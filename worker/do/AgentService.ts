@@ -116,6 +116,9 @@ export class AgentService {
 		}
 
 		try {
+			// streamText reports API errors (bad key, 5xx, refusal) only through onError and then
+			// ends the stream quietly, so keep the error and rethrow it after the stream ends.
+			let streamError: unknown = null
 			const { textStream } = streamText({
 				model,
 				messages,
@@ -126,9 +129,9 @@ export class AgentService {
 				onAbort() {
 					console.warn('Stream actions aborted')
 				},
-				onError: (e) => {
-					console.error('Stream text error:', e)
-					throw e
+				onError: ({ error }) => {
+					console.error('Stream text error:', error)
+					streamError ??= error
 				},
 			})
 
@@ -183,6 +186,8 @@ export class AgentService {
 					}
 				}
 			}
+
+			if (streamError) throw streamError
 
 			// If we've finished receiving events, but there's still an incomplete event, we need to complete it
 			if (maybeIncompleteAction) {

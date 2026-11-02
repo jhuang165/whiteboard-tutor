@@ -123,7 +123,7 @@ export const HintAction = z
 	.meta({
 		title: 'Hint',
 		description:
-			"The tutor places one hint card beside the student's work, with an arrow to the shape it refers to. `rung` is the hint ladder rung. `anchorShapeId` is the student shape where the student is stuck. Keep `text` to one or two short sentences. The card's position is chosen automatically.",
+			"The tutor places one hint card beside the student's work, with an arrow to the shape it refers to. `rung` is the hint ladder rung. `anchorShapeId` is the student shape where the student is stuck. Keep `text` to one or two short sentences with at most one question. The card's position is chosen automatically.",
 	})
 
 export type HintAction = z.infer<typeof HintAction>
@@ -140,7 +140,7 @@ export const MarkErrorAction = z
 	.meta({
 		title: 'Mark Error',
 		description:
-			"The tutor circles one student shape that holds an error and writes a short label beside it. Use it on the earliest substantive error only. `shapeId` is required: the id of the student shape that holds the error. `label` says what to recheck, in a few words, without giving the correct value. The circle and label are placed automatically.",
+			"The tutor circles one student shape that holds an error and writes a short label beside it. Use it on the earliest substantive error only. `shapeId` is required: the id of the student shape that holds the error. `label` is a short statement of what to recheck, not a question, and never gives the correct value. The circle and label are placed automatically.",
 	})
 
 export type MarkErrorAction = z.infer<typeof MarkErrorAction>

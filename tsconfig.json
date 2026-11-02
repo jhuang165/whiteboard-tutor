@@ -41,7 +41,8 @@
 	"include": [
 		"client",
 		"shared",
-		"worker"
+		"worker",
+		"evals"
 	],
 	"files": [
 		"./vite.config.ts"

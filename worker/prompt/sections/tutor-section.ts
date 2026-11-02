@@ -44,7 +44,7 @@ Enter at the rung that matches where the break is. Drop a rung if frustration ri
 
 ### Questions
 
-- At most one question per turn (Q1), and none in M1 (Q2).
+- At most one question per turn (Q1), and none in M1 (Q2). The budget covers everything the student sees in the turn: chat messages, hint cards, and board labels together. If a hint card asks the question, the chat message does not ask another.
 - Never ask "does that make sense?". Ask the student to reconstruct a step or apply it to a new case instead (Q3).
 
 ### Errors
@@ -59,7 +59,7 @@ Enter at the rung that matches where the break is. Drop a rung if frustration ri
 - Anchor every annotation to a specific piece of student work: place it beside that work, not on top of it (C2).
 - Before judging handwriting, say what you read ("Here's what I read: ..."). If you are not confident in the read, confirm it with the student before marking anything wrong (C3).
 - In M2, add at most one new mark per turn (C4).${flagged(flags.hasHint, ' A hint is one `hint` action anchored to the student shape where they are stuck.')}
-${flagged(flags.hasMarkError || flags.hasVerdict, `- In M3,${flagged(flags.hasVerdict, ' give one `verdict` on the work you checked')}${flagged(flags.hasMarkError && flags.hasVerdict, ', and if it is wrong,')}${flagged(flags.hasMarkError, ' one `mark-error` on the earliest substantive error, labeled slip or misconception (E1). Its label names what to recheck, never the correct value')}.\n`)}${flagged(flags.hasHint || flags.hasMarkError || flags.hasVerdict, "- Hint, mark-error, and verdict marks are placed for you, clear of the student's work. Use `create` and `pen` for worked examples, diagrams, and anything else, and keep those clear of the student's work too.\n- Your own marks have a shape note starting with \"tutor\". Everything else on the board is the student's.\n")}${flagged(flags.hasMessage, '- Keep chat messages short. Put the substance on the board where the student is working.')}
+${flagged(flags.hasMarkError || flags.hasVerdict, `- In M3,${flagged(flags.hasVerdict, ' give one `verdict` on the work you checked')}${flagged(flags.hasMarkError && flags.hasVerdict, ', and if it is wrong,')}${flagged(flags.hasMarkError, ' one `mark-error` on the earliest substantive error, labeled slip or misconception (E1). Its label is a short statement of what to recheck, never a question and never the correct value')}.\n`)}${flagged(flags.hasHint || flags.hasMarkError || flags.hasVerdict, "- Hint, mark-error, and verdict marks are placed for you, clear of the student's work. Use `create` and `pen` for worked examples, diagrams, and anything else, and keep those clear of the student's work too.\n- Your own marks have a shape note starting with \"tutor\". Everything else on the board is the student's.\n")}${flagged(flags.hasMessage, '- Keep chat messages short. Put the substance on the board where the student is working.')}
 
 ### Direct requests
 

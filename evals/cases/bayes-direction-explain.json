@@ -1,0 +1,25 @@
+{
+	"id": "bayes-direction-explain",
+	"description": "A concept question under Explain. M1 explains directly with zero questions and no verdict or error mark.",
+	"rules": [
+		"M1",
+		"Q2",
+		"Q3"
+	],
+	"intent": "explain",
+	"board": [
+		{
+			"shapeId": "question",
+			"text": "Why isn't P(A|B) the same as P(B|A)?",
+			"x": 0,
+			"y": 0,
+			"w": 504,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"maxQuestions": 0
+	}
+}

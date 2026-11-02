@@ -164,7 +164,17 @@ assumed to be probability (§8 #1 recommendation) until decided.
   first omitted `shapeId` on `mark-error` (the schema description now says it's required),
   and earlier `[THOUGHT]` text pasted back into a user turn gets refused as reasoning
   extraction (the bridge drops it).
-- [ ] Eval cases.
+- [x] Eval harness and seed cases, 2026-11-01 (`npm run eval`, `evals/`). Five
+  probability cases: Bayes missing a branch (Check and Hint), correct Bayes work (Check),
+  a die-expectation slip that carries into a later line (Check), and a concept question
+  (Explain). The checks cover verdict, earliest error with slip or misconception, one
+  hint rung with its anchor, the question budget, the mark budget, and no answer leaks.
+  The first run found the tutor asking two questions per turn (one in the error label,
+  one in chat). The prompt now counts Q1 across everything the student sees and makes
+  error labels statements; after that, 50/50 checks passed over two runs of each case
+  through the bridge.
+- [ ] More cases (D1 full-solution requests, Wait-what, second and later hint presses with
+  chat history, ambiguous handwriting from a screenshot) and the judged MRBench rubric.
 - Done when: in a probability problem with a planted error, Check points at the right line,
   and Hint gives exactly one rung without leaking the answer.
 

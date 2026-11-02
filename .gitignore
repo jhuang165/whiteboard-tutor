@@ -13,3 +13,4 @@ playwright-report/
 test-results/
 .tsbuild/
 !.dev.vars.example
+evals/results/

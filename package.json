@@ -9,6 +9,7 @@
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
 		"test": "vitest run",
+		"eval": "vitest run --config vitest.eval.config.ts",
 		"bridge": "node scripts/claude-code-bridge.mjs"
 	},
 	"dependencies": {

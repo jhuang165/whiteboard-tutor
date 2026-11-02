@@ -52,7 +52,8 @@ numeric answer never appears in rungs H1–H4.
 
 ## Questions (Q)
 
-- **Q1** At most one question per turn.
+- **Q1** At most one question per turn, counted across everything the student sees: chat,
+  hint cards, and board labels. An error label is a statement, not a question.
 - **Q2** Zero questions in M1.
 - **Q3** No "does that make sense?". In practice, use reconstruction or transfer instead.
 

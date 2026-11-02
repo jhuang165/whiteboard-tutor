@@ -50,6 +50,7 @@ npm install
 npm run dev        # Vite + the worker via @cloudflare/vite-plugin, http://localhost:5173
 npm run typecheck  # tsc --noEmit
 npm test           # vitest run (config in vitest.config.ts, not vite.config.ts)
+npm run eval       # tutor evals: real model calls (vitest.eval.config.ts), bridge by default
 npm run build
 ```
 
@@ -67,6 +68,7 @@ Claude Code login: dev only, never for other users.
 | `client/` | React app: tldraw canvas, chat panel, agent actions (`actions/`), prompt parts (`parts/`), modes (`modes/`), tutor-mark helpers (`tutor/`) |
 | `worker/` | Cloudflare Worker: `/stream` route, `do/AgentService.ts` model calls, system prompt (`prompt/`) |
 | `shared/` | Code used by both sides: model list (`models.ts`), shape formats, schemas |
+| `evals/` | Tutor behavior evals: `cases/*.json`, checks in `lib/checks.ts`, runner `run.eval.ts` |
 | `.claude/skills/` | Dev skills for agents working here (Codex sees them via `.agents/skills`) |
 | `pedagogy/source-skills/` | DATA 21100 tutoring skills, copied as **product prompt material** |
 | `pedagogy/PROVENANCE-data21100.md` | Upstream sources and licenses for those skills |

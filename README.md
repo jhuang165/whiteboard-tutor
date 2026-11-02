@@ -71,8 +71,19 @@ Other scripts:
 ```bash
 npm run typecheck   # tsc --noEmit
 npm test            # Vitest
+npm run eval        # tutor behavior evals: real model calls (see below)
 npm run build       # production build
 ```
+
+### Evals
+
+`npm run eval` sends each case in `evals/cases/` through the worker's own model call and
+scores the tutor's actions: the verdict, which line the error mark targets, slip versus
+misconception, one hint rung, the question budget, and no answer leaks. It reads its keys
+from `.dev.vars` like the worker does. It refuses to call the real API unless
+`EVAL_ALLOW_API=1` is set, so the default is to run it through the bridge. Results go to
+`evals/results/` (gitignored), with a summary in `latest.md`. The `tutor-eval` skill
+describes the case format.
 
 ## How it fits together
 
@@ -85,6 +96,7 @@ The app starts from tldraw's agent starter kit. Its own docs are in
 | `client/tutor/` | Helpers for tutor marks: ink colors, placement, locking |
 | `worker/` | Cloudflare Worker and Durable Object. Streams the model's actions back to the client. The system prompt is in `worker/prompt/` |
 | `shared/` | Code used on both sides: action schemas, the shape format, the model list, tutor turn text |
+| `evals/` | Tutor behavior evals: cases of student work, deterministic checks, and the runner |
 | `pedagogy/` | The source tutoring skills, used as prompt material, with their licenses and provenance |
 | `docs/PLAN.md` | Design, architecture, phases, evals, and open decisions |
 

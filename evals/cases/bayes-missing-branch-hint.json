@@ -1,0 +1,71 @@
+{
+	"id": "bayes-missing-branch-hint",
+	"description": "Same board, first Hint press. Exactly one hint below H5, anchored at the broken step, one mark, no answer.",
+	"rules": [
+		"M2",
+		"H",
+		"C2",
+		"C4",
+		"Q1"
+	],
+	"intent": "hint",
+	"hintsGiven": 0,
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: P(A) = 0.3, P(B|A) = 0.4, P(B|not A) = 0.1. Find P(A|B).",
+			"x": 0,
+			"y": 0,
+			"w": 910,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "P(A|B) = P(B|A) P(A) / P(B)",
+			"x": 0,
+			"y": 80,
+			"w": 378,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "P(B) = P(B|A) P(A) = 0.4 x 0.3 = 0.12",
+			"x": 0,
+			"y": 160,
+			"w": 518,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "P(A|B) = 0.12 / 0.12 = 1",
+			"x": 0,
+			"y": 240,
+			"w": 336,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 1,
+		"hintRungs": [
+			"H1",
+			"H2",
+			"H3",
+			"H4"
+		],
+		"hintAnchorIn": [
+			"line2",
+			"line3"
+		],
+		"maxMarks": 1,
+		"maxQuestions": 1,
+		"forbidden": [
+			"0.19",
+			"0.07",
+			"0.63",
+			"0.632",
+			"12/19"
+		]
+	}
+}
