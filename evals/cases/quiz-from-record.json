@@ -1,0 +1,40 @@
+{
+	"id": "quiz-from-record",
+	"description": "Quiz me with a learner record where Bayes' rule was solved only with help. Exactly one posed problem with a concept, nothing else on the board, no hint, verdict, or question.",
+	"rules": [
+		"M4",
+		"V1",
+		"C4",
+		"Q2"
+	],
+	"intent": "quiz",
+	"learnerSummary": [
+		{
+			"concept": "bayes-rule",
+			"best": "assisted",
+			"independent": 0,
+			"assisted": 2,
+			"exposures": 1,
+			"lastAt": 1793300000000,
+			"reviewDueAt": null
+		},
+		{
+			"concept": "expected-value",
+			"best": "independent",
+			"independent": 1,
+			"assisted": 0,
+			"exposures": 0,
+			"lastAt": 1793200000000,
+			"reviewDueAt": 1793286400000
+		}
+	],
+	"board": [],
+	"expect": {
+		"posesProblem": 1,
+		"hints": 0,
+		"verdict": "none",
+		"markErrorOn": "none",
+		"maxMarks": 1,
+		"maxQuestions": 0
+	}
+}

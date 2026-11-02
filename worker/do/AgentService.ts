@@ -23,7 +23,8 @@ import { Environment } from '../environment'
 import { buildAgentMessages, toModelMessages } from '../prompt/buildMessages'
 import { buildSystemPrompt } from '../prompt/buildSystemPrompt'
 import { getModelName } from '../prompt/getModelName'
-import { buildAnthropicRequest, getTurnEffort, normalizeAnthropicBaseUrl } from './anthropicRequest'
+import { createAnthropicClient } from '../anthropicClient'
+import { buildAnthropicRequest, getTurnEffort } from './anthropicRequest'
 import { closeAndParseJson } from './closeAndParseJson'
 
 export class AgentService {
@@ -33,13 +34,7 @@ export class AgentService {
 
 	constructor(env: Environment) {
 		this.openai = createOpenAI({ apiKey: env.OPENAI_API_KEY })
-		// Pass every setting explicitly so the SDK never falls back to ANTHROPIC_* in a host shell.
-		this.anthropic = new Anthropic({
-			// null, not undefined: undefined makes the SDK read ANTHROPIC_API_KEY from the environment.
-			apiKey: env.ANTHROPIC_API_KEY || null,
-			authToken: null,
-			baseURL: normalizeAnthropicBaseUrl(env.ANTHROPIC_BASE_URL),
-		})
+		this.anthropic = createAnthropicClient(env)
 		this.google = createGoogleGenerativeAI({ apiKey: env.GOOGLE_API_KEY })
 	}
 

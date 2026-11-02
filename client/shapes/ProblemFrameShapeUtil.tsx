@@ -10,6 +10,7 @@ import {
 	useEditor,
 	Editor,
 } from 'tldraw'
+import { getProblemState, ProblemState } from '../tutor/problemState'
 import { renderTextWithMath } from './latex'
 
 declare module 'tldraw' {
@@ -93,8 +94,35 @@ function ProblemFrameComponent({ shape }: { shape: ProblemFrameShape }) {
 				<div dangerouslySetInnerHTML={{ __html: statement }} />
 			</div>
 			<div className="tutor-problem-work">Your work</div>
+			<ProblemStatusBadge state={getProblemState(shape)} />
 		</HTMLContainer>
 	)
+}
+
+/** Where the problem stands: the answer check, then whether it is solved. Never the answer. */
+function ProblemStatusBadge({ state }: { state: ProblemState }) {
+	const [text, tone] = getBadge(state)
+	return (
+		<div className="tutor-problem-status" data-tone={tone}>
+			{text}
+		</div>
+	)
+}
+
+function getBadge(state: ProblemState): [string, 'quiet' | 'good' | 'warn'] {
+	if (state.status === 'flawed') {
+		return [`This question has a flaw${state.issue ? `: ${state.issue}` : ''}. It won't count against you.`, 'warn']
+	}
+	if (state.status === 'solved') return ['Solved', 'good']
+	switch (state.verification) {
+		case 'pending':
+			return ['Checking the answer…', 'quiet']
+		case 'checked':
+			return [state.checkedWithCode ? 'Answer checked with code' : 'Answer checked (no code run)', 'quiet']
+		case 'failed':
+		case 'flawed':
+			return ["Answer not checked; the tutor will solve it before grading", 'quiet']
+	}
 }
 
 /** Grow or shrink the frame with its header, keeping the work area's height. */

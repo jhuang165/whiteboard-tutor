@@ -26,8 +26,8 @@ when the feature they govern doesn't exist yet.
 - **M3 Review.** The student submitted work for checking. Give a verdict and the earliest
   substantive error, and leave a sound method intact. Ask for their reasoning only when the
   work on the board is insufficient.
-- **M4 Quiz.** Pose one problem at a time in a problem frame (`pose-problem`). Solve and verify it privately
-  first (V1). Grade only the submitted attempt.
+- **M4 Quiz.** (Quiz me button.) Pose one problem at a time in a problem frame (`pose-problem`), with its concept chosen from the learner record: a due review, then a concept only seen or solved with help. Solve and verify it privately
+  first (V1); `/verify` also checks it with code, and the tutor grades against that answer. Grade only the submitted attempt (Check on the open problem).
 - **M5 Grill.** One probe per turn, anchored to a specific claim on the board. Don't put
   the preferred answer inside the question. Finish with what held up, the open gap, and a
   next exercise.
@@ -54,7 +54,7 @@ numeric answer never appears in rungs H1–H4.
 
 - **Q1** At most one question per turn, counted across everything the student sees: chat,
   hint cards, and board labels. An error label is a statement, not a question.
-- **Q2** Zero questions in M1.
+- **Q2** Zero questions in M1. Rhetorical questions count: state definitions as statements.
 - **Q3** No "does that make sense?". In practice, use reconstruction or transfer instead.
 
 ## Errors (E)
@@ -89,12 +89,12 @@ numeric answer never appears in rungs H1–H4.
 
 ## Evidence (L)
 
-Each turn writes at most one evidence record per concept:
+Each turn writes at most one evidence record per concept. The app decides the level from what it counted (hint rungs opened, earlier wrong checks), never the model (`shared/tutor/evidence.ts`); a solve after any hint or wrong check is assisted. A problem the answer check found flawed records nothing (V2).
 
 - **L1** `exposure`: the student saw an explanation or a worked example.
 - **L2** `assisted`: the student solved it after hints. Record which rungs were opened.
 - **L3** `independent`: the student solved it with no hints on this problem.
-- **L4** `retained`: an independent solve on a delayed review (proposed dates: 1, 3, 7, and
+- **L4** `retained`: an independent solve on a delayed review: a clean solve of the same concept on a different problem at least a day after an earlier clean solve (review dates: 1, 3, 7, and
   21 days).
 
 A generated lesson, one correct answer, or a solve after hints is never mastery. Historical

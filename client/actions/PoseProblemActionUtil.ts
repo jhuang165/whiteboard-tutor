@@ -9,6 +9,9 @@ import {
 	PROBLEM_WORK_HEIGHT,
 	ProblemFrameShape,
 } from '../shapes/ProblemFrameShapeUtil'
+import { conceptSlug } from '../../shared/tutor/evidence'
+import { ProblemState } from '../tutor/problemState'
+import { checkPosedProblem } from '../tutor/problemTracking'
 import { lockShapes, newTutorShapeId, tutorMeta } from '../tutor/tutorMarks'
 import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
@@ -16,7 +19,8 @@ const GAP = 120
 
 /**
  * One problem in a problem frame, placed to the right of everything already on the board.
- * The view moves to it and the student gets the pen (pedagogy-spec M4).
+ * The view moves to it and the student gets the pen (pedagogy-spec M4). The worker then
+ * solves it with code in the background and keeps the answer (V1).
  */
 export const PoseProblemActionUtil = registerActionUtil(
 	class PoseProblemActionUtil extends AgentActionUtil<PoseProblemAction> {
@@ -50,11 +54,22 @@ export const PoseProblemActionUtil = registerActionUtil(
 					}
 
 			const id = newTutorShapeId(helpers, 'problem')
+			const state: ProblemState = {
+				problemId: crypto.randomUUID(),
+				concept: conceptSlug(action.concept ?? ''),
+				posedAt: Date.now(),
+				status: 'open',
+				hintRungs: [],
+				incorrectChecks: 0,
+				verification: 'pending',
+				checkedWithCode: false,
+				issue: '',
+			}
 			editor.createShape<ProblemFrameShape>({
 				id,
 				type: 'problem-frame',
 				...point,
-				meta: { ...tutorMeta('problem', `problem frame: ${title}`), posedAt: Date.now() },
+				meta: { ...tutorMeta('problem', `problem frame: ${title}`), ...state },
 				props: { w: PROBLEM_FRAME_WIDTH, h, headerH, title, statement: action.statement },
 			})
 			editor.sendToBack([id])
@@ -66,6 +81,14 @@ export const PoseProblemActionUtil = registerActionUtil(
 				animation: { duration: 400 },
 			})
 			editor.setCurrentTool('draw')
+
+			// Solve and check it with code while the student reads it (V1).
+			void checkPosedProblem(editor, id, {
+				problemId: state.problemId,
+				title,
+				statement: action.statement,
+				concept: state.concept,
+			})
 		}
 	}
 )

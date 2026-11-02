@@ -167,12 +167,13 @@ export const PoseProblemAction = z
 		_type: z.literal('pose-problem'),
 		intent: z.string(),
 		title: z.string(),
+		concept: z.string(),
 		statement: z.string(),
 	})
 	.meta({
 		title: 'Pose Problem',
 		description:
-			"The tutor puts one problem on the board in a problem frame: the statement on top and an empty work area below, where the student writes. The view moves to the frame and the student gets the pen. Use it to pose a practice problem, or to frame a problem the student typed in chat. `title` is short, such as \"Problem 2\". `statement` is the full problem; write math inline as `$...$` LaTeX. Pose one problem at a time. The frame's position is chosen automatically.",
+			"The tutor puts one problem on the board in a problem frame: the statement on top and an empty work area below, where the student writes. The view moves to the frame and the student gets the pen. Use it to pose a practice problem, or to frame a problem the student typed in chat. `title` is short, such as \"Problem 2\". `concept` is the one concept the problem tests, as a short kebab-case slug such as `bayes-rule` or `linearity-of-expectation`; reuse a slug from the learner's record when it fits. `statement` is the full problem, with a single well-defined answer; write math inline as `$...$` LaTeX. Pose one problem at a time. The frame's position is chosen automatically, and the problem is checked with code in the background.",
 	})
 
 export type PoseProblemAction = z.infer<typeof PoseProblemAction>

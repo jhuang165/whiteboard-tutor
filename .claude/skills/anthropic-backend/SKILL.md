@@ -16,7 +16,7 @@ this file when a decision changes.
   text block with `cache_control`, adaptive thinking, `output_config.effort` from
   `getTurnEffort`, `max_tokens` 16000, and `betas` + `fallbacks: "default"` when the model
   definition has `serverFallback` (not Haiku 5.5). No temperature, no prefill.
-- Effort per tutor button: `low` for Hint; `medium` for Explain, Check, and Wait-what. Chat
+- Effort per tutor button: `low` for Hint; `medium` for Explain, Check, Wait-what, and Quiz me. Chat
   turns keep the model definition's `effort`.
 - After the stream: a `[usage]` log line (input, cache read and write, output, stop
   reason), a `[fallback]` warning when a `fallback` block shows up, and a thrown error on
@@ -24,14 +24,16 @@ this file when a decision changes.
 - The client is built with explicit `apiKey` (`null` when unset), `authToken: null`, and
   `baseURL`, so the SDK never reads `ANTHROPIC_*` from the shell. `ANTHROPIC_BASE_URL` has
   no `/v1`; a trailing `/v1` is stripped for old `.dev.vars` files.
-- Not built yet: `/verify`, `/triage`, `/ingest`, the per-session token ceiling, and crops.
+- `/verify` (`worker/verify/verifyProblem.ts`): one non-streamed-to-client call per posed problem, `messages.stream().finalMessage()` so long thinking cannot time out, resuming up to 3 `pause_turn` stops by resending the assistant content. The answer is read from the last text block that parses against `VERIFY_OUTPUT_SCHEMA`. `checkedWithCode` is true only when a `bash_code_execution_result` returned code 0. The answer stays in `LearnerDurableObject`; `AgentDurableObject` attaches it to the `problem` part and drops any `verified` the client sent.
+- The Anthropic client comes from `worker/anthropicClient.ts` for every route.
+- Not built yet: `/triage`, `/ingest`, the per-session token ceiling, crops, and auth or rate limits on `/verify`.
 
 ## Routes
 
 | Route | Model | Effort | Notes |
 | --- | --- | --- | --- |
 | `/stream` tutor turn | `claude-opus-5-5` | `low` for hint and annotation turns, `medium` for concept and review | Streams canvas actions. Adaptive thinking (it can't be disabled on 5.5). |
-| `/verify` | `claude-opus-5-5` | `high` | Server tool `code_execution_20260521`. Results come back as `bash_code_execution_tool_result`. |
+| `/verify` | `claude-opus-5-5` | `high` | Server tool `code_execution_20260521` (the newest; prefer it per the docs) plus a JSON-schema `output_config.format`. Results come back as `bash_code_execution_tool_result`. Built. |
 | `/triage` (proactive mode) | Undecided. See `docs/PLAN.md` §8 #3 | `low` | Classifier only: intervene or not, plus a reason. |
 | `/ingest` | `claude-opus-5-5` | `medium` | PDF documents with citations, for page-grounded problem extraction. |
 

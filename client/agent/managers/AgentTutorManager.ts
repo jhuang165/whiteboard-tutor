@@ -1,6 +1,7 @@
 import { Atom, atom } from 'tldraw'
 import type { TutorTurnState } from '../../../shared/tutor/buildTutorTurnContent'
 import type { TutorIntent } from '../../../shared/tutor/TutorIntent'
+import { noteExposure } from '../../tutor/problemTracking'
 import type { TldrawAgent } from '../TldrawAgent'
 import { BaseAgentManager } from './BaseAgentManager'
 
@@ -36,10 +37,25 @@ export class AgentTutorManager extends BaseAgentManager {
 		const hintsGiven = this.hintPresses
 		if (intent === 'hint') this.hintPresses++
 		this.$state.set({ intent, hintsGiven })
+		this.exposurePending = intent === 'explain' || intent === 'wait-what'
+	}
+
+	/** Whether this turn's explanation still has to be recorded as exposure (L1). */
+	private exposurePending = false
+
+	/**
+	 * Called when a request finishes without error or cancel. The first one after an Explain
+	 * or Wait-what press records exposure for the current problem's concept.
+	 */
+	onRequestDone(): void {
+		if (!this.exposurePending) return
+		this.exposurePending = false
+		noteExposure(this.agent.editor)
 	}
 
 	reset(): void {
 		this.hintPresses = 0
+		this.exposurePending = false
 		this.$state.set(INITIAL_STATE)
 	}
 }

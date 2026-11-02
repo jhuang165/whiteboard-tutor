@@ -60,8 +60,10 @@ const server = createServer(async (req, res) => {
 		'--setting-sources', '',
 		'--disable-slash-commands',
 		'--no-session-persistence',
-		'--system-prompt', systemText(body.system),
+		'--system-prompt', systemText(body.system) + schemaInstruction(body.output_config?.format),
 	]
+	const serverTools = (body.tools ?? []).map((tool) => tool.type ?? tool.name)
+	if (serverTools.length > 0) log(`dropping tools ${serverTools.join(', ')}: the bridge has no sandbox`)
 	if (body.model) args.push('--model', body.model)
 	const effort = body.output_config?.effort
 	if (EFFORTS.has(effort)) args.push('--effort', effort)
@@ -157,6 +159,15 @@ server.listen(PORT, '127.0.0.1', () => {
 	log(`listening on http://127.0.0.1:${PORT}, running \`${COMMAND}\``)
 	log('dev only: this answers with your own Claude login, so keep it to your machine')
 })
+
+/**
+ * Structured outputs (`output_config.format`) as a prompt instruction. `claude -p` can't
+ * enforce a schema, so the caller must still validate the reply.
+ */
+function schemaInstruction(format) {
+	if (format?.type !== 'json_schema') return ''
+	return `\n\nReply with only one JSON object matching this JSON schema, with no other text:\n${JSON.stringify(format.schema)}`
+}
 
 /** The Messages API `system` field, as one string. */
 function systemText(system) {

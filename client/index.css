@@ -76,7 +76,9 @@ body {
 
 .chat-header {
 	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 4px;
 }
 
 .new-chat-button {
@@ -841,5 +843,94 @@ button.prompt-tag span {
 	border-radius: 6px;
 	font-family: 'Inter', sans-serif;
 	font-size: 14px;
+	color: var(--tl-color-text-3);
+}
+
+.tutor-problem-frame {
+	position: relative;
+}
+
+/* Answer-check and solved status, in the work area's bottom-right corner. */
+.tutor-problem-status {
+	position: absolute;
+	right: 20px;
+	bottom: 18px;
+	max-width: 60%;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	text-align: right;
+	color: var(--tl-color-text-3);
+}
+
+.tutor-problem-status[data-tone='good'] {
+	color: var(--tl-color-success, #2f9e44);
+	font-weight: 600;
+}
+
+.tutor-problem-status[data-tone='warn'] {
+	color: var(--tl-color-warning, #e8590c);
+}
+
+/* Evidence panel: the learner's progress by concept */
+.evidence-panel {
+	flex: 1;
+	min-width: 0;
+	margin: 2px 4px;
+	font-size: 12px;
+	color: var(--tl-color-text);
+}
+
+.evidence-panel > summary {
+	cursor: pointer;
+	padding: 8px 6px;
+	border-radius: 4px;
+	font-weight: 600;
+	user-select: none;
+}
+
+.evidence-panel > summary:hover {
+	background-color: var(--tl-color-muted-2);
+}
+
+.evidence-empty {
+	margin: 4px 6px 8px;
+	color: var(--tl-color-text-3);
+}
+
+.evidence-list {
+	list-style: none;
+	margin: 0;
+	padding: 0 6px 8px;
+	max-height: 200px;
+	overflow-y: auto;
+}
+
+.evidence-row {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	gap: 2px 8px;
+	padding: 4px 0;
+	border-bottom: 1px solid var(--tl-color-divider);
+}
+
+.evidence-concept {
+	text-transform: capitalize;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.evidence-level {
+	color: var(--tl-color-text-3);
+}
+
+.evidence-level[data-level='independent'],
+.evidence-level[data-level='retained'] {
+	color: var(--tl-color-success, #2f9e44);
+	font-weight: 600;
+}
+
+.evidence-detail {
+	grid-column: 1 / -1;
 	color: var(--tl-color-text-3);
 }

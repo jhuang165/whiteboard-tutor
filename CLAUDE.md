@@ -32,8 +32,11 @@ before writing code. Status: Phase 0 scaffold is in place (the tldraw agent temp
 defaulting to `claude-opus-5-5`). Phase 1 has started: tutor buttons, the `tutorTurn` prompt
 part, the tutor system prompt, a tutor mode that can only add to the board, and the
 `hint`, `mark-error`, `verdict`, `pose-problem` (a locked problem frame), and `write-math`
-(a KaTeX math shape) actions, with all tutor output locked, plus behavior evals. Real model
-turns have run only through the dev-only Claude Code bridge (`npm run bridge`).
+(a KaTeX math shape) actions, with all tutor output locked, plus behavior evals. Phase 2 has
+started: the Quiz me button with grading on Check, `/verify` answer checks with code
+execution (answers stay in the worker), and evidence records in a per-learner SQLite
+Durable Object (`LearnerDurableObject`) with a Progress panel. Real model turns have run
+only through the dev-only Claude Code bridge (`npm run bridge`).
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable
 Object (`AgentDurableObject`). The worker calls Claude through the official

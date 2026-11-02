@@ -38,6 +38,7 @@ import { ChatHistoryPartUtil } from '../parts/ChatHistoryPartUtil'
 import { ContextItemsPartUtil } from '../parts/ContextItemsPartUtil'
 import { DataPartUtil } from '../parts/DataPartUtil'
 import { DebugPartUtil } from '../parts/DebugPartUtil'
+import { LearnerPartUtil } from '../parts/LearnerPartUtil'
 import { MessagesPartUtil } from '../parts/MessagesPartUtil'
 import { ModelNamePartUtil } from '../parts/ModelNamePartUtil'
 import { ModePartUtil } from '../parts/ModePartUtil'
@@ -112,7 +113,9 @@ export const AGENT_MODE_DEFINITIONS = [
 			DataPartUtil.type,
 			ContextItemsPartUtil.type,
 
-			// Tutor (the posed problem, then the pedagogy mode and hint ladder state for this turn)
+			// Tutor (the learner's record, the posed problem, then the pedagogy mode and hint
+			// ladder state for this turn)
+			LearnerPartUtil.type,
 			ProblemPartUtil.type,
 			TutorTurnPartUtil.type,
 

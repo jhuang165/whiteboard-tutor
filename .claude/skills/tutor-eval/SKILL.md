@@ -32,13 +32,14 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 
 ## Case format (`evals/cases/<id>.json`, type `EvalCase` in `evals/lib/EvalCase.ts`)
 
-- `intent` (the button: `check`, `hint`, `explain`, `wait-what`, `chat`), `hintsGiven`,
+- `intent` (the button: `check`, `hint`, `explain`, `wait-what`, `quiz`, `chat`), `hintsGiven`,
   and an optional `message` (defaults to the button's message) and `model`.
 - `board`: the student shapes as the tutor sees them: `shapeId` (simple id, no
   `shape:`), `text`, `x`, `y`, `w`, `h`, and `type` (default `text`). Use neutral ids
   (`line1`, `line2`) so the ids don't hint at the error.
 - `expect`: `verdict` (`correct`, `incorrect`, or `none`), `markErrorOn` (a shape id or
   `none`), `errorKind`, `hints` with `hintRungs` and `hintAnchorIn`, `maxQuestions`,
+  `posesProblem` (how many `pose-problem` actions, each with a concept, title, and statement),
   `maxMarks`, and `forbidden` (strings that must not appear in student-visible text,
   matched as whole values, so "0.19" doesn't match "10.19").
 - `rules`: the `pedagogy-spec` ids under test, and a `description` of what the case
@@ -52,9 +53,9 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 Implemented in `evals/lib/checks.ts`: answer leak, earliest error, question budget, mark
 budget, plus the verdict, one hint rung with its anchor, and mode-only actions. Still to
 build: overlap and mutation (placement runs in the client), C3 on ambiguous handwriting
-(needs screenshot cases), and L (Phase 4). `pose-problem` and `write-math` count as marks;
+(needs screenshot cases). L is decided in code, not by the model, so it is unit-tested in `shared/tutor/evidence.test.ts` instead. `pose-problem` and `write-math` count as marks;
 their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
-A case can set `problem` (shape id, title, statement) to put a posed problem in the prompt.
+A case can set `problem` (the full `ProblemPart` problem, including `verified` for the checked answer the worker would attach) and `learnerSummary` (the per-concept evidence summary). Put the checked answer in `forbidden` on hint cases.
 
 | Check | Rule |
 | --- | --- |

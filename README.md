@@ -12,11 +12,11 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done and Phase 1 (the tutor MVP) is under way.
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in.
 
 Working now:
 
-- **Explain**, **Hint**, **Check**, and **Wait, what?** buttons above the chat. Each one
+- **Explain**, **Hint**, **Check**, **Wait, what?**, and **Quiz me** buttons above the chat. Each one
   sets the tutor mode for that turn and tracks how many hints the student has used.
 - A tutor system prompt built from the pedagogy rules, kept static so it stays cached.
 - Tutor marks: `hint` (a violet card with an arrow to the student's work), `mark-error` (a
@@ -30,11 +30,18 @@ Working now:
 - Claude calls use the official `@anthropic-ai/sdk` with adaptive thinking, per-button
   effort (low for Hint, medium otherwise), a cached system prompt, and server-side
   fallbacks.
+- Quizzes: **Quiz me** poses one problem, chosen from the student's record. In the
+  background, `/verify` solves it with Claude's code execution tool and keeps the answer on
+  the server. **Check** grades the attempt against that answer. A problem the check finds
+  flawed is marked as the question's fault and doesn't count.
+- Evidence: each solve is logged as assisted (any hint or wrong check), independent, or
+  retained, and explanations as exposure. The app decides the level, not the model. A
+  **Progress** panel at the top of the chat lists it by concept, with review dates.
 - Behavior evals (`npm run eval`).
 
-Not done yet: a Quiz button and grading flow, code-execution answer checks, and evidence
-tracking. Real model turns have only run through
-the dev-only bridge below. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
+Not done yet: accounts (progress is tied to an anonymous id in this browser), auth and rate
+limits on the routes, and a review queue. Real model turns have only run through the
+dev-only bridge below, which has no code sandbox, so answer checks there run without code. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
 
 ## Run it
 

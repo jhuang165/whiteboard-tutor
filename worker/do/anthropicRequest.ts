@@ -7,13 +7,14 @@ import type { AgentPrompt } from '../../shared/types/AgentPrompt'
 
 /**
  * Effort per tutor button (anthropic-backend skill): `low` for hints, `medium` for
- * explaining and reviewing. A chat turn keeps the model's default.
+ * explaining, reviewing, and posing quiz problems. A chat turn keeps the model's default.
  */
 const TUTOR_EFFORT: Partial<Record<TutorIntent, AnthropicEffort>> = {
 	hint: 'low',
 	explain: 'medium',
 	'wait-what': 'medium',
 	check: 'medium',
+	quiz: 'medium',
 }
 
 export const SERVER_FALLBACK_BETA = 'server-side-fallback-2026-07-01'

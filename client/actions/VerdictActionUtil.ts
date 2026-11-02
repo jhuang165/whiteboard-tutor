@@ -2,6 +2,7 @@ import { TLShapeId } from 'tldraw'
 import { VerdictAction } from '../../shared/schema/AgentActionSchemas'
 import { Streaming } from '../../shared/types/Streaming'
 import { AgentHelpers } from '../AgentHelpers'
+import { noteVerdict } from '../tutor/problemTracking'
 import {
 	getAnchorBox,
 	lockShapes,
@@ -15,7 +16,10 @@ import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
 const STAMP_SIZE = 48
 
-/** A ✓ or ✗ stamp beside the student work being judged (pedagogy-spec M3). */
+/**
+ * A ✓ or ✗ stamp beside the student work being judged (pedagogy-spec M3). A verdict on work
+ * in the current problem's frame also grades that problem (M4).
+ */
 export const VerdictActionUtil = registerActionUtil(
 	class VerdictActionUtil extends AgentActionUtil<VerdictAction> {
 		static override type = 'verdict' as const
@@ -57,6 +61,7 @@ export const VerdictActionUtil = registerActionUtil(
 			})
 			moveBeside(editor, stampId, work, 16)
 			lockShapes(editor, [stampId])
+			noteVerdict(editor, action.verdict, workIds)
 		}
 	}
 )

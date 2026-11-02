@@ -21,6 +21,7 @@ describe('getTurnEffort', () => {
 		expect(getTurnEffort(turn('explain'), opus)).toBe('medium')
 		expect(getTurnEffort(turn('wait-what'), opus)).toBe('medium')
 		expect(getTurnEffort(turn('check'), opus)).toBe('medium')
+		expect(getTurnEffort(turn('quiz'), opus)).toBe('medium')
 	})
 
 	it("keeps the model's default for chat and non-tutor turns", () => {

@@ -3,6 +3,7 @@ import { PlacementBox, placeBeside, unionBoxes } from '../../shared/tutor/placeB
 import { SimpleShapeId } from '../../shared/types/ids-schema'
 import { AgentHelpers } from '../AgentHelpers'
 import type { ProblemFrameShape } from '../shapes/ProblemFrameShapeUtil'
+import { getWorkArea } from './problemState'
 
 /**
  * Tutor ink: the colors the tutor's own marks use, so they read apart from the student's
@@ -61,9 +62,8 @@ function getWorkAreaAround(editor: Editor, anchor: PlacementBox): PlacementBox |
 	const center = { x: anchor.x + anchor.w / 2, y: anchor.y + anchor.h / 2 }
 	for (const shape of editor.getCurrentPageShapes()) {
 		if (!editor.isShapeOfType(shape, 'problem-frame')) continue
-		const box = editor.getShapePageBounds(shape)
-		if (!box) continue
-		const work = { x: box.x, y: box.y + shape.props.headerH, w: box.w, h: box.h - shape.props.headerH }
+		const work = getWorkArea(editor, shape)
+		if (!work) continue
 		if (
 			center.x >= work.x &&
 			center.x <= work.x + work.w &&

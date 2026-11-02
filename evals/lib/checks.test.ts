@@ -5,6 +5,7 @@ import {
 	checkMarkError,
 	checkMarks,
 	checkNoLeak,
+	checkPosedProblems,
 	checkQuestions,
 	checkVerdict,
 	containsValue,
@@ -98,6 +99,14 @@ describe('checks', () => {
 		expect(checkNoLeak([message('P(B) should be 0.19')], ['0.19']).pass).toBe(false)
 		expect(checkNoLeak([markError('line2', 'slip', 'sum is 21')], ['21']).pass).toBe(false)
 		expect(checkNoLeak([{ _type: 'write-math', intent: 'Formula', latex: 'P(B) = 0.19' }], ['0.19']).pass).toBe(false)
+	})
+
+	it('poses-problem wants the count, each with a concept, title, and statement', () => {
+		const pose = (concept: string): EvalAction => ({ _type: 'pose-problem', concept, title: 'Dice', statement: 'Roll two dice.' })
+		expect(checkPosedProblems([pose('conditional-probability')], 1).pass).toBe(true)
+		expect(checkPosedProblems([pose('')], 1).pass).toBe(false)
+		expect(checkPosedProblems([pose('a'), pose('b')], 1).pass).toBe(false)
+		expect(checkPosedProblems([], 0).pass).toBe(true)
 	})
 
 	it('flags actions outside the mode', () => {

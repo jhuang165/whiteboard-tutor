@@ -2,6 +2,7 @@ import { toRichText } from 'tldraw'
 import { HintAction } from '../../shared/schema/AgentActionSchemas'
 import { Streaming } from '../../shared/types/Streaming'
 import { AgentHelpers } from '../AgentHelpers'
+import { noteHint } from '../tutor/problemTracking'
 import {
 	connectWithArrow,
 	getAnchorBox,
@@ -57,6 +58,7 @@ export const HintActionUtil = registerActionUtil(
 				ids.push(arrowId)
 			}
 			lockShapes(editor, ids)
+			noteHint(editor, action.rung ?? 'H?')
 		}
 	}
 )

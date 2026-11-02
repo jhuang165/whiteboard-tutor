@@ -35,5 +35,9 @@ export function buildTutorTurnContent({ intent, hintsGiven }: TutorTurnState): s
 			return [
 				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, tree, reduced sample space, area model, or number line). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
 			]
+		case 'quiz':
+			return [
+				"Tutor turn: the student pressed **Quiz me**. Use M4 Quiz: pose exactly one practice problem with `pose-problem`, then stop. Choose its concept from the learner's record: a review that is due first, then a concept they have only seen or solved with help, then the topic they are working on now. Match the difficulty to their recent work. Solve it yourself first (V1); it is also checked with code before you grade it. Give no hint, method, or answer. Any chat message is one short line with no question.",
+			]
 	}
 }

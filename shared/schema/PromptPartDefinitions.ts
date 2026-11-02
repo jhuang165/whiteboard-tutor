@@ -13,6 +13,8 @@ import { SimpleShapeId } from '../types/ids-schema'
 import type { PromptPart, PromptPartDefinition } from '../types/PromptPart'
 import { TodoItem } from '../types/TodoItem'
 import { buildTutorTurnContent, TutorTurnState } from '../tutor/buildTutorTurnContent'
+import type { ConceptSummary } from '../tutor/evidence'
+import type { ProblemVerification, VerificationStatus } from '../tutor/verification'
 
 // ============================================================================
 // Prompt Part Type Interfaces
@@ -122,7 +124,33 @@ export interface TutorTurnPart extends TutorTurnState {
 export interface ProblemPart {
 	type: 'problem'
 	/** The most recently posed problem frame on the page, or null if there is none. */
-	problem: { shapeId: SimpleShapeId; title: string; statement: string } | null
+	problem: {
+		shapeId: SimpleShapeId
+		/** Stable id for the problem, used by the learner store. */
+		problemId: string
+		concept: string
+		title: string
+		statement: string
+		/** `solved` after a correct verdict, `flawed` when the check found a bad question (V2). */
+		status: ProblemStatus
+		/** Hint rungs opened on this problem so far. */
+		hintRungs: string[]
+		/** Checks on this problem that came back incorrect. */
+		incorrectChecks: number
+		verification: VerificationStatus
+		/** The worker's checked solution. Attached by the worker; the client never has it. */
+		verified?: ProblemVerification | null
+	} | null
+}
+
+export type ProblemStatus = 'open' | 'solved' | 'flawed'
+
+export interface LearnerPart {
+	type: 'learner'
+	/** An anonymous id kept in the browser, until there are accounts (PLAN §8 #2). */
+	learnerId: string
+	/** The learner's evidence by concept. Attached by the worker from the learner store. */
+	summary?: ConceptSummary[]
 }
 
 export interface DebugPart {
@@ -539,15 +567,61 @@ export const TutorTurnPartDefinition: PromptPartDefinition<TutorTurnPart> = {
 	buildContent: (part) => buildTutorTurnContent(part),
 }
 
-// Problem - the problem the tutor posed most recently, in a problem frame
+// Problem - the problem the tutor posed most recently, in a problem frame, with its checked answer
 export const ProblemPartDefinition: PromptPartDefinition<ProblemPart> = {
 	type: 'problem',
 	priority: 250, // after the board, before the tutor turn
-	buildContent({ problem }: ProblemPart) {
-		if (!problem) return []
+	buildContent: ({ problem }: ProblemPart) => (problem ? buildProblemContent(problem) : []),
+}
+
+function buildProblemContent(problem: NonNullable<ProblemPart['problem']>): string[] {
+	const lines = [
+		`The current problem (concept \`${problem.concept}\`) is in problem frame \`${problem.shapeId}\`. ${problem.title}: ${problem.statement}`,
+		"The student's work on it is the ink in the frame's work area, below the statement. The frame is yours, not student work.",
+	]
+	const { verified } = problem
+	if (problem.status === 'flawed' || verified?.status === 'flawed') {
+		lines.push(
+			`The answer check found this problem flawed: ${verified?.issue || 'it has no single correct answer'}. Tell the student plainly that the question was at fault, not them, and do not grade work on it (V2). Offer a corrected problem with \`pose-problem\` if they want one.`
+		)
+		return lines
+	}
+	if (problem.status === 'solved') {
+		lines.push('The student has already solved this problem correctly.')
+	}
+	if (verified) {
+		lines.push(
+			`Checked answer (private: never show it or the method until the student has solved it or explicitly asks for the solution (D1), and never in hint rungs H1 to H4): ${verified.answer}. Method: ${verified.method}${verified.checkedWithCode ? '' : ' This was solved without running code, so recheck it before relying on it.'}`
+		)
+	} else {
+		lines.push(
+			problem.verification === 'pending'
+				? 'The code check of this problem is still running. Solve it yourself before grading (V1).'
+				: 'There is no checked answer for this problem. Solve it yourself before grading (V1).'
+		)
+	}
+	if (problem.status === 'open') {
+		lines.push(
+			'If the student pressed Check, their work in the frame is their submitted attempt (M4): grade it against the checked answer with one `verdict` whose `shapeIds` are the student shapes in the work area.'
+		)
+	}
+	return lines
+}
+
+// Learner - the learner's evidence record by concept, for choosing quiz problems
+export const LearnerPartDefinition: PromptPartDefinition<LearnerPart> = {
+	type: 'learner',
+	priority: 240, // just before the problem
+	buildContent({ summary }: LearnerPart) {
+		if (!summary || summary.length === 0) return []
+		const now = Date.now()
+		const rows = summary.slice(0, 12).map((c) => {
+			const due = c.reviewDueAt !== null && c.reviewDueAt <= now ? ', review due' : ''
+			return `- \`${c.concept}\`: best ${c.best} (${c.independent} clean solves, ${c.assisted} with help, ${c.exposures} explanations seen${due})`
+		})
 		return [
-			`The current problem is in problem frame \`${problem.shapeId}\`. ${problem.title}: ${problem.statement}`,
-			"The student's work on it is the ink in the frame's work area, below the statement. The frame is yours, not student work.",
+			"The learner's record so far, by concept. Use it to choose quiz problems. It is not a grade; a weak area only suggests a diagnostic.",
+			...rows,
 		]
 	},
 }

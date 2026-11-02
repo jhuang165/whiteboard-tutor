@@ -6,11 +6,13 @@ import type { AgentPrompt } from '../../shared/types/AgentPrompt'
 import type { EvalCase } from './EvalCase'
 
 const MARGIN = 200
+const EVAL_LEARNER_ID = '00000000-0000-4000-8000-000000000000'
 
 /**
  * The prompt the client would send for this case, built without a browser. It has the same
- * parts as the working mode, with two differences from a live turn: no screenshot (the
- * model reads the board from the shape list) and no chat history.
+ * parts as the working mode, with three differences from a live turn: no screenshot (the
+ * model reads the board from the shape list), no chat history, and the learner record and
+ * checked answer come from the case instead of the learner store.
  */
 export function buildCasePrompt(evalCase: EvalCase): AgentPrompt {
 	const mode = getAgentModeDefinition('working')
@@ -28,6 +30,7 @@ export function buildCasePrompt(evalCase: EvalCase): AgentPrompt {
 		messages: { type: 'messages', agentMessages: [message], requestSource: 'user' },
 		data: { type: 'data', data: [] },
 		contextItems: { type: 'contextItems', items: [], requestSource: 'user' },
+		learner: { type: 'learner', learnerId: EVAL_LEARNER_ID, summary: evalCase.learnerSummary ?? [] },
 		problem: { type: 'problem', problem: evalCase.problem ?? null },
 		tutorTurn: { type: 'tutorTurn', intent: evalCase.intent, hintsGiven: evalCase.hintsGiven ?? 0 },
 		screenshot: { type: 'screenshot', screenshot: '' },

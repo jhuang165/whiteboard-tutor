@@ -5,6 +5,7 @@ import { AgentPrompt } from '../../shared/types/AgentPrompt'
 import { Streaming } from '../../shared/types/Streaming'
 import { Environment } from '../environment'
 import { AgentService } from './AgentService'
+import { getLearnerStub, isLearnerId } from './LearnerDurableObject'
 
 export class AgentDurableObject extends DurableObject<Environment> {
 	service: AgentService
@@ -42,6 +43,7 @@ export class AgentDurableObject extends DurableObject<Environment> {
 		;(async () => {
 			try {
 				const prompt = (await request.json()) as AgentPrompt
+				await attachLearnerContext(this.env, prompt)
 
 				for await (const change of this.service.stream(prompt)) {
 					response.changes.push(change)
@@ -76,5 +78,30 @@ export class AgentDurableObject extends DurableObject<Environment> {
 				'Access-Control-Allow-Headers': 'Content-Type',
 			},
 		})
+	}
+}
+
+/**
+ * Add what only the worker holds: the learner's evidence summary, and the checked answer to
+ * the current problem. Any `verified` the client sent is dropped, so the answer the tutor
+ * grades against always comes from the learner store.
+ */
+async function attachLearnerContext(env: Environment, prompt: AgentPrompt) {
+	const problem = prompt.problem?.problem
+	if (problem) problem.verified = null
+
+	const learner = prompt.learner
+	if (!learner || !isLearnerId(learner.learnerId)) return
+	const stub = getLearnerStub(env, learner.learnerId)
+	try {
+		const [summary, verified] = await Promise.all([
+			stub.getSummary(),
+			problem ? stub.getVerification(problem.problemId) : Promise.resolve(null),
+		])
+		learner.summary = summary
+		if (problem) problem.verified = verified
+	} catch (error) {
+		// A missing record should not block the turn; the tutor falls back to solving it (V1).
+		console.error('learner context error:', error)
 	}
 }

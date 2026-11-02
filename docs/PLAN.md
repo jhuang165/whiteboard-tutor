@@ -98,7 +98,7 @@ worker (Cloudflare)
 - **Triage for proactive watching:** a cheaper second model (`claude-haiku-5-5`, $0.10/$0.50)
   is the natural fit. Per the house default, that's your call (see §8). Opus 5.5 at `low`
   effort is the single-model alternative, and it keeps a single prompt cache.
-- **Answer verification:** server tool `code_execution_20260521` (sympy, exact enumeration).
+- **Answer verification:** server tool `code_execution_20260521` (sympy, exact enumeration), the newest version, with a JSON-schema `output_config.format` for the answer. Built in Phase 2.
   Output arrives as `bash_code_execution_tool_result` blocks.
 - **Prompt caching:** put the frozen pedagogy system prompt and action schema first, with a
   cache breakpoint after them. Screenshots and per-turn state go last. Verify with
@@ -193,8 +193,33 @@ assumed to be probability (§8 #1 recommendation) until decided.
 
 **Phase 2: evidence and quizzes.**
 
-- LearnerDO evidence log, Quiz mode with `/verify`, a review queue with
-  spaced-repetition dates, and a session history page.
+- [x] Quiz me button and grading (M4), 2026-11-02. Quiz me asks for exactly one
+  `pose-problem`, with the concept chosen from the learner's record (a due review first,
+  then a concept only seen or solved with help). `pose-problem` now carries a kebab-case
+  `concept`. The frame keeps its state in `meta` (`client/tutor/problemState.ts`): problem
+  id, concept, open/solved/flawed, hint rungs opened, incorrect checks, and the check
+  status. Check on an open problem grades the attempt in the frame's work area; a correct
+  verdict marks it solved. A badge on the frame shows the check status.
+- [x] `/verify` answer checks (V1, V2), 2026-11-02 (`worker/verify/verifyProblem.ts`,
+  `worker/routes/verify.ts`). Posing a problem fires a background check: Opus 5.5 at
+  `high` effort with `code_execution_20260521` and a JSON-schema `output_config.format`
+  (status, answer, method, issue), resuming `pause_turn`. The answer is stored in the
+  learner's Durable Object and attached to the `problem` prompt part by the worker, so the
+  client never receives it. A flawed problem shows "won't count against you" on the frame,
+  the tutor says the question was at fault, and it records no evidence. Through the dev
+  bridge there is no sandbox, so checks report `checkedWithCode: false` and the tutor is
+  told to recheck.
+- [x] Evidence log (L1 to L4), 2026-11-02. `LearnerDurableObject` (SQLite, one per
+  anonymous browser id until accounts, §8 #2) stores evidence records; the level is
+  decided in `shared/tutor/evidence.ts`, never by the model. Any hint or earlier wrong
+  check makes a solve assisted; a clean solve is independent, or retained when a clean
+  solve of the same concept on another problem is at least a day old. Explain and
+  Wait-what on a posed problem record exposure. Review dates follow 1, 3, 7, 21 days. The
+  worker attaches a per-concept summary to each turn (the `learner` part), and a Progress
+  panel at the top of the chat lists it.
+- [ ] A review queue that offers due reviews unprompted, and a session history page.
+- [ ] Auth and a rate limit on `/verify` and `/evidence` before any deploy: the learner id
+  is an unauthenticated browser UUID, and `/verify` spends API money per call.
 
 **Phase 3: feel.**
 

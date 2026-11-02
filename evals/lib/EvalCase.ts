@@ -1,6 +1,7 @@
 import type { BlurryShape } from '../../shared/format/BlurryShape'
 import type { AgentModelName } from '../../shared/models'
 import type { ProblemPart } from '../../shared/schema/PromptPartDefinitions'
+import type { ConceptSummary } from '../../shared/tutor/evidence'
 import type { TutorIntent } from '../../shared/tutor/TutorIntent'
 
 /**
@@ -19,8 +20,13 @@ export interface EvalCase {
 	message?: string
 	/** Defaults to the app's default model. */
 	model?: AgentModelName
-	/** A problem posed in a problem frame, if the case has one. Its shapeId must not be on the board. */
+	/**
+	 * A problem posed in a problem frame, if the case has one. Its shapeId must not be on the
+	 * board. Set `verified` to the checked answer the worker would attach.
+	 */
 	problem?: NonNullable<ProblemPart['problem']>
+	/** The learner's evidence summary, as the worker would attach it. Defaults to none. */
+	learnerSummary?: ConceptSummary[]
 	/** Student shapes, as the tutor sees them. Ids are simple ids, without `shape:`. */
 	board: BoardShape[]
 	expect: EvalExpectations
@@ -42,6 +48,8 @@ export interface EvalExpectations {
 	hintAnchorIn?: string[]
 	/** Most questions allowed across the turn's student-visible text (Q1, Q2). */
 	maxQuestions?: number
+	/** How many `pose-problem` actions the turn must contain, each with a concept, title, and statement (M4). */
+	posesProblem?: number
 	/** Most new tutor marks allowed (C4). */
 	maxMarks?: number
 	/** Strings that must not appear in student-visible text, such as the final answer. */

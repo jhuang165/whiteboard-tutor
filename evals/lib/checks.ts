@@ -34,6 +34,7 @@ export function runChecks(evalCase: EvalCase, actions: EvalAction[], allowedActi
 	if (expect.markErrorOn) results.push(checkMarkError(actions, expect.markErrorOn, expect.errorKind))
 	if (expect.hints !== undefined) results.push(checkHints(actions, expect.hints, expect.hintRungs, expect.hintAnchorIn))
 	if (expect.maxQuestions !== undefined) results.push(checkQuestions(actions, expect.maxQuestions))
+	if (expect.posesProblem !== undefined) results.push(checkPosedProblems(actions, expect.posesProblem))
 	if (expect.maxMarks !== undefined) results.push(checkMarks(actions, expect.maxMarks))
 	if (expect.forbidden?.length) results.push(checkNoLeak(actions, expect.forbidden))
 
@@ -114,6 +115,25 @@ export function checkQuestions(actions: EvalAction[], max: number): CheckResult 
 		rule: max === 0 ? 'Q2' : 'Q1',
 		pass: questions.length <= max,
 		detail: `${questions.length} question(s), max ${max}${questions.length ? `: ${questions.map((q) => `"${q}"`).join(' | ')}` : ''}`,
+	}
+}
+
+export function checkPosedProblems(actions: EvalAction[], expectedCount: number): CheckResult {
+	const posed = actions.filter((a) => a._type === 'pose-problem')
+	const problems: string[] = []
+	if (posed.length !== expectedCount) problems.push(`expected ${expectedCount} posed problem(s), got ${posed.length}`)
+	for (const action of posed) {
+		const missing = ['concept', 'title', 'statement'].filter((key) => !String(action[key] ?? '').trim())
+		if (missing.length) problems.push(`a problem is missing ${missing.join(', ')}`)
+	}
+	return {
+		check: 'poses-problem',
+		rule: 'M4',
+		pass: problems.length === 0,
+		detail:
+			problems.length === 0
+				? `posed: [${posed.map((a) => `${String(a.concept)}: ${String(a.title)}`).join('; ')}]`
+				: problems.join('; '),
 	}
 }
 

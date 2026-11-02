@@ -65,6 +65,8 @@ const _AGENT_MODE_CHART: Record<AgentModeDefinition['type'], AgentModeNode> = {
 		},
 
 		onPromptEnd(agent, _request) {
+			agent.tutor.onRequestDone()
+
 			// Check if there are incomplete todos
 			const todoList = agent.todos.getTodos()
 			const incompleteTodos = todoList.filter((item) => item.status !== 'done')

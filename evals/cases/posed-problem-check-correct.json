@@ -1,0 +1,60 @@
+{
+	"id": "posed-problem-check-correct",
+	"description": "A posed problem with a checked answer, and a correct attempt in the work area. Check must grade it correct with one verdict on the student's work and mark no error.",
+	"rules": [
+		"M4",
+		"V1",
+		"T",
+		"Q1"
+	],
+	"intent": "check",
+	"problem": {
+		"shapeId": "frame1",
+		"problemId": "eval-dice-six",
+		"concept": "conditional-probability",
+		"title": "Two dice",
+		"statement": "Roll two fair six-sided dice. Given that at least one die shows a 6, what is the probability that the sum is at least 10?",
+		"status": "open",
+		"hintRungs": [],
+		"incorrectChecks": 0,
+		"verification": "checked",
+		"verified": {
+			"status": "checked",
+			"answer": "5/11 ≈ 0.4545",
+			"method": "11 of the 36 outcomes have at least one 6. Of those, (4,6), (6,4), (5,6), (6,5), (6,6) have sum at least 10, so 5/11.",
+			"issue": "",
+			"checkedWithCode": true
+		}
+	},
+	"board": [
+		{
+			"shapeId": "line1",
+			"text": "At least one 6: 36 − 25 = 11 outcomes",
+			"x": 40,
+			"y": 220,
+			"w": 560,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "Sum ≥ 10 with a 6: (4,6) (6,4) (5,6) (6,5) (6,6) = 5",
+			"x": 40,
+			"y": 290,
+			"w": 700,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "P = 5/11",
+			"x": 40,
+			"y": 360,
+			"w": 200,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "correct",
+		"markErrorOn": "none",
+		"maxQuestions": 1
+	}
+}

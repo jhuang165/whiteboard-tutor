@@ -3,6 +3,7 @@ import { TutorIntent } from '../../shared/tutor/TutorIntent'
 import { useAgent } from '../agent/TldrawAgentAppProvider'
 import { ChatHistory } from './chat-history/ChatHistory'
 import { ChatInput } from './ChatInput'
+import { EvidencePanel } from './EvidencePanel'
 import { TodoList } from './TodoList'
 import { TutorButtons } from './TutorButtons'
 
@@ -54,6 +55,7 @@ export function ChatPanel() {
 	return (
 		<div className="chat-panel tl-theme__dark">
 			<div className="chat-header">
+				<EvidencePanel />
 				<button className="new-chat-button" onClick={handleNewChat}>
 					+
 				</button>
