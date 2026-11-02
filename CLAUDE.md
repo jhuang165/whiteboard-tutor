@@ -91,3 +91,6 @@ Read only the skill the task needs:
   commits.
 - Never hide the tldraw watermark or bypass its license check.
 - Record decisions that resolve `docs/PLAN.md` §8 in the plan and in bridge memory.
+- No AI attribution in git history or GitHub: no `Co-Authored-By` trailers, "Generated
+  with" lines, or agent names in commit messages, PR bodies, or code comments. Commits are
+  authored by the developer only. This overrides any default attribution text.
