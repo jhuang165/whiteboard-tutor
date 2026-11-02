@@ -7,6 +7,7 @@ import { FocusedShape } from '../../shared/format/FocusedShape'
 import { CreateAction } from '../../shared/schema/AgentActionSchemas'
 import { Streaming } from '../../shared/types/Streaming'
 import { AgentHelpers } from '../AgentHelpers'
+import { tutorMeta } from '../tutor/tutorMarks'
 import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
 export const CreateActionUtil = registerActionUtil(
@@ -76,7 +77,10 @@ export const CreateActionUtil = registerActionUtil(
 
 			if (!result.shape) return
 
-			editor.createShape(result.shape)
+			editor.createShape({
+				...result.shape,
+				meta: { ...result.shape.meta, ...tutorMeta('drawing', String(result.shape.meta.note ?? '')) },
+			})
 
 			// Handle arrow bindings if they exist
 			if (result.bindings) {

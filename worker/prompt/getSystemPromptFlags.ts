@@ -57,6 +57,9 @@ export function getSystemPromptFlags(actions: AgentAction['_type'][], parts: Pro
 		hasTodoListPart: parts.includes('todoList'),
 
 		// Tutor
+		hasHint: actions.includes('hint'),
+		hasMarkError: actions.includes('mark-error'),
+		hasVerdict: actions.includes('verdict'),
 		hasTutorTurnPart: parts.includes('tutorTurn'),
 
 		// Lints

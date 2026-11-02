@@ -30,8 +30,8 @@ Claude-backed tutor reads the canvas and responds on it with hints, annotations,
 and worked steps. The design, phases, and open decisions are in `docs/PLAN.md`. Read it
 before writing code. Status: Phase 0 scaffold is in place (the tldraw agent template,
 defaulting to `claude-opus-5-5`). Phase 1 has started: tutor buttons, the `tutorTurn` prompt
-part, the tutor system prompt, and a tutor mode that can only add to the board. No real
-model turn has run yet.
+part, the tutor system prompt, a tutor mode that can only add to the board, and the
+`hint`, `mark-error`, and `verdict` tutor-mark actions. No real model turn has run yet.
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable
 Object (`AgentDurableObject`). The worker still calls Claude through the template's Vercel
@@ -59,7 +59,8 @@ Without a key, a chat message fails in the worker with `AI_LoadAPIKeyError`.
 | Path | What it is |
 | --- | --- |
 | `docs/PLAN.md` | Product brainstorm, architecture, phases, evals, open decisions |
-| `client/` | React app: tldraw canvas, chat panel, agent actions (`actions/`), prompt parts (`parts/`), modes (`modes/`) |
+| `README.md` | Human-facing overview and quick start |
+| `client/` | React app: tldraw canvas, chat panel, agent actions (`actions/`), prompt parts (`parts/`), modes (`modes/`), tutor-mark helpers (`tutor/`) |
 | `worker/` | Cloudflare Worker: `/stream` route, `do/AgentService.ts` model calls, system prompt (`prompt/`) |
 | `shared/` | Code used by both sides: model list (`models.ts`), shape formats, schemas |
 | `.claude/skills/` | Dev skills for agents working here (Codex sees them via `.agents/skills`) |

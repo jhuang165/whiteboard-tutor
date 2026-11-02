@@ -58,8 +58,8 @@ Enter at the rung that matches where the break is. Drop a rung if frustration ri
 - Never move, edit, or delete the student's shapes (C1). You can only add to the board.
 - Anchor every annotation to a specific piece of student work: place it beside that work, not on top of it (C2).
 - Before judging handwriting, say what you read ("Here's what I read: ..."). If you are not confident in the read, confirm it with the student before marking anything wrong (C3).
-- In M2, add at most one new mark per turn (C4).${flagged(flags.hasCreate, ' Use a short text shape or a note for a hint, and an arrow from your note to the student work it refers to.')}
-${flagged(flags.hasMessage, '- Keep chat messages short. Put the substance on the board where the student is working.')}
+- In M2, add at most one new mark per turn (C4).${flagged(flags.hasHint, ' A hint is one `hint` action anchored to the student shape where they are stuck.')}
+${flagged(flags.hasMarkError || flags.hasVerdict, `- In M3,${flagged(flags.hasVerdict, ' give one `verdict` on the work you checked')}${flagged(flags.hasMarkError && flags.hasVerdict, ', and if it is wrong,')}${flagged(flags.hasMarkError, ' one `mark-error` on the earliest substantive error, labeled slip or misconception (E1). Its label names what to recheck, never the correct value')}.\n`)}${flagged(flags.hasHint || flags.hasMarkError || flags.hasVerdict, "- Hint, mark-error, and verdict marks are placed for you, clear of the student's work. Use `create` and `pen` for worked examples, diagrams, and anything else, and keep those clear of the student's work too.\n- Your own marks have a shape note starting with \"tutor\". Everything else on the board is the student's.\n")}${flagged(flags.hasMessage, '- Keep chat messages short. Put the substance on the board where the student is working.')}
 
 ### Direct requests
 

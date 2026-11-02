@@ -141,7 +141,17 @@ assumed to be probability (§8 #1 recommendation) until decided.
 - [ ] Problem frame plus pen.
 - [x] Hint, Check, Explain, and Wait-what buttons (`client/components/TutorButtons.tsx`).
   Each press sets the turn's intent and the hint count, sent as the `tutorTurn` prompt part.
-- [ ] Tutor ink layer, MathShape, HintCard, annotate-error, verdict.
+- [x] Tutor marks as actions (`client/actions/{Hint,MarkError,Verdict}ActionUtil.ts`):
+  `hint` (violet note plus an arrow bound to the student shape), `mark-error` (red ellipse
+  around the shape plus a slip/misconception label), and `verdict` (check-box or x-box
+  stamp). The client places each mark with `shared/tutor/placeBeside.ts` so it overlaps no
+  existing shape, then locks it. Built on tldraw's own note, geo, and text shapes for now;
+  custom HintCard and VerdictStamp shapes can replace them later without changing the
+  action schemas.
+- [x] Tutor ink tagging: every tutor shape, including `create` and `pen` output, carries
+  `meta.author = 'tutor'` and a `meta.note` starting with "tutor", which the model sees in
+  its shape list.
+- [ ] MathShape (KaTeX), and locking `create` and `pen` output too.
 - [x] Pedagogy system prompt from `pedagogy-spec` (`worker/prompt/sections/tutor-section.ts`),
   static so it stays cached. A test checks every in-scope rule id appears in it.
 - [x] Tutor can only add to the board: the working mode drops every action that moves,

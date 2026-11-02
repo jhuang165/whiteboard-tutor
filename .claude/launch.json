@@ -6,6 +6,12 @@
       "runtimeExecutable": "/opt/homebrew/opt/node@22/bin/node",
       "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port", "5173", "--strictPort"],
       "port": 5173
+    },
+    {
+      "name": "dev-alt",
+      "runtimeExecutable": "/opt/homebrew/opt/node@22/bin/node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "--port", "5174", "--strictPort"],
+      "port": 5174
     }
   ]
 }

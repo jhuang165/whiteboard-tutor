@@ -27,6 +27,10 @@ describe('working mode', () => {
 		expect(actions.filter((a) => MUTATING_ACTIONS.includes(a))).toEqual([])
 	})
 
+	it('has the tutor mark actions', () => {
+		expect(mode.actions).toEqual(expect.arrayContaining(['hint', 'mark-error', 'verdict']))
+	})
+
 	it('sends the tutorTurn part, which selects the tutor system prompt', () => {
 		expect(mode.parts).toContain('tutorTurn')
 	})

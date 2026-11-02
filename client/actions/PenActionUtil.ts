@@ -4,6 +4,7 @@ import { convertFocusedFillToTldrawFill } from '../../shared/format/FocusedFill'
 import { PenAction } from '../../shared/schema/AgentActionSchemas'
 import { Streaming } from '../../shared/types/Streaming'
 import { AgentHelpers } from '../AgentHelpers'
+import { tutorMeta } from '../tutor/tutorMarks'
 import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
 export const PenActionUtil = registerActionUtil(
@@ -99,6 +100,7 @@ export const PenActionUtil = registerActionUtil(
 				x: minX,
 				y: minY,
 				isLocked: !action.complete,
+				meta: tutorMeta('drawing', action.intent ?? 'pen stroke'),
 				props: {
 					color: asColor(action.color ?? 'black'),
 					fill: convertFocusedFillToTldrawFill(action.fill ?? 'none'),

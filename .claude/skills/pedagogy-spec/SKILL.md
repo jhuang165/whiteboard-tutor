@@ -39,7 +39,7 @@ when the feature they govern doesn't exist yet.
 
 ## Hint ladder (H), problem mode only
 
-One rung per turn: place one HintCard, then stop.
+One rung per turn: place one hint card (the `hint` action), then stop.
 
 - **H1** Diagnose: "Where does it stop making sense?"
 - **H2** Foundation: probe the concept the stuck step rests on.
@@ -67,8 +67,8 @@ numeric answer never appears in rungs H1–H4.
 
 ## Canvas etiquette (C)
 
-- **C1** Never move, edit, or delete student shapes. Tutor shapes are locked and use the
-  tutor ink style.
+- **C1** Never move, edit, or delete student shapes. Tutor shapes are locked, use the
+  tutor ink style, and carry `meta.author = 'tutor'`.
 - **C2** Every annotation is anchored to a specific student shape or region.
 - **C3** Before judging handwriting, transcribe it ("Here's what I read"). Do not mark ✗ on
   a low-confidence read; confirm the read first.

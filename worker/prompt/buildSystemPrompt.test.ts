@@ -3,7 +3,17 @@ import { describe, expect, it } from 'vitest'
 import type { AgentPrompt } from '../../shared/types/AgentPrompt'
 import { buildSystemPrompt } from './buildSystemPrompt'
 
-const TUTOR_ACTIONS = ['message', 'think', 'setMyView', 'create', 'pen', 'unknown'] as const
+const TUTOR_ACTIONS = [
+	'message',
+	'think',
+	'setMyView',
+	'hint',
+	'mark-error',
+	'verdict',
+	'create',
+	'pen',
+	'unknown',
+] as const
 
 function promptFor(partTypes: string[]): AgentPrompt {
 	return {
@@ -42,6 +52,12 @@ describe('buildSystemPrompt', () => {
 
 		const missing = ids.filter((id) => !DEFERRED_RULES.has(id) && !tutorPrompt.includes(id))
 		expect(missing).toEqual([])
+	})
+
+	it('tells the tutor when to use each tutor mark action', () => {
+		expect(tutorPrompt).toContain('one `hint` action anchored to the student shape')
+		expect(tutorPrompt).toContain('give one `verdict` on the work you checked, and if it is wrong, one `mark-error`')
+		expect(tutorPrompt).toContain('note starting with "tutor"')
 	})
 
 	it('is identical across turns, so it stays cacheable', () => {

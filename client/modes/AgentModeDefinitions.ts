@@ -10,7 +10,9 @@ import { CountShapesActionUtil } from '../actions/CountShapesActionUtil'
 import { CreateActionUtil } from '../actions/CreateActionUtil'
 import { DeleteActionUtil } from '../actions/DeleteActionUtil'
 import { DistributeActionUtil } from '../actions/DistributeActionUtil'
+import { HintActionUtil } from '../actions/HintActionUtil'
 import { LabelActionUtil } from '../actions/LabelActionUtil'
+import { MarkErrorActionUtil } from '../actions/MarkErrorActionUtil'
 import { MessageActionUtil } from '../actions/MessageActionUtil'
 import { MoveActionUtil } from '../actions/MoveActionUtil'
 import { PenActionUtil } from '../actions/PenActionUtil'
@@ -25,6 +27,7 @@ import { ThinkActionUtil } from '../actions/ThinkActionUtil'
 import { UnknownActionUtil } from '../actions/UnknownActionUtil'
 import { UpdateActionUtil } from '../actions/UpdateActionUtil'
 import { UpsertTodoListItemActionUtil } from '../actions/UpsertTodoListItemActionUtil'
+import { VerdictActionUtil } from '../actions/VerdictActionUtil'
 // Import prompt part utils to ensure they register themselves
 import { AgentViewportBoundsPartUtil } from '../parts/AgentViewportBoundsPartUtil'
 import { BlurryShapesPartUtil } from '../parts/BlurryShapesPartUtil'
@@ -144,6 +147,11 @@ export const AGENT_MODE_DEFINITIONS = [
 			// Planning
 			ThinkActionUtil.type,
 			SetMyViewActionUtil.type,
+
+			// Tutor marks (placed beside student work, locked)
+			HintActionUtil.type,
+			MarkErrorActionUtil.type,
+			VerdictActionUtil.type,
 
 			// Adding to the board
 			CreateActionUtil.type,

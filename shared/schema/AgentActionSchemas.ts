@@ -108,6 +108,59 @@ export const CreateAction = z
 
 export type CreateAction = z.infer<typeof CreateAction>
 
+// Tutor actions. Each one adds a locked tutor mark next to the student's work and computes
+// its own position, so it never covers student ink (pedagogy-spec C1, C2).
+
+// Hint Action
+export const HintAction = z
+	.object({
+		_type: z.literal('hint'),
+		intent: z.string(),
+		rung: z.enum(['H1', 'H2', 'H3', 'H4', 'H5']),
+		text: z.string(),
+		anchorShapeId: SimpleShapeIdSchema,
+	})
+	.meta({
+		title: 'Hint',
+		description:
+			"The tutor places one hint card beside the student's work, with an arrow to the shape it refers to. `rung` is the hint ladder rung. `anchorShapeId` is the student shape where the student is stuck. Keep `text` to one or two short sentences. The card's position is chosen automatically.",
+	})
+
+export type HintAction = z.infer<typeof HintAction>
+
+// Mark Error Action
+export const MarkErrorAction = z
+	.object({
+		_type: z.literal('mark-error'),
+		intent: z.string(),
+		shapeId: SimpleShapeIdSchema,
+		errorKind: z.enum(['slip', 'misconception']),
+		label: z.string(),
+	})
+	.meta({
+		title: 'Mark Error',
+		description:
+			"The tutor circles one student shape that holds an error and writes a short label beside it. Use it on the earliest substantive error only. `label` says what to recheck, in a few words, without giving the correct value. The circle and label are placed automatically.",
+	})
+
+export type MarkErrorAction = z.infer<typeof MarkErrorAction>
+
+// Verdict Action
+export const VerdictAction = z
+	.object({
+		_type: z.literal('verdict'),
+		intent: z.string(),
+		verdict: z.enum(['correct', 'incorrect']),
+		shapeIds: z.array(SimpleShapeIdSchema),
+	})
+	.meta({
+		title: 'Verdict',
+		description:
+			'The tutor stamps a check mark or a cross beside the student work being judged. `shapeIds` are the student shapes that make up that work. Give at most one verdict per piece of work.',
+	})
+
+export type VerdictAction = z.infer<typeof VerdictAction>
+
 // Delete Action
 export const DeleteAction = z
 	.object({
