@@ -1,0 +1,4 @@
+ANTHROPIC_API_KEY=sk-ant-...
+# Optional, only if you pick a non-Claude model in the UI:
+# OPENAI_API_KEY=
+# GOOGLE_API_KEY=

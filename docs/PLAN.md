@@ -125,12 +125,15 @@ license.
 
 ## 5. Build phases
 
-**Phase 0: scaffold (half a day).**
+**Phase 0: scaffold (half a day).** Mostly done 2026-11-01.
 
-- Generate the agent template into this repo.
-- Switch the model to Claude and confirm the stock agent works locally.
-- Set up project tooling: lint, typecheck, Vitest, Playwright, and the project skills
-  described in §7.
+- [x] Generate the agent template into this repo (`create-tldraw@5.6.0 --template agent`).
+- [x] Switch the default model to `claude-opus-5-5` (`shared/models.ts`).
+- [x] Confirm it runs locally: canvas and chat load, and `/stream` reaches the worker.
+  A real model turn is still unverified until `ANTHROPIC_API_KEY` is in `.dev.vars`.
+- [x] Typecheck script and the project skills described in §7.
+- [ ] Lint, Vitest, and Playwright. Deferred to the start of Phase 1, when there is
+  project code to test.
 
 **Phase 1: tutor MVP, single-player, explicit triggers.**
 
