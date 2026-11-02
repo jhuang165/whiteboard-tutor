@@ -8,7 +8,8 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
-		"test": "vitest run"
+		"test": "vitest run",
+		"bridge": "node scripts/claude-code-bridge.mjs"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "^2.0.80",

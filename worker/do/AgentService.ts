@@ -29,7 +29,10 @@ export class AgentService {
 
 	constructor(env: Environment) {
 		this.openai = createOpenAI({ apiKey: env.OPENAI_API_KEY })
-		this.anthropic = createAnthropic({ apiKey: env.ANTHROPIC_API_KEY })
+		this.anthropic = createAnthropic({
+			apiKey: env.ANTHROPIC_API_KEY,
+			...(env.ANTHROPIC_BASE_URL ? { baseURL: env.ANTHROPIC_BASE_URL } : {}),
+		})
 		this.google = createGoogleGenerativeAI({ apiKey: env.GOOGLE_API_KEY })
 	}
 

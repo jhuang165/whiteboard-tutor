@@ -31,7 +31,8 @@ and worked steps. The design, phases, and open decisions are in `docs/PLAN.md`. 
 before writing code. Status: Phase 0 scaffold is in place (the tldraw agent template,
 defaulting to `claude-opus-5-5`). Phase 1 has started: tutor buttons, the `tutorTurn` prompt
 part, the tutor system prompt, a tutor mode that can only add to the board, and the
-`hint`, `mark-error`, and `verdict` tutor-mark actions. No real model turn has run yet.
+`hint`, `mark-error`, and `verdict` tutor-mark actions. Real model turns have run only
+through the dev-only Claude Code bridge (`npm run bridge`).
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable
 Object (`AgentDurableObject`). The worker still calls Claude through the template's Vercel
@@ -52,7 +53,10 @@ npm test           # vitest run (config in vitest.config.ts, not vite.config.ts)
 npm run build
 ```
 
-Without a key, a chat message fails in the worker with `AI_LoadAPIKeyError`.
+Without a key, a chat message fails in the worker with `AI_LoadAPIKeyError`. For local
+testing without a key, run `npm run bridge` (`scripts/claude-code-bridge.mjs`) and point
+`ANTHROPIC_BASE_URL` at it; see the README. The bridge answers on the developer's own
+Claude Code login: dev only, never for other users.
 
 ## Layout
 

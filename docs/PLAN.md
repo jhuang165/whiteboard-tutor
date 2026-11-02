@@ -130,7 +130,7 @@ license.
 - [x] Generate the agent template into this repo (`create-tldraw@5.6.0 --template agent`).
 - [x] Switch the default model to `claude-opus-5-5` (`shared/models.ts`).
 - [x] Confirm it runs locally: canvas and chat load, and `/stream` reaches the worker.
-  A real model turn is still unverified until `ANTHROPIC_API_KEY` is in `.dev.vars`.
+  A real model turn ran on 2026-11-01 through the dev-only Claude Code bridge (Phase 1).
 - [x] Typecheck script and the project skills described in §7.
 - [x] Vitest (`npm test`), added with the first Phase 1 slice.
 - [ ] Lint and Playwright. Deferred until there is UI flow worth testing end to end.
@@ -157,7 +157,14 @@ assumed to be probability (§8 #1 recommendation) until decided.
 - [x] Tutor can only add to the board: the working mode drops every action that moves,
   edits, or deletes shapes (C1), and the client already skips actions outside the mode.
 - [ ] Per-intent effort (low for hints, medium for explain), after the SDK swap.
-- [ ] First real model run and eval cases (needs `ANTHROPIC_API_KEY`).
+- [x] First real model run, 2026-11-01, through the dev-only Claude Code bridge
+  (`npm run bridge`, no API key). On a Bayes problem with a planted error (P(B) missing the
+  not-A branch), Check gave an `incorrect` verdict, put a misconception mark on the right
+  line, and asked one guiding question without giving the answer. Two findings: the model
+  first omitted `shapeId` on `mark-error` (the schema description now says it's required),
+  and earlier `[THOUGHT]` text pasted back into a user turn gets refused as reasoning
+  extraction (the bridge drops it).
+- [ ] Eval cases.
 - Done when: in a probability problem with a planted error, Check points at the right line,
   and Hint gives exactly one rung without leaking the answer.
 

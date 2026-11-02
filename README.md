@@ -26,8 +26,8 @@ Working now:
   turned off.
 
 Not done yet: a problem frame, math rendering (KaTeX), the swap to the official
-`@anthropic-ai/sdk`, evals, quizzes, and evidence tracking. No real model turn has been run
-yet. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
+`@anthropic-ai/sdk`, evals, quizzes, and evidence tracking. Real model turns have only run through
+the dev-only bridge below. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
 
 ## Run it
 
@@ -41,6 +41,30 @@ npm run dev                      # http://localhost:5173
 
 Without a key the app loads, but a chat message fails in the worker with
 `AI_LoadAPIKeyError`.
+
+### Testing without an API key
+
+`scripts/claude-code-bridge.mjs` is a small local server that answers the worker's Messages
+API calls by running the Claude Code CLI on your own login. Put these lines in `.dev.vars`
+instead of a real key (they are in `.dev.vars.example`, commented out):
+
+```bash
+ANTHROPIC_BASE_URL=http://127.0.0.1:8790/v1
+ANTHROPIC_API_KEY=claude-code-bridge
+CLAUDE_BRIDGE_COMMAND=claude   # or another CLI wrapper on your PATH
+```
+
+Then run the bridge and the app in two terminals:
+
+```bash
+npm run bridge
+npm run dev
+```
+
+This is for testing on your own machine only. A Claude subscription or Enterprise seat is
+not API access, so don't use the bridge to serve anyone else. The bridge has no tools and
+folds the conversation into one user turn, so behavior and caching differ slightly from the
+real API.
 
 Other scripts:
 

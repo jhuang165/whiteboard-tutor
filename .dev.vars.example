@@ -2,3 +2,9 @@ ANTHROPIC_API_KEY=sk-ant-...
 # Optional, only if you pick a non-Claude model in the UI:
 # OPENAI_API_KEY=
 # GOOGLE_API_KEY=
+
+# Dev only, no API key: run `npm run bridge` and use these lines instead of a real key.
+# The bridge answers with your own Claude Code login. Don't use it to serve other people.
+# ANTHROPIC_BASE_URL=http://127.0.0.1:8790/v1
+# ANTHROPIC_API_KEY=claude-code-bridge
+# CLAUDE_BRIDGE_COMMAND=claude   # or another CLI wrapper on your PATH

@@ -140,7 +140,7 @@ export const MarkErrorAction = z
 	.meta({
 		title: 'Mark Error',
 		description:
-			"The tutor circles one student shape that holds an error and writes a short label beside it. Use it on the earliest substantive error only. `label` says what to recheck, in a few words, without giving the correct value. The circle and label are placed automatically.",
+			"The tutor circles one student shape that holds an error and writes a short label beside it. Use it on the earliest substantive error only. `shapeId` is required: the id of the student shape that holds the error. `label` says what to recheck, in a few words, without giving the correct value. The circle and label are placed automatically.",
 	})
 
 export type MarkErrorAction = z.infer<typeof MarkErrorAction>
