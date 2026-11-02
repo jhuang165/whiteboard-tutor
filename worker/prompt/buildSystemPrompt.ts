@@ -4,6 +4,10 @@ import { AgentPrompt } from '../../shared/types/AgentPrompt'
 import { getSystemPromptFlags } from './getSystemPromptFlags'
 import { buildIntroPromptSection } from './sections/intro-section'
 import { buildRulesPromptSection } from './sections/rules-section'
+import {
+	buildTutorIntroPromptSection,
+	buildTutorRulesPromptSection,
+} from './sections/tutor-section'
 
 /**
  * Build the system prompt for the agent.
@@ -31,7 +35,14 @@ export function buildSystemPrompt(
 	const { actionTypes, partTypes } = modePart
 	const flags = getSystemPromptFlags(actionTypes, partTypes)
 
-	const lines = [buildIntroPromptSection(flags), buildRulesPromptSection(flags)]
+	// A mode with the tutorTurn part is a tutor; otherwise use the template's generic agent intro.
+	const lines = flags.hasTutorTurnPart
+		? [
+				buildTutorIntroPromptSection(flags),
+				buildTutorRulesPromptSection(flags),
+				buildRulesPromptSection(flags),
+			]
+		: [buildIntroPromptSection(flags), buildRulesPromptSection(flags)]
 
 	if (withSchema) {
 		lines.push(buildSchemaPromptSection(modePart))

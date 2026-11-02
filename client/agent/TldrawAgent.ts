@@ -24,6 +24,7 @@ import { AgentModelNameManager } from './managers/AgentModelNameManager'
 import { AgentModeManager } from './managers/AgentModeManager'
 import { AgentRequestManager } from './managers/AgentRequestManager'
 import { AgentTodoManager } from './managers/AgentTodoManager'
+import { AgentTutorManager } from './managers/AgentTutorManager'
 import { AgentUserActionTracker } from './managers/AgentUserActionTracker'
 
 /**
@@ -101,6 +102,9 @@ export class TldrawAgent {
 	/** The todo manager associated with this agent. */
 	todos: AgentTodoManager
 
+	/** The tutor turn manager associated with this agent (tutor mode, hint ladder). */
+	tutor: AgentTutorManager
+
 	/** The user action tracker associated with this agent. */
 	userAction: AgentUserActionTracker
 
@@ -142,6 +146,7 @@ export class TldrawAgent {
 		this.modelName = new AgentModelNameManager(this)
 		this.requests = new AgentRequestManager(this)
 		this.todos = new AgentTodoManager(this)
+		this.tutor = new AgentTutorManager(this)
 		this.userAction = new AgentUserActionTracker(this)
 
 		// Note: Agent registration is handled by AgentAppAgentsManager.createAgent()
@@ -215,6 +220,7 @@ export class TldrawAgent {
 		this.modelName.dispose()
 		this.requests.dispose()
 		this.todos.dispose()
+		this.tutor.dispose()
 
 		// Note: Agent removal from registry is handled by AgentAppAgentsManager.deleteAgent()
 	}
@@ -547,6 +553,7 @@ export class TldrawAgent {
 		this.mode.reset()
 		this.requests.reset()
 		this.todos.reset()
+		this.tutor.reset()
 		this.userAction.reset()
 	}
 
@@ -586,7 +593,7 @@ export class TldrawAgent {
 			)
 		}
 
-		const availableActions = modeDefinition.actions
+		const availableActions: readonly AgentAction['_type'][] = modeDefinition.actions
 
 		const requestPromise = (async () => {
 			const prompt = await this.preparePrompt(request, helpers)

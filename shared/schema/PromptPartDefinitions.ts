@@ -12,6 +12,7 @@ import { ContextItem } from '../types/ContextItem'
 import { SimpleShapeId } from '../types/ids-schema'
 import type { PromptPart, PromptPartDefinition } from '../types/PromptPart'
 import { TodoItem } from '../types/TodoItem'
+import { buildTutorTurnContent, TutorTurnState } from '../tutor/buildTutorTurnContent'
 
 // ============================================================================
 // Prompt Part Type Interfaces
@@ -112,6 +113,10 @@ export interface ModePart {
 	modeType: string
 	partTypes: PromptPart['type'][]
 	actionTypes: AgentAction['_type'][]
+}
+
+export interface TutorTurnPart extends TutorTurnState {
+	type: 'tutorTurn'
 }
 
 export interface DebugPart {
@@ -519,6 +524,13 @@ export const AgentViewportBoundsPartDefinition: PromptPartDefinition<AgentViewpo
 export const ModePartDefinition: PromptPartDefinition<ModePart> = {
 	type: 'mode',
 	// No buildContent - this is metadata for the worker, not prompt content for the model
+}
+
+// TutorTurn - which tutor mode this turn uses, and the hint ladder state
+export const TutorTurnPartDefinition: PromptPartDefinition<TutorTurnPart> = {
+	type: 'tutorTurn',
+	priority: 300, // just before the student's message
+	buildContent: (part) => buildTutorTurnContent(part),
 }
 
 // Debug - sends debug flags to worker for logging

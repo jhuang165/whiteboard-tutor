@@ -28,8 +28,10 @@ The operator guide is `~/claude-tools/docs/shared-memory-bridge.md`.
 A web app that tutors through a shared tldraw whiteboard. The student writes and draws; a
 Claude-backed tutor reads the canvas and responds on it with hints, annotations, diagrams,
 and worked steps. The design, phases, and open decisions are in `docs/PLAN.md`. Read it
-before writing code. Status: Phase 0 scaffold is in place (the stock tldraw agent template,
-defaulting to `claude-opus-5-5`); Phase 1 tutor work has not started.
+before writing code. Status: Phase 0 scaffold is in place (the tldraw agent template,
+defaulting to `claude-opus-5-5`). Phase 1 has started: tutor buttons, the `tutorTurn` prompt
+part, the tutor system prompt, and a tutor mode that can only add to the board. No real
+model turn has run yet.
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable
 Object (`AgentDurableObject`). The worker still calls Claude through the template's Vercel
@@ -46,6 +48,7 @@ cp .dev.vars.example .dev.vars   # then set ANTHROPIC_API_KEY
 npm install
 npm run dev        # Vite + the worker via @cloudflare/vite-plugin, http://localhost:5173
 npm run typecheck  # tsc --noEmit
+npm test           # vitest run (config in vitest.config.ts, not vite.config.ts)
 npm run build
 ```
 

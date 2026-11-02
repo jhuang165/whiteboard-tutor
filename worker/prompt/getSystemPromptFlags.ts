@@ -56,6 +56,9 @@ export function getSystemPromptFlags(actions: AgentAction['_type'][], parts: Pro
 		hasUserActionHistoryPart: parts.includes('userActionHistory'),
 		hasTodoListPart: parts.includes('todoList'),
 
+		// Tutor
+		hasTutorTurnPart: parts.includes('tutorTurn'),
+
 		// Lints
 		hasCanvasLintsPart: parts.includes('canvasLints'),
 

@@ -132,15 +132,22 @@ license.
 - [x] Confirm it runs locally: canvas and chat load, and `/stream` reaches the worker.
   A real model turn is still unverified until `ANTHROPIC_API_KEY` is in `.dev.vars`.
 - [x] Typecheck script and the project skills described in §7.
-- [ ] Lint, Vitest, and Playwright. Deferred to the start of Phase 1, when there is
-  project code to test.
+- [x] Vitest (`npm test`), added with the first Phase 1 slice.
+- [ ] Lint and Playwright. Deferred until there is UI flow worth testing end to end.
 
-**Phase 1: tutor MVP, single-player, explicit triggers.**
+**Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; v1 subject
+assumed to be probability (§8 #1 recommendation) until decided.
 
-- Problem frame plus pen.
-- Hint, Check, Explain, and Wait-what buttons.
-- Tutor ink layer, MathShape, HintCard, annotate-error, verdict.
-- Pedagogy system prompt compiled from `pedagogy/`.
+- [ ] Problem frame plus pen.
+- [x] Hint, Check, Explain, and Wait-what buttons (`client/components/TutorButtons.tsx`).
+  Each press sets the turn's intent and the hint count, sent as the `tutorTurn` prompt part.
+- [ ] Tutor ink layer, MathShape, HintCard, annotate-error, verdict.
+- [x] Pedagogy system prompt from `pedagogy-spec` (`worker/prompt/sections/tutor-section.ts`),
+  static so it stays cached. A test checks every in-scope rule id appears in it.
+- [x] Tutor can only add to the board: the working mode drops every action that moves,
+  edits, or deletes shapes (C1), and the client already skips actions outside the mode.
+- [ ] Per-intent effort (low for hints, medium for explain), after the SDK swap.
+- [ ] First real model run and eval cases (needs `ANTHROPIC_API_KEY`).
 - Done when: in a probability problem with a planted error, Check points at the right line,
   and Hint gives exactly one rung without leaking the answer.
 

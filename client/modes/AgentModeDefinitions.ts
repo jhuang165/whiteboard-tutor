@@ -41,6 +41,7 @@ import { ScreenshotPartUtil } from '../parts/ScreenshotPartUtil'
 import { SelectedShapesPartUtil } from '../parts/SelectedShapesPartUtil'
 import { TimePartUtil } from '../parts/TimePartUtil'
 import { TodoListPartUtil } from '../parts/TodoListPartUtil'
+import { TutorTurnPartUtil } from '../parts/TutorTurnPartUtil'
 import { UserActionHistoryPartUtil } from '../parts/UserActionHistoryPartUtil'
 import { UserViewportBoundsPartUtil } from '../parts/UserViewportBoundsPartUtil'
 
@@ -105,6 +106,9 @@ export const AGENT_MODE_DEFINITIONS = [
 			DataPartUtil.type,
 			ContextItemsPartUtil.type,
 
+			// Tutor (pedagogy mode and hint ladder state for this turn)
+			TutorTurnPartUtil.type,
+
 			// Viewport
 			ScreenshotPartUtil.type,
 			UserViewportBoundsPartUtil.type,
@@ -118,7 +122,6 @@ export const AGENT_MODE_DEFINITIONS = [
 			// History
 			ChatHistoryPartUtil.type,
 			UserActionHistoryPartUtil.type,
-			TodoListPartUtil.type,
 
 			// Lints
 			CanvasLintsPartUtil.type,
@@ -129,6 +132,10 @@ export const AGENT_MODE_DEFINITIONS = [
 
 		/**
 		 * Agent actions determine what actions the agent can take.
+		 *
+		 * The tutor only adds to the board. Actions that move, edit, or delete existing
+		 * shapes stay disabled, because those shapes are the student's work
+		 * (pedagogy-spec C1). They are still imported above so their utils register.
 		 */
 		actions: [
 			// Communication
@@ -136,35 +143,11 @@ export const AGENT_MODE_DEFINITIONS = [
 
 			// Planning
 			ThinkActionUtil.type,
-			ReviewActionUtil.type,
-			AddDetailActionUtil.type,
-			UpsertTodoListItemActionUtil.type,
 			SetMyViewActionUtil.type,
 
-			// Individual shapes
+			// Adding to the board
 			CreateActionUtil.type,
-			DeleteActionUtil.type,
-			UpdateActionUtil.type,
-			LabelActionUtil.type,
-			MoveActionUtil.type,
-
-			// Groups of shapes
-			PlaceActionUtil.type,
-			BringToFrontActionUtil.type,
-			SendToBackActionUtil.type,
-			RotateActionUtil.type,
-			ResizeActionUtil.type,
-			AlignActionUtil.type,
-			DistributeActionUtil.type,
-			StackActionUtil.type,
-			ClearActionUtil.type,
-
-			// Drawing
 			PenActionUtil.type,
-
-			// External APIs
-			CountryInfoActionUtil.type,
-			CountShapesActionUtil.type,
 
 			// Internal (required)
 			UnknownActionUtil.type,

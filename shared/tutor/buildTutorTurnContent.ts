@@ -1,0 +1,39 @@
+import type { TutorIntent } from './TutorIntent'
+
+export interface TutorTurnState {
+	intent: TutorIntent
+	/** Hint presses before this one, since the last new chat. */
+	hintsGiven: number
+}
+
+/**
+ * Per-turn tutor instructions, sent as user content after the cached system prompt.
+ * Rule ids refer to `.claude/skills/pedagogy-spec/SKILL.md`; the full rules are in the
+ * system prompt, so this only names the mode and the turn-specific state.
+ */
+export function buildTutorTurnContent({ intent, hintsGiven }: TutorTurnState): string[] {
+	switch (intent) {
+		case 'chat':
+			return [
+				'Tutor turn: the student typed a message (no button). Infer the mode from it: a how/why question is M1 Concept, work in progress is M2 Problem, a request to check is M3 Review. If you cannot tell, ask one short routing question (M7).',
+			]
+		case 'explain':
+			return [
+				'Tutor turn: the student pressed **Explain**. Use M1 Concept: intuition, then a small concrete example, then the formal statement with its assumptions. Ask zero questions (Q2).',
+			]
+		case 'hint': {
+			const ordinal = hintsGiven + 1
+			return [
+				`Tutor turn: the student pressed **Hint**. Use M2 Problem. This is hint request #${ordinal} since this chat started${hintsGiven > 0 ? '; read the chat history for the rungs you already gave and go one rung further, or drop a rung if they seem frustrated' : '; enter the ladder at the rung that matches where they are stuck'}. Give exactly one rung (H), as one hint on the board next to the stuck step (C2, C4), then stop. Do not reveal the answer below H5.`,
+			]
+		}
+		case 'check':
+			return [
+				'Tutor turn: the student pressed **Check**. Use M3 Review. Transcribe the handwriting you are judging first (C3). Give a verdict, then mark only the earliest substantive error and classify it as a slip or a misconception (E1). If the work is correct, say so specifically (T). Leave a sound method intact.',
+			]
+		case 'wait-what':
+			return [
+				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, tree, reduced sample space, area model, or number line). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
+			]
+	}
+}

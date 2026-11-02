@@ -1,12 +1,30 @@
 import { FormEventHandler, useCallback, useRef } from 'react'
+import { TutorIntent } from '../../shared/tutor/TutorIntent'
 import { useAgent } from '../agent/TldrawAgentAppProvider'
 import { ChatHistory } from './chat-history/ChatHistory'
 import { ChatInput } from './ChatInput'
 import { TodoList } from './TodoList'
+import { TutorButtons } from './TutorButtons'
 
 export function ChatPanel() {
 	const agent = useAgent()
 	const inputRef = useRef<HTMLTextAreaElement>(null)
+
+	// Start a student turn. Sending a new message interrupts the current request.
+	const send = useCallback(
+		(intent: TutorIntent, message: string) => {
+			agent.tutor.beginTurn(intent)
+			agent.interrupt({
+				input: {
+					agentMessages: [message],
+					bounds: agent.editor.getViewportPageBounds(),
+					source: 'user',
+					contextItems: agent.context.getItems(),
+				},
+			})
+		},
+		[agent]
+	)
 
 	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
 		async (e) => {
@@ -24,17 +42,9 @@ export function ChatPanel() {
 			// Clear the chat input (context is cleared after it's captured in requestAgentActions)
 			inputRef.current.value = ''
 
-			// Sending a new message to the agent should interrupt the current request
-			agent.interrupt({
-				input: {
-					agentMessages: [value],
-					bounds: agent.editor.getViewportPageBounds(),
-					source: 'user',
-					contextItems: agent.context.getItems(),
-				},
-			})
+			send('chat', value)
 		},
-		[agent]
+		[agent, send]
 	)
 
 	const handleNewChat = useCallback(() => {
@@ -51,6 +61,7 @@ export function ChatPanel() {
 			<ChatHistory agent={agent} />
 			<div className="chat-input-container">
 				<TodoList agent={agent} />
+				<TutorButtons onPress={send} />
 				<ChatInput handleSubmit={handleSubmit} inputRef={inputRef} />
 			</div>
 		</div>

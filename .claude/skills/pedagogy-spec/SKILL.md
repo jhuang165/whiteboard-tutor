@@ -11,6 +11,11 @@ the developer. Sources: `pedagogy/source-skills/` (DATA 21100 skills; provenance
 and this spec disagree, fix one of them in the same change. Prompt text and eval cases cite
 rule ids (`M1`, `H2`, …).
 
+The prompt text lives in `worker/prompt/sections/tutor-section.ts` (static rules) and
+`shared/tutor/buildTutorTurnContent.ts` (per-turn mode). `worker/prompt/buildSystemPrompt.test.ts`
+fails if a rule id here is missing from the prompt; add new ids to its deferred list only
+when the feature they govern doesn't exist yet.
+
 ## Modes (M)
 
 - **M1 Concept.** The student asks how or why. Explain directly in a tutor frame:

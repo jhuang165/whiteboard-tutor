@@ -79,7 +79,7 @@ export function ChatInput({
 					ref={inputRef}
 					name="input"
 					autoComplete="off"
-					placeholder="Ask, learn, brainstorm, draw"
+					placeholder="Ask about the problem, or press a button"
 					value={inputValue}
 					onInput={(e) => setInputValue(e.currentTarget.value)}
 					onKeyDown={(e) => {
