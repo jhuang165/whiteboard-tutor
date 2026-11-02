@@ -1,0 +1,90 @@
+{
+	"id": "bayes-second-hint",
+	"description": "Same broken Bayes work, second Hint press. The first hint (H1, in the chat history) asked where it stops making sense. Go one rung further (H2 to H4), anchored at the P(B) line, still no answer.",
+	"rules": [
+		"H",
+		"C2",
+		"C4",
+		"Q1",
+		"E3"
+	],
+	"intent": "hint",
+	"hintsGiven": 1,
+	"history": [
+		{
+			"role": "student",
+			"message": "Can I get a hint?"
+		},
+		{
+			"role": "tutor",
+			"actions": [
+				{
+					"_type": "hint",
+					"intent": "Diagnose where the work breaks",
+					"rung": "H1",
+					"text": "Which step are you least sure of: setting up Bayes' rule, or finding P(B)?",
+					"anchorShapeId": "line2"
+				},
+				{
+					"_type": "message",
+					"text": "I put a hint next to your P(B) line."
+				}
+			]
+		}
+	],
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: P(A) = 0.3, P(B|A) = 0.4, P(B|not A) = 0.1. Find P(A|B).",
+			"x": 0,
+			"y": 0,
+			"w": 910,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "P(A|B) = P(B|A) P(A) / P(B)",
+			"x": 0,
+			"y": 80,
+			"w": 378,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "P(B) = P(B|A) P(A) = 0.4 x 0.3 = 0.12",
+			"x": 0,
+			"y": 160,
+			"w": 518,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "P(A|B) = 0.12 / 0.12 = 1",
+			"x": 0,
+			"y": 240,
+			"w": 336,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"hints": 1,
+		"hintRungs": [
+			"H2",
+			"H3",
+			"H4"
+		],
+		"hintAnchorIn": [
+			"line2"
+		],
+		"maxMarks": 1,
+		"maxQuestions": 1,
+		"forbidden": [
+			"0.19",
+			"0.07",
+			"0.63",
+			"0.632",
+			"12/19"
+		]
+	}
+}

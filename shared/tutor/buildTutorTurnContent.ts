@@ -1,9 +1,12 @@
+import { conceptSlug } from './evidence'
 import type { TutorIntent } from './TutorIntent'
 
 export interface TutorTurnState {
 	intent: TutorIntent
 	/** Hint presses before this one, since the last new chat. */
 	hintsGiven: number
+	/** On a Quiz turn, the due review the student chose to start (L4). */
+	reviewConcept?: string
 }
 
 /**
@@ -11,7 +14,7 @@ export interface TutorTurnState {
  * Rule ids refer to `.claude/skills/pedagogy-spec/SKILL.md`; the full rules are in the
  * system prompt, so this only names the mode and the turn-specific state.
  */
-export function buildTutorTurnContent({ intent, hintsGiven }: TutorTurnState): string[] {
+export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: TutorTurnState): string[] {
 	switch (intent) {
 		case 'chat':
 			return [
@@ -36,6 +39,13 @@ export function buildTutorTurnContent({ intent, hintsGiven }: TutorTurnState): s
 				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, tree, reduced sample space, area model, or number line). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
 			]
 		case 'quiz':
+			if (reviewConcept) {
+				// The client sends the slug; normalize it so only a slug reaches the prompt.
+				const concept = conceptSlug(reviewConcept)
+				return [
+					`Tutor turn: the student started a **scheduled review** of \`${concept}\`. Use M4 Quiz: pose exactly one practice problem with \`pose-problem\` that tests \`${concept}\`, and set its \`concept\` to exactly \`${concept}\`, then stop. A review checks retention (L4), so make it a new problem in a different setting from the ones they have solved, at about the difficulty of their last clean solve. Solve it yourself first (V1); it is also checked with code before you grade it. Give no hint, method, or answer. Any chat message is one short line with no question.`,
+				]
+			}
 			return [
 				"Tutor turn: the student pressed **Quiz me**. Use M4 Quiz: pose exactly one practice problem with `pose-problem`, then stop. Choose its concept from the learner's record: a review that is due first, then a concept they have only seen or solved with help, then the topic they are working on now. Match the difficulty to their recent work. Solve it yourself first (V1); it is also checked with code before you grade it. Give no hint, method, or answer. Any chat message is one short line with no question.",
 			]

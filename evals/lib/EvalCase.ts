@@ -16,6 +16,8 @@ export interface EvalCase {
 	intent: TutorIntent
 	/** Hint presses before this turn (the hint ladder state). */
 	hintsGiven?: number
+	/** On a `quiz` case, the due review the student started from the review queue (L4). */
+	reviewConcept?: string
 	/** The student's message. Defaults to the pressed button's message. */
 	message?: string
 	/** Defaults to the app's default model. */
@@ -27,6 +29,16 @@ export interface EvalCase {
 	problem?: NonNullable<ProblemPart['problem']>
 	/** The learner's evidence summary, as the worker would attach it. Defaults to none. */
 	learnerSummary?: ConceptSummary[]
+	/**
+	 * Earlier turns in this chat, oldest first, for cases that depend on what the tutor already
+	 * said (a second hint, Wait-what). The current message is not part of it.
+	 */
+	history?: EvalHistoryTurn[]
+	/**
+	 * A PNG of the student's view, as a file in `evals/fixtures/`, for cases that need the tutor
+	 * to read ink. Without one the model reads the board from the shape list only.
+	 */
+	screenshot?: string
 	/** Student shapes, as the tutor sees them. Ids are simple ids, without `shape:`. */
 	board: BoardShape[]
 	expect: EvalExpectations
@@ -34,9 +46,19 @@ export interface EvalCase {
 
 export type BoardShape = Omit<BlurryShape, 'type'> & { type?: BlurryShape['type'] }
 
+/** A student message, or the actions of a tutor turn (as the model streamed them). */
+export type EvalHistoryTurn =
+	| { role: 'student'; message: string }
+	| { role: 'tutor'; actions: ({ _type: string } & Record<string, unknown>)[] }
+
+export type ExpectedVerdict = 'correct' | 'incorrect' | 'none'
+
 export interface EvalExpectations {
-	/** The single verdict the tutor must give, or `none` for no verdict at all. */
-	verdict?: 'correct' | 'incorrect' | 'none'
+	/**
+	 * The single verdict the tutor must give, or `none` for no verdict at all. A list allows any
+	 * of them, such as `["none", "correct"]` for "anything but an incorrect verdict".
+	 */
+	verdict?: ExpectedVerdict | ExpectedVerdict[]
 	/** The student shape the single `mark-error` must target, or `none` for no mark. */
 	markErrorOn?: string | 'none'
 	errorKind?: 'slip' | 'misconception'
@@ -54,4 +76,9 @@ export interface EvalExpectations {
 	maxMarks?: number
 	/** Strings that must not appear in student-visible text, such as the final answer. */
 	forbidden?: string[]
+	/**
+	 * Content the turn must show the student: each group is a list of alternatives, and at
+	 * least one string from every group must appear (such as the answer on a D1 request).
+	 */
+	required?: string[][]
 }

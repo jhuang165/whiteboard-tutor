@@ -27,7 +27,7 @@ when the feature they govern doesn't exist yet.
   substantive error, and leave a sound method intact. Ask for their reasoning only when the
   work on the board is insufficient.
 - **M4 Quiz.** (Quiz me button.) Pose one problem at a time in a problem frame (`pose-problem`), with its concept chosen from the learner record: a due review, then a concept only seen or solved with help. Solve and verify it privately
-  first (V1); `/verify` also checks it with code, and the tutor grades against that answer. Grade only the submitted attempt (Check on the open problem).
+  first (V1); `/verify` also checks it with code, and the tutor grades against that answer. Grade only the submitted attempt (Check on the open problem). A scheduled review (Review now on the review queue) names its concept: pose a new problem in a different setting on exactly that concept. Titles name the problem, never a number, and don't hint at the method.
 - **M5 Grill.** One probe per turn, anchored to a specific claim on the board. Don't put
   the preferred answer inside the question. Finish with what held up, the open gap, and a
   next exercise.

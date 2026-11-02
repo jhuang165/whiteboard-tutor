@@ -54,9 +54,12 @@ export const PoseProblemActionUtil = registerActionUtil(
 					}
 
 			const id = newTutorShapeId(helpers, 'problem')
+			// A scheduled review files under the concept that was due, whatever slug the model
+			// wrote, so a clean solve can count as retained (L4).
+			const reviewConcept = this.agent.tutor.getState().reviewConcept
 			const state: ProblemState = {
 				problemId: crypto.randomUUID(),
-				concept: conceptSlug(action.concept ?? ''),
+				concept: conceptSlug(reviewConcept ?? action.concept ?? ''),
 				posedAt: Date.now(),
 				status: 'open',
 				hintRungs: [],

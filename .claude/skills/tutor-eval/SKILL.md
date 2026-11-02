@@ -26,22 +26,32 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 - `EVAL_REPEAT=n` runs each case n times (the model is not deterministic; report pass
   rates, not single runs). `EVAL_MODEL=<name>` overrides the model.
   `npm run eval -- -t <substring>` runs matching cases only.
-- Differences from a live turn: no screenshot (the model reads the shape list) and no
-  chat history. Mark placement and the no-overlap rule run in the client, so they aren't
-  checked here.
+- Differences from a live turn: no screenshot and no chat history unless the case sets
+  them (the model otherwise reads the shape list). Mark placement and the no-overlap rule
+  run in the client, so they aren't checked here.
 
 ## Case format (`evals/cases/<id>.json`, type `EvalCase` in `evals/lib/EvalCase.ts`)
 
 - `intent` (the button: `check`, `hint`, `explain`, `wait-what`, `quiz`, `chat`), `hintsGiven`,
-  and an optional `message` (defaults to the button's message) and `model`.
+  and an optional `message` (defaults to the button's message) and `model`. `reviewConcept`
+  makes a `quiz` case a review started from the review queue.
+- `history`: earlier turns, oldest first, as `{ "role": "student", "message" }` or
+  `{ "role": "tutor", "actions": [...] }` with actions as the model streams them. Leave out
+  `think` actions: pasted-back thoughts get refused as reasoning extraction. Needed for a
+  second hint press and for Wait-what.
+- `screenshot`: a PNG in `evals/fixtures/`, sized to the viewport around the board (the
+  shapes' bounds plus 200 px on each side). Ink shapes are `"type": "draw"` with no `text`,
+  so the model has to read them from the image.
 - `board`: the student shapes as the tutor sees them: `shapeId` (simple id, no
   `shape:`), `text`, `x`, `y`, `w`, `h`, and `type` (default `text`). Use neutral ids
   (`line1`, `line2`) so the ids don't hint at the error.
-- `expect`: `verdict` (`correct`, `incorrect`, or `none`), `markErrorOn` (a shape id or
+- `expect`: `verdict` (`correct`, `incorrect`, or `none`, or a list of allowed ones), `markErrorOn` (a shape id or
   `none`), `errorKind`, `hints` with `hintRungs` and `hintAnchorIn`, `maxQuestions`,
   `posesProblem` (how many `pose-problem` actions, each with a concept, title, and statement),
   `maxMarks`, and `forbidden` (strings that must not appear in student-visible text,
-  matched as whole values, so "0.19" doesn't match "10.19").
+  matched as whole values, so "0.19" doesn't match "10.19"), and `required` (groups of
+  alternatives; one string from each group must appear, such as the answer on a D1
+  request or the transcribed value on a C3 case).
 - `rules`: the `pedagogy-spec` ids under test, and a `description` of what the case
   probes.
 - Source: hand-built from DATA 21100 topics (conditional probability, Bayes, counting,
@@ -52,8 +62,9 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 
 Implemented in `evals/lib/checks.ts`: answer leak, earliest error, question budget, mark
 budget, plus the verdict, one hint rung with its anchor, and mode-only actions. Still to
-build: overlap and mutation (placement runs in the client), C3 on ambiguous handwriting
-(needs screenshot cases). L is decided in code, not by the model, so it is unit-tested in `shared/tutor/evidence.test.ts` instead. `pose-problem` and `write-math` count as marks;
+build: overlap and mutation (placement runs in the client). C3 is covered by a screenshot
+case (`ambiguous-digit-check`) with `required` on the transcribed value. `poses-problem`
+also rejects bare-number titles such as "Problem 3". L is decided in code, not by the model, so it is unit-tested in `shared/tutor/evidence.test.ts` instead. `pose-problem` and `write-math` count as marks;
 their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
 A case can set `problem` (the full `ProblemPart` problem, including `verified` for the checked answer the worker would attach) and `learnerSummary` (the per-concept evidence summary). Put the checked answer in `forbidden` on hint cases.
 

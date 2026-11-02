@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { classifyEvidence, conceptSlug, EvidenceRecord, summarizeEvidence, toEvidenceRecord } from './evidence'
+import {
+	classifyEvidence,
+	conceptSlug,
+	EvidenceRecord,
+	getDueReviews,
+	summarizeEvidence,
+	toEvidenceRecord,
+} from './evidence'
 
 const DAY = 24 * 60 * 60 * 1000
 const NOW = 100 * DAY
@@ -57,6 +64,18 @@ describe('summarizeEvidence', () => {
 
 	it('has no review date before an independent solve', () => {
 		expect(summarizeEvidence([record({ level: 'assisted' })])[0].reviewDueAt).toBeNull()
+	})
+})
+
+describe('getDueReviews', () => {
+	it('lists due reviews, most overdue first', () => {
+		const summary = summarizeEvidence([
+			record({ concept: 'bayes-rule', level: 'independent', at: NOW - DAY }),
+			record({ concept: 'expected-value', level: 'independent', at: NOW - 2 * DAY }),
+			record({ concept: 'counting', level: 'independent', at: NOW - DAY / 2 }),
+			record({ concept: 'variance', level: 'assisted', at: NOW - 5 * DAY }),
+		])
+		expect(getDueReviews(summary, NOW).map((c) => c.concept)).toEqual(['expected-value', 'bayes-rule'])
 	})
 })
 

@@ -242,6 +242,60 @@ body {
 	background: var(--tl-color-muted-2);
 }
 
+/* Review queue: the most overdue review, offered above the tutor buttons */
+.review-queue {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	margin: 0px 8px 6px 8px;
+	padding: 6px 6px 6px 10px;
+	border: 1px solid var(--tl-color-selected, #2f80ed);
+	border-radius: 8px;
+	background: var(--tl-color-panel);
+	color: var(--tl-color-text);
+	font-size: 12px;
+}
+
+.review-queue-text {
+	flex: 1;
+	min-width: 0;
+	line-height: 1.35;
+}
+
+.review-queue-text strong {
+	text-transform: capitalize;
+}
+
+.review-queue-more {
+	color: var(--tl-color-text-3);
+}
+
+.review-queue-start,
+.review-queue-later {
+	padding: 4px 8px;
+	border-radius: 6px;
+	font-size: 12px;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.review-queue-start {
+	border: none;
+	background: var(--tl-color-selected, #2f80ed);
+	color: var(--tl-color-selected-contrast, #fff);
+	font-weight: 600;
+}
+
+.review-queue-later {
+	border: 1px solid var(--tl-color-muted-2);
+	background: transparent;
+	color: var(--tl-color-text-3);
+}
+
+.review-queue-later:hover {
+	background: var(--tl-color-muted-2);
+}
+
 .chat-actions {
 	display: flex;
 	gap: 8px;

@@ -186,8 +186,16 @@ assumed to be probability (§8 #1 recommendation) until decided.
   one in chat). The prompt now counts Q1 across everything the student sees and makes
   error labels statements; after that, 50/50 checks passed over two runs of each case
   through the bridge.
-- [ ] More cases (D1 full-solution requests, Wait-what, second and later hint presses with
-  chat history, ambiguous handwriting from a screenshot) and the judged MRBench rubric.
+- [x] More cases, 2026-11-02: a D1 full-solution request, Wait-what after a formula-only
+  explanation, a second Hint press with the first hint in the chat history, a Check on
+  handwritten work read from a screenshot whose last digit could be a 3 or an 8 (C3), and a
+  review started from the review queue. The harness now takes `history`, `screenshot`
+  (`evals/fixtures/`), `reviewConcept`, `required` content, and a list of allowed verdicts,
+  and rejects bare-number problem titles. Through the bridge, 141/142 checks passed over two
+  runs of all 13 cases; the one failure was a second question in a hint's `intent` on
+  posed-problem-hint.
+- [ ] The judged MRBench rubric, long-session replays, and a handwriting case the model
+  actually misreads (on the fixture it read 0.63 both times).
 - Done when: in a probability problem with a planted error, Check points at the right line,
   and Hint gives exactly one rung without leaking the answer.
 
@@ -217,7 +225,15 @@ assumed to be probability (§8 #1 recommendation) until decided.
   Wait-what on a posed problem record exposure. Review dates follow 1, 3, 7, 21 days. The
   worker attaches a per-concept summary to each turn (the `learner` part), and a Progress
   panel at the top of the chat lists it.
-- [ ] A review queue that offers due reviews unprompted, and a session history page.
+- [x] Review queue, 2026-11-02 (`client/components/ReviewQueue.tsx`). When a review is due,
+  a card above the tutor buttons offers the most overdue concept, with a count of the
+  others. **Review now** is a Quiz me turn with `reviewConcept` in the `tutorTurn` part:
+  the turn text asks for a new problem on exactly that concept, and the client files the
+  frame under it whatever slug the model writes, so a clean solve counts as retained (L4).
+  **Later** hides it for the page visit; it also hides while the tutor works and while
+  that concept's problem is open. Problem titles now name the problem ("Spam emails with
+  the word free") instead of "Problem 3".
+- [ ] A session history page.
 - [ ] Auth and a rate limit on `/verify` and `/evidence` before any deploy: the learner id
   is an unauthenticated browser UUID, and `/verify` spends API money per call.
 

@@ -4,6 +4,7 @@ import { useAgent } from '../agent/TldrawAgentAppProvider'
 import { ChatHistory } from './chat-history/ChatHistory'
 import { ChatInput } from './ChatInput'
 import { EvidencePanel } from './EvidencePanel'
+import { ReviewQueue } from './ReviewQueue'
 import { TodoList } from './TodoList'
 import { TutorButtons } from './TutorButtons'
 
@@ -13,8 +14,8 @@ export function ChatPanel() {
 
 	// Start a student turn. Sending a new message interrupts the current request.
 	const send = useCallback(
-		(intent: TutorIntent, message: string) => {
-			agent.tutor.beginTurn(intent)
+		(intent: TutorIntent, message: string, reviewConcept?: string) => {
+			agent.tutor.beginTurn(intent, reviewConcept)
 			agent.interrupt({
 				input: {
 					agentMessages: [message],
@@ -63,6 +64,7 @@ export function ChatPanel() {
 			<ChatHistory agent={agent} />
 			<div className="chat-input-container">
 				<TodoList agent={agent} />
+				<ReviewQueue onStart={(concept, message) => send('quiz', message, concept)} />
 				<TutorButtons onPress={send} />
 				<ChatInput handleSubmit={handleSubmit} inputRef={inputRef} />
 			</div>

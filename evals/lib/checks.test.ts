@@ -7,6 +7,7 @@ import {
 	checkNoLeak,
 	checkPosedProblems,
 	checkQuestions,
+	checkRequired,
 	checkVerdict,
 	containsValue,
 	type EvalAction,
@@ -66,6 +67,21 @@ describe('checks', () => {
 		expect(checkVerdict([], 'none').pass).toBe(true)
 	})
 
+	it('verdict accepts any listed kind', () => {
+		const notIncorrect = ['none', 'correct'] as const
+		expect(checkVerdict([], [...notIncorrect]).pass).toBe(true)
+		expect(checkVerdict([verdict('correct')], [...notIncorrect]).pass).toBe(true)
+		expect(checkVerdict([verdict('incorrect')], [...notIncorrect]).pass).toBe(false)
+		expect(checkVerdict([], ['incorrect']).pass).toBe(false)
+	})
+
+	it('required content needs one string from every group', () => {
+		const actions = [message('So P(A|B) = 12/19, about 0.63.')]
+		expect(checkRequired(actions, [['0.63', '0.632'], ['12/19']], ['D1']).pass).toBe(true)
+		expect(checkRequired(actions, [['0.19']], ['D1']).pass).toBe(false)
+		expect(checkRequired([{ _type: 'write-math', intent: 'Answer', latex: '\\frac{12}{19}' }], [['frac{12}{19}']], ['D1']).pass).toBe(true)
+	})
+
 	it('mark-error must target the earliest error with the right kind', () => {
 		expect(checkMarkError([markError('line2', 'slip')], 'line2', 'slip').pass).toBe(true)
 		expect(checkMarkError([markError('shape:line2', 'slip')], 'line2', 'slip').pass).toBe(true)
@@ -107,6 +123,10 @@ describe('checks', () => {
 		expect(checkPosedProblems([pose('')], 1).pass).toBe(false)
 		expect(checkPosedProblems([pose('a'), pose('b')], 1).pass).toBe(false)
 		expect(checkPosedProblems([], 0).pass).toBe(true)
+		const titled = (title: string): EvalAction => ({ _type: 'pose-problem', concept: 'a', title, statement: 'Roll two dice.' })
+		expect(checkPosedProblems([titled('Problem 3')], 1).pass).toBe(false)
+		expect(checkPosedProblems([titled('Practice problem')], 1).pass).toBe(false)
+		expect(checkPosedProblems([titled('Two dice, at least one six')], 1).pass).toBe(true)
 	})
 
 	it('flags actions outside the mode', () => {

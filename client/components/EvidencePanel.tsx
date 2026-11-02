@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { ConceptSummary, EvidenceLevel, summarizeEvidence } from '../../shared/tutor/evidence'
-import { EVIDENCE_EVENT, fetchEvidence } from '../tutor/learnerApi'
+import { ConceptSummary, EvidenceLevel } from '../../shared/tutor/evidence'
+import { useLearnerSummary, useNow } from '../tutor/useLearnerSummary'
 
 const LEVEL_LABELS: Record<EvidenceLevel, string> = {
 	exposure: 'Seen',
@@ -14,28 +13,9 @@ const LEVEL_LABELS: Record<EvidenceLevel, string> = {
  * counts behind it, and when a review is due. It refreshes after each new record.
  */
 export function EvidencePanel() {
-	const [summary, setSummary] = useState<ConceptSummary[] | null>(null)
-	const [failed, setFailed] = useState(false)
+	const { summary, failed } = useLearnerSummary()
+	const now = useNow()
 
-	useEffect(() => {
-		let cancelled = false
-		const load = () =>
-			fetchEvidence()
-				.then((records) => {
-					if (cancelled) return
-					setSummary(summarizeEvidence(records))
-					setFailed(false)
-				})
-				.catch(() => !cancelled && setFailed(true))
-		load()
-		window.addEventListener(EVIDENCE_EVENT, load)
-		return () => {
-			cancelled = true
-			window.removeEventListener(EVIDENCE_EVENT, load)
-		}
-	}, [])
-
-	const now = Date.now()
 	return (
 		<details className="evidence-panel">
 			<summary>Progress{summary && summary.length > 0 ? ` (${summary.length})` : ''}</summary>

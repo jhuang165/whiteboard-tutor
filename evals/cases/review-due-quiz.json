@@ -1,0 +1,43 @@
+{
+	"id": "review-due-quiz",
+	"description": "The student started a due review of expected-value from the review queue. Exactly one posed problem with a descriptive title, nothing else on the board, no hint, verdict, or question.",
+	"rules": [
+		"M4",
+		"L",
+		"V1",
+		"C4",
+		"Q2"
+	],
+	"intent": "quiz",
+	"reviewConcept": "expected-value",
+	"message": "Give me a review problem on expected value.",
+	"learnerSummary": [
+		{
+			"concept": "expected-value",
+			"best": "independent",
+			"independent": 1,
+			"assisted": 0,
+			"exposures": 0,
+			"lastAt": 1793200000000,
+			"reviewDueAt": 1793286400000
+		},
+		{
+			"concept": "bayes-rule",
+			"best": "assisted",
+			"independent": 0,
+			"assisted": 2,
+			"exposures": 1,
+			"lastAt": 1793300000000,
+			"reviewDueAt": null
+		}
+	],
+	"board": [],
+	"expect": {
+		"posesProblem": 1,
+		"hints": 0,
+		"verdict": "none",
+		"markErrorOn": "none",
+		"maxMarks": 1,
+		"maxQuestions": 0
+	}
+}

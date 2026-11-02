@@ -34,4 +34,11 @@ describe('buildTutorTurnContent', () => {
 	it('transcribes before judging on Check (C3)', () => {
 		expect(buildTutorTurnContent({ intent: 'check', hintsGiven: 0 }).join()).toContain('(C3)')
 	})
+
+	it('pins the concept on a scheduled review (L4)', () => {
+		const text = buildTutorTurnContent({ intent: 'quiz', hintsGiven: 0, reviewConcept: 'bayes-rule' }).join()
+		expect(text).toContain('scheduled review')
+		expect(text).toContain('set its `concept` to exactly `bayes-rule`')
+		expect(buildTutorTurnContent({ intent: 'quiz', hintsGiven: 0 }).join()).not.toContain('scheduled review')
+	})
 })

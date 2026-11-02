@@ -131,3 +131,10 @@ export function summarizeEvidence(records: EvidenceRecord[]): ConceptSummary[] {
 	}
 	return summaries.sort((a, b) => b.lastAt - a.lastAt)
 }
+
+/** Concepts whose review is due by `now`, most overdue first (L4). */
+export function getDueReviews(summary: ConceptSummary[], now: number): ConceptSummary[] {
+	return summary
+		.filter((c) => c.reviewDueAt !== null && c.reviewDueAt <= now)
+		.sort((a, b) => a.reviewDueAt! - b.reviewDueAt!)
+}

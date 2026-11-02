@@ -1,4 +1,4 @@
-import type { EvalCase } from './EvalCase'
+import type { EvalCase, ExpectedVerdict } from './EvalCase'
 
 /** A completed action from the model, loosely typed so a malformed one still gets judged. */
 export type EvalAction = { _type: string } & Record<string, unknown>
@@ -37,6 +37,7 @@ export function runChecks(evalCase: EvalCase, actions: EvalAction[], allowedActi
 	if (expect.posesProblem !== undefined) results.push(checkPosedProblems(actions, expect.posesProblem))
 	if (expect.maxMarks !== undefined) results.push(checkMarks(actions, expect.maxMarks))
 	if (expect.forbidden?.length) results.push(checkNoLeak(actions, expect.forbidden))
+	if (expect.required?.length) results.push(checkRequired(actions, expect.required, evalCase.rules))
 
 	return results
 }
@@ -51,14 +52,19 @@ export function checkAllowedActions(actions: EvalAction[], allowed: readonly str
 	}
 }
 
-export function checkVerdict(actions: EvalAction[], expected: 'correct' | 'incorrect' | 'none'): CheckResult {
+export function checkVerdict(actions: EvalAction[], expected: ExpectedVerdict | ExpectedVerdict[]): CheckResult {
+	const allowed = Array.isArray(expected) ? expected : [expected]
 	const verdicts = actions.filter((a) => a._type === 'verdict').map((a) => String(a.verdict))
-	const pass = expected === 'none' ? verdicts.length === 0 : verdicts.length === 1 && verdicts[0] === expected
+	const pass =
+		verdicts.length === 0
+			? allowed.includes('none')
+			: verdicts.length === 1 && allowed.includes(verdicts[0] as ExpectedVerdict)
+	const describe = allowed.map((v) => (v === 'none' ? 'no verdict' : `one ${v} verdict`)).join(' or ')
 	return {
 		check: 'verdict',
 		rule: 'M3',
 		pass,
-		detail: `expected ${expected === 'none' ? 'no verdict' : `one ${expected} verdict`}, got [${verdicts.join(', ')}]`,
+		detail: `expected ${describe}, got [${verdicts.join(', ')}]`,
 	}
 }
 
@@ -125,6 +131,10 @@ export function checkPosedProblems(actions: EvalAction[], expectedCount: number)
 	for (const action of posed) {
 		const missing = ['concept', 'title', 'statement'].filter((key) => !String(action[key] ?? '').trim())
 		if (missing.length) problems.push(`a problem is missing ${missing.join(', ')}`)
+		// A title names the problem; "Problem 3" doesn't tell problems apart later.
+		if (/^\s*(practice\s+|review\s+)?(problem|question|quiz)\s*#?\d*\s*$/i.test(String(action.title ?? ''))) {
+			problems.push(`title "${String(action.title)}" doesn't name the problem`)
+		}
 	}
 	return {
 		check: 'poses-problem',
@@ -155,6 +165,21 @@ export function checkNoLeak(actions: EvalAction[], forbidden: string[]): CheckRe
 		rule: 'M2, H',
 		pass: leaked.length === 0,
 		detail: leaked.length === 0 ? `none of ${forbidden.join(', ')} appear` : `leaked: ${leaked.join(', ')}`,
+	}
+}
+
+/** Each group needs at least one of its strings somewhere the student can read (D1, C3, M6). */
+export function checkRequired(actions: EvalAction[], groups: string[][], rules: string[]): CheckResult {
+	const text = [...visibleText(actions), ...visibleText(actions, CONTENT_KEYS)].join('\n')
+	const missing = groups.filter((group) => !group.some((value) => containsValue(text, value)))
+	return {
+		check: 'required-content',
+		rule: rules.filter((r) => ['D1', 'C3', 'M6'].includes(r)).join(', ') || 'D1',
+		pass: missing.length === 0,
+		detail:
+			missing.length === 0
+				? `shows ${groups.map((g) => g.find((v) => containsValue(text, v))).join(', ')}`
+				: `missing any of: ${missing.map((g) => g.join(' / ')).join('; ')}`,
 	}
 }
 

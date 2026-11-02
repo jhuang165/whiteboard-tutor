@@ -1,0 +1,60 @@
+{
+	"id": "wait-what-after-explain",
+	"description": "The tutor explained why P(A|B) and P(B|A) differ with formulas only (chat history); the student pressed Wait, what?. M6: re-explain the same point in a different representation, such as counts in a table or a tree, with no verdict, error mark, or hint.",
+	"rules": [
+		"M6",
+		"E3",
+		"Q1"
+	],
+	"intent": "wait-what",
+	"history": [
+		{
+			"role": "student",
+			"message": "Explain this to me."
+		},
+		{
+			"role": "tutor",
+			"actions": [
+				{
+					"_type": "write-math",
+					"intent": "Show both conditionals share a numerator",
+					"latex": "P(A \\mid B) = \\frac{P(A \\cap B)}{P(B)}, \\quad P(B \\mid A) = \\frac{P(A \\cap B)}{P(A)}",
+					"anchorShapeId": "question"
+				},
+				{
+					"_type": "message",
+					"text": "Both conditionals have the same numerator, P(A and B), but they divide by different things: P(A|B) divides by P(B) and P(B|A) divides by P(A). So they're equal only when P(A) = P(B). Conditioning changes which group you measure the overlap against."
+				}
+			]
+		}
+	],
+	"board": [
+		{
+			"shapeId": "question",
+			"text": "Why isn't P(A|B) the same as P(B|A)?",
+			"x": 0,
+			"y": 0,
+			"w": 504,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 0,
+		"maxQuestions": 1,
+		"required": [
+			[
+				"table",
+				"tree",
+				"out of",
+				"people",
+				"grid",
+				"area",
+				"count",
+				"number line",
+				"sample space"
+			]
+		]
+	}
+}

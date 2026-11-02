@@ -1,0 +1,62 @@
+{
+	"id": "full-solution-request",
+	"description": "Same broken Bayes work; the student types an explicit request for the full solution. D1: give it cleanly (P(B) = 0.19 and P(A|B) = 12/19), name the cost once, no hint ladder and no stonewalling.",
+	"rules": [
+		"D1",
+		"Q1",
+		"T"
+	],
+	"intent": "chat",
+	"message": "I've been stuck on this for 20 minutes. Please just show me the full solution.",
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: P(A) = 0.3, P(B|A) = 0.4, P(B|not A) = 0.1. Find P(A|B).",
+			"x": 0,
+			"y": 0,
+			"w": 910,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "P(A|B) = P(B|A) P(A) / P(B)",
+			"x": 0,
+			"y": 80,
+			"w": 378,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "P(B) = P(B|A) P(A) = 0.4 x 0.3 = 0.12",
+			"x": 0,
+			"y": 160,
+			"w": 518,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "P(A|B) = 0.12 / 0.12 = 1",
+			"x": 0,
+			"y": 240,
+			"w": 336,
+			"h": 40
+		}
+	],
+	"expect": {
+		"hints": 0,
+		"maxQuestions": 1,
+		"required": [
+			[
+				"0.19",
+				".19"
+			],
+			[
+				"12/19",
+				"0.63",
+				"0.632",
+				"0.6316",
+				".63"
+			]
+		]
+	}
+}

@@ -37,10 +37,12 @@ Working now:
 - Evidence: each solve is logged as assisted (any hint or wrong check), independent, or
   retained, and explanations as exposure. The app decides the level, not the model. A
   **Progress** panel at the top of the chat lists it by concept, with review dates.
+- Reviews: when a review is due, a card above the tutor buttons offers it. **Review now**
+  poses a new problem on that concept, so a clean solve counts as retained.
 - Behavior evals (`npm run eval`).
 
 Not done yet: accounts (progress is tied to an anonymous id in this browser), auth and rate
-limits on the routes, and a review queue. Real model turns have only run through the
+limits on the routes, and a session history page. Real model turns have only run through the
 dev-only bridge below, which has no code sandbox, so answer checks there run without code. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
 
 ## Run it
