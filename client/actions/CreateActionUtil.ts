@@ -7,7 +7,7 @@ import { FocusedShape } from '../../shared/format/FocusedShape'
 import { CreateAction } from '../../shared/schema/AgentActionSchemas'
 import { Streaming } from '../../shared/types/Streaming'
 import { AgentHelpers } from '../AgentHelpers'
-import { tutorMeta } from '../tutor/tutorMarks'
+import { lockShapes, tutorMeta } from '../tutor/tutorMarks'
 import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
 export const CreateActionUtil = registerActionUtil(
@@ -94,6 +94,9 @@ export const CreateActionUtil = registerActionUtil(
 					})
 				}
 			}
+
+			// Lock it once it's whole, after any arrow bindings, so the student can't nudge it (C1).
+			if (action.complete) lockShapes(editor, [result.shape.id])
 		}
 	}
 )

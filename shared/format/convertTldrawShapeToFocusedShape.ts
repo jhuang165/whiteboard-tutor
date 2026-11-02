@@ -244,11 +244,13 @@ function convertNoteShapeToFocused(editor: Editor, shape: TLNoteShape): FocusedN
 
 function convertUnknownShapeToFocused(editor: Editor, shape: TLShape): FocusedUnknownShape {
 	const bounds = getSimpleBounds(editor, shape)
+	const text = editor.getShapeUtil(shape).getText(shape)
 	return {
 		_type: 'unknown',
 		note: (shape.meta.note as string) ?? '',
 		shapeId: convertTldrawIdToSimpleId(shape.id),
 		subType: shape.type,
+		...(text ? { text } : {}),
 		x: bounds.x,
 		y: bounds.y,
 	}

@@ -9,7 +9,7 @@
  *   npm run bridge          # listens on http://127.0.0.1:8790
  *
  * Then in .dev.vars:
- *   ANTHROPIC_BASE_URL=http://127.0.0.1:8790/v1
+ *   ANTHROPIC_BASE_URL=http://127.0.0.1:8790
  *   ANTHROPIC_API_KEY=claude-code-bridge
  *
  * Settings (environment variables, or the same keys in .dev.vars):
@@ -33,7 +33,7 @@ const EMPTY_CWD = mkdtempSync(join(tmpdir(), 'claude-code-bridge-'))
 const EFFORTS = new Set(['low', 'medium', 'high', 'xhigh', 'max'])
 
 const server = createServer(async (req, res) => {
-	if (req.method !== 'POST' || !req.url?.endsWith('/messages')) {
+	if (req.method !== 'POST' || !new URL(req.url ?? '/', 'http://localhost').pathname.endsWith('/messages')) {
 		return sendError(res, 404, 'not_found_error', `No route for ${req.method} ${req.url}`)
 	}
 
@@ -154,7 +154,7 @@ const server = createServer(async (req, res) => {
 })
 
 server.listen(PORT, '127.0.0.1', () => {
-	log(`listening on http://127.0.0.1:${PORT}/v1, running \`${COMMAND}\``)
+	log(`listening on http://127.0.0.1:${PORT}, running \`${COMMAND}\``)
 	log('dev only: this answers with your own Claude login, so keep it to your machine')
 })
 

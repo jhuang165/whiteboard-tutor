@@ -119,6 +119,12 @@ export interface TutorTurnPart extends TutorTurnState {
 	type: 'tutorTurn'
 }
 
+export interface ProblemPart {
+	type: 'problem'
+	/** The most recently posed problem frame on the page, or null if there is none. */
+	problem: { shapeId: SimpleShapeId; title: string; statement: string } | null
+}
+
 export interface DebugPart {
 	type: 'debug'
 	logSystemPrompt: boolean
@@ -531,6 +537,19 @@ export const TutorTurnPartDefinition: PromptPartDefinition<TutorTurnPart> = {
 	type: 'tutorTurn',
 	priority: 300, // just before the student's message
 	buildContent: (part) => buildTutorTurnContent(part),
+}
+
+// Problem - the problem the tutor posed most recently, in a problem frame
+export const ProblemPartDefinition: PromptPartDefinition<ProblemPart> = {
+	type: 'problem',
+	priority: 250, // after the board, before the tutor turn
+	buildContent({ problem }: ProblemPart) {
+		if (!problem) return []
+		return [
+			`The current problem is in problem frame \`${problem.shapeId}\`. ${problem.title}: ${problem.statement}`,
+			"The student's work on it is the ink in the frame's work area, below the statement. The frame is yours, not student work.",
+		]
+	},
 }
 
 // Debug - sends debug flags to worker for logging

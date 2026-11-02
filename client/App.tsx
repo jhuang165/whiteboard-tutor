@@ -16,6 +16,7 @@ import { ChatPanel } from './components/ChatPanel'
 import { ChatPanelFallback } from './components/ChatPanelFallback'
 import { CustomHelperButtons } from './components/CustomHelperButtons'
 import { AgentHighlightOverlayUtil } from './overlays/AgentHighlightOverlayUtil'
+import { TUTOR_SHAPE_UTILS } from './shapes/tutorShapeUtils'
 import { TargetAreaTool } from './tools/TargetAreaTool'
 import { TargetShapeTool } from './tools/TargetShapeTool'
 
@@ -76,6 +77,7 @@ function App() {
 				<div className="tldraw-canvas">
 					<Tldraw
 						persistenceKey="tldraw-agent-demo"
+						shapeUtils={TUTOR_SHAPE_UTILS}
 						tools={tools}
 						overlayUtils={overlayUtils}
 						overrides={overrides}

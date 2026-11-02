@@ -90,12 +90,14 @@ describe('checks', () => {
 	it('mark budget counts new board marks only', () => {
 		expect(checkMarks([message('hi'), hint('H1', 'line2')], 1).pass).toBe(true)
 		expect(checkMarks([hint('H1', 'line2'), verdict('incorrect')], 1).pass).toBe(false)
+		expect(checkMarks([hint('H1', 'line2'), { _type: 'write-math', latex: 'x' }], 1).pass).toBe(false)
 	})
 
 	it('no-leak looks at visible text, not think', () => {
 		expect(checkNoLeak([{ _type: 'think', text: 'answer is 0.19' }], ['0.19']).pass).toBe(true)
 		expect(checkNoLeak([message('P(B) should be 0.19')], ['0.19']).pass).toBe(false)
 		expect(checkNoLeak([markError('line2', 'slip', 'sum is 21')], ['21']).pass).toBe(false)
+		expect(checkNoLeak([{ _type: 'write-math', intent: 'Formula', latex: 'P(B) = 0.19' }], ['0.19']).pass).toBe(false)
 	})
 
 	it('flags actions outside the mode', () => {

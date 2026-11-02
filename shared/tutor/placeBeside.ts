@@ -16,20 +16,24 @@ const SIDES: PlacementSide[] = ['right', 'below', 'left', 'above']
  * (pedagogy-spec C1, C2).
  *
  * Tries each side in order, top- or left-aligned with the anchor, then steps outward from
- * the anchor in `gap`-sized rings. Falls back to the right side if nothing is free within
- * `maxRings`.
+ * the anchor in `gap`-sized rings. With `within` (a problem frame's work area), spots inside it
+ * win over spots outside. Falls back to the right side if nothing is free within `maxRings`.
  */
 export function placeBeside(
 	anchor: PlacementBox,
 	size: { w: number; h: number },
 	obstacles: PlacementBox[],
-	{ gap = 24, maxRings = 12 }: { gap?: number; maxRings?: number } = {}
+	{ gap = 24, maxRings = 12, within }: { gap?: number; maxRings?: number; within?: PlacementBox } = {}
 ): PlacementBox & { side: PlacementSide } {
-	for (let ring = 0; ring <= maxRings; ring++) {
-		const offset = gap + ring * gap
-		for (const side of SIDES) {
-			const box = boxOnSide(anchor, size, side, offset)
-			if (!obstacles.some((o) => overlaps(box, o, gap / 2))) return { ...box, side }
+	const inside = (box: PlacementBox) => !within || contains(within, box)
+	for (const wantInside of within ? [true, false] : [false]) {
+		for (let ring = 0; ring <= maxRings; ring++) {
+			const offset = gap + ring * gap
+			for (const side of SIDES) {
+				const box = boxOnSide(anchor, size, side, offset)
+				if (wantInside && within && !contains(within, box)) continue
+				if (!obstacles.some((o) => overlaps(box, o, gap / 2))) return { ...box, side }
+			}
 		}
 	}
 	return { ...boxOnSide(anchor, size, 'right', gap), side: 'right' }
@@ -71,4 +75,14 @@ export function unionBoxes(boxes: PlacementBox[]): PlacementBox | null {
 	const maxX = Math.max(...boxes.map((b) => b.x + b.w))
 	const maxY = Math.max(...boxes.map((b) => b.y + b.h))
 	return { x: minX, y: minY, w: maxX - minX, h: maxY - minY }
+}
+
+/** Whether `inner` lies entirely inside `outer`. */
+function contains(outer: PlacementBox, inner: PlacementBox): boolean {
+	return (
+		inner.x >= outer.x &&
+		inner.y >= outer.y &&
+		inner.x + inner.w <= outer.x + outer.w &&
+		inner.y + inner.h <= outer.y + outer.h
+	)
 }

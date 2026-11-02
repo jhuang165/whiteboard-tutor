@@ -99,7 +99,8 @@ export const PenActionUtil = registerActionUtil(
 				type: 'draw',
 				x: minX,
 				y: minY,
-				isLocked: !action.complete,
+				// Locked while it streams and after, so the student can't nudge it (C1).
+				isLocked: true,
 				meta: tutorMeta('drawing', action.intent ?? 'pen stroke'),
 				props: {
 					color: asColor(action.color ?? 'black'),

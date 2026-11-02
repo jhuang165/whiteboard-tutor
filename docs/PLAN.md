@@ -105,10 +105,9 @@ worker (Cloudflare)
   `usage.cache_read_input_tokens`.
 - **API gotchas for 5.5:** forced `tool_choice` returns 400, so use `auto` with `strict: true`
   or structured outputs. Assistant prefill is gone. `temperature` is rejected.
-- **SDK decision:** the kit calls models through the Vercel AI SDK (`@ai-sdk/anthropic`). We
-  should move the worker's model call to the official `@anthropic-ai/sdk`. That gives
-  first-class access to code execution, effort, fallbacks, and cache diagnostics. It's a
-  contained change in `worker/do/AgentService.ts`.
+- **SDK decision (done 2026-11-02):** the worker calls Claude through the official
+  `@anthropic-ai/sdk` instead of the kit's Vercel AI SDK. That gives first-class access to
+  code execution, effort, fallbacks, and cache diagnostics.
 
 ### Licensing (must decide before anything is public)
 
@@ -138,7 +137,12 @@ license.
 **Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; v1 subject
 assumed to be probability (§8 #1 recommendation) until decided.
 
-- [ ] Problem frame plus pen.
+- [x] Problem frame plus pen, 2026-11-02. `pose-problem` puts one problem in a locked
+  `problem-frame` shape (`client/shapes/ProblemFrameShapeUtil.tsx`): the statement on top,
+  with inline `$...$` KaTeX, and a work area below. It goes to the right of the existing
+  board, sent to the back, and the view moves to it with the draw tool selected. The
+  `problem` prompt part tells the model which frame is current. Tutor marks treat a frame
+  as only its header and stay inside its work area when there is room.
 - [x] Hint, Check, Explain, and Wait-what buttons (`client/components/TutorButtons.tsx`).
   Each press sets the turn's intent and the hint count, sent as the `tutorTurn` prompt part.
 - [x] Tutor marks as actions (`client/actions/{Hint,MarkError,Verdict}ActionUtil.ts`):
@@ -151,12 +155,21 @@ assumed to be probability (§8 #1 recommendation) until decided.
 - [x] Tutor ink tagging: every tutor shape, including `create` and `pen` output, carries
   `meta.author = 'tutor'` and a `meta.note` starting with "tutor", which the model sees in
   its shape list.
-- [ ] MathShape (KaTeX), and locking `create` and `pen` output too.
+- [x] MathShape (KaTeX) and locking `create` and `pen` output too, 2026-11-02. `write-math`
+  typesets one formula in tutor ink beside its anchor (`client/shapes/MathShapeUtil.tsx`,
+  sized from the rendered KaTeX). `create` and `pen` output is locked once drawn. The kit
+  used to unlock every shape it made when a turn ended, so the earlier tutor marks were not
+  really locked; `AgentLintManager.unlockCreatedShapes` now skips tutor shapes.
 - [x] Pedagogy system prompt from `pedagogy-spec` (`worker/prompt/sections/tutor-section.ts`),
   static so it stays cached. A test checks every in-scope rule id appears in it.
 - [x] Tutor can only add to the board: the working mode drops every action that moves,
   edits, or deletes shapes (C1), and the client already skips actions outside the mode.
-- [ ] Per-intent effort (low for hints, medium for explain), after the SDK swap.
+- [x] SDK swap and per-intent effort, 2026-11-02. Claude calls go through the official
+  `@anthropic-ai/sdk` (`worker/do/AgentService.ts`, request shape in
+  `worker/do/anthropicRequest.ts`): adaptive thinking, `output_config.effort` of `low` for
+  Hint and `medium` for Explain, Check, and Wait-what, a cache breakpoint on the system
+  prompt, server-side fallbacks on Opus and Sonnet 5.5, refusal checks, and a `[usage]` log
+  line per turn. OpenAI and Google models stay on the Vercel AI SDK.
 - [x] First real model run, 2026-11-01, through the dev-only Claude Code bridge
   (`npm run bridge`, no API key). On a Bayes problem with a planted error (P(B) missing the
   not-A branch), Check gave an `incorrect` verdict, put a misconception mark on the right

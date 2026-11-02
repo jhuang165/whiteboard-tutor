@@ -52,7 +52,9 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 Implemented in `evals/lib/checks.ts`: answer leak, earliest error, question budget, mark
 budget, plus the verdict, one hint rung with its anchor, and mode-only actions. Still to
 build: overlap and mutation (placement runs in the client), C3 on ambiguous handwriting
-(needs screenshot cases), and L (Phase 4).
+(needs screenshot cases), and L (Phase 4). `pose-problem` and `write-math` count as marks;
+their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
+A case can set `problem` (shape id, title, statement) to put a posed problem in the prompt.
 
 | Check | Rule |
 | --- | --- |

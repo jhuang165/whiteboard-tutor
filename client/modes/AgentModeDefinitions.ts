@@ -16,6 +16,7 @@ import { MarkErrorActionUtil } from '../actions/MarkErrorActionUtil'
 import { MessageActionUtil } from '../actions/MessageActionUtil'
 import { MoveActionUtil } from '../actions/MoveActionUtil'
 import { PenActionUtil } from '../actions/PenActionUtil'
+import { PoseProblemActionUtil } from '../actions/PoseProblemActionUtil'
 import { PlaceActionUtil } from '../actions/PlaceActionUtil'
 import { ResizeActionUtil } from '../actions/ResizeActionUtil'
 import { ReviewActionUtil } from '../actions/ReviewActionUtil'
@@ -28,6 +29,7 @@ import { UnknownActionUtil } from '../actions/UnknownActionUtil'
 import { UpdateActionUtil } from '../actions/UpdateActionUtil'
 import { UpsertTodoListItemActionUtil } from '../actions/UpsertTodoListItemActionUtil'
 import { VerdictActionUtil } from '../actions/VerdictActionUtil'
+import { WriteMathActionUtil } from '../actions/WriteMathActionUtil'
 // Import prompt part utils to ensure they register themselves
 import { AgentViewportBoundsPartUtil } from '../parts/AgentViewportBoundsPartUtil'
 import { BlurryShapesPartUtil } from '../parts/BlurryShapesPartUtil'
@@ -39,6 +41,7 @@ import { DebugPartUtil } from '../parts/DebugPartUtil'
 import { MessagesPartUtil } from '../parts/MessagesPartUtil'
 import { ModelNamePartUtil } from '../parts/ModelNamePartUtil'
 import { ModePartUtil } from '../parts/ModePartUtil'
+import { ProblemPartUtil } from '../parts/ProblemPartUtil'
 import { PeripheralShapesPartUtil } from '../parts/PeripheralShapesPartUtil'
 import { ScreenshotPartUtil } from '../parts/ScreenshotPartUtil'
 import { SelectedShapesPartUtil } from '../parts/SelectedShapesPartUtil'
@@ -109,7 +112,8 @@ export const AGENT_MODE_DEFINITIONS = [
 			DataPartUtil.type,
 			ContextItemsPartUtil.type,
 
-			// Tutor (pedagogy mode and hint ladder state for this turn)
+			// Tutor (the posed problem, then the pedagogy mode and hint ladder state for this turn)
+			ProblemPartUtil.type,
 			TutorTurnPartUtil.type,
 
 			// Viewport
@@ -153,7 +157,11 @@ export const AGENT_MODE_DEFINITIONS = [
 			MarkErrorActionUtil.type,
 			VerdictActionUtil.type,
 
-			// Adding to the board
+			// Tutor content (a posed problem, typeset math)
+			PoseProblemActionUtil.type,
+			WriteMathActionUtil.type,
+
+			// Adding to the board (locked once drawn)
 			CreateActionUtil.type,
 			PenActionUtil.type,
 

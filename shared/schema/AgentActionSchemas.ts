@@ -161,6 +161,38 @@ export const VerdictAction = z
 
 export type VerdictAction = z.infer<typeof VerdictAction>
 
+// Pose Problem Action
+export const PoseProblemAction = z
+	.object({
+		_type: z.literal('pose-problem'),
+		intent: z.string(),
+		title: z.string(),
+		statement: z.string(),
+	})
+	.meta({
+		title: 'Pose Problem',
+		description:
+			"The tutor puts one problem on the board in a problem frame: the statement on top and an empty work area below, where the student writes. The view moves to the frame and the student gets the pen. Use it to pose a practice problem, or to frame a problem the student typed in chat. `title` is short, such as \"Problem 2\". `statement` is the full problem; write math inline as `$...$` LaTeX. Pose one problem at a time. The frame's position is chosen automatically.",
+	})
+
+export type PoseProblemAction = z.infer<typeof PoseProblemAction>
+
+// Write Math Action
+export const WriteMathAction = z
+	.object({
+		_type: z.literal('write-math'),
+		intent: z.string(),
+		latex: z.string(),
+		anchorShapeId: SimpleShapeIdSchema.nullable(),
+	})
+	.meta({
+		title: 'Write Math',
+		description:
+			'The tutor writes one typeset formula or equation on the board, in tutor ink. `latex` is KaTeX-compatible LaTeX without surrounding `$`. `anchorShapeId` is the shape the math belongs next to, or null to place it in view. Use it instead of `create` or `pen` for any math notation. The position is chosen automatically.',
+	})
+
+export type WriteMathAction = z.infer<typeof WriteMathAction>
+
 // Delete Action
 export const DeleteAction = z
 	.object({

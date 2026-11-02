@@ -9,6 +9,23 @@ Use the official `@anthropic-ai/sdk` in the worker. For exact SDK calls, read th
 `claude-api` skill and the TypeScript docs it points to; never guess the API shape. Update
 this file when a decision changes.
 
+## What is built (2026-11-02)
+
+- `/stream` calls `client.beta.messages.stream()` from `worker/do/AgentService.ts`. The
+  request is built in `worker/do/anthropicRequest.ts` (unit-tested): system prompt as one
+  text block with `cache_control`, adaptive thinking, `output_config.effort` from
+  `getTurnEffort`, `max_tokens` 16000, and `betas` + `fallbacks: "default"` when the model
+  definition has `serverFallback` (not Haiku 5.5). No temperature, no prefill.
+- Effort per tutor button: `low` for Hint; `medium` for Explain, Check, and Wait-what. Chat
+  turns keep the model definition's `effort`.
+- After the stream: a `[usage]` log line (input, cache read and write, output, stop
+  reason), a `[fallback]` warning when a `fallback` block shows up, and a thrown error on
+  `stop_reason: "refusal"` with `stop_details.category`.
+- The client is built with explicit `apiKey` (`null` when unset), `authToken: null`, and
+  `baseURL`, so the SDK never reads `ANTHROPIC_*` from the shell. `ANTHROPIC_BASE_URL` has
+  no `/v1`; a trailing `/v1` is stripped for old `.dev.vars` files.
+- Not built yet: `/verify`, `/triage`, `/ingest`, the per-session token ceiling, and crops.
+
 ## Routes
 
 | Route | Model | Effort | Notes |

@@ -3,7 +3,8 @@ import { AgentMessage, AgentMessageContent } from '../../shared/types/AgentMessa
 import { AgentPrompt } from '../../shared/types/AgentPrompt'
 import { getPromptPartDefinition, PromptPart } from '../../shared/types/PromptPart'
 
-export function buildMessages(prompt: AgentPrompt): ModelMessage[] {
+/** The prompt's messages in prompt order, before conversion for a particular SDK. */
+export function buildAgentMessages(prompt: AgentPrompt): AgentMessage[] {
 	const allMessages: AgentMessage[] = []
 
 	// Build messages from each prompt part using shared definitions
@@ -15,7 +16,7 @@ export function buildMessages(prompt: AgentPrompt): ModelMessage[] {
 	// Sort by priority (higher priority = later in prompt)
 	allMessages.sort((a, b) => a.priority - b.priority)
 
-	return toModelMessages(allMessages)
+	return allMessages
 }
 
 /**
@@ -72,7 +73,7 @@ function defaultBuildMessagesFromPart(part: PromptPart): AgentMessage[] {
 /**
  * Convert AgentMessage[] to ModelMessage[] for the AI SDK
  */
-function toModelMessages(agentMessages: AgentMessage[]): ModelMessage[] {
+export function toModelMessages(agentMessages: AgentMessage[]): ModelMessage[] {
 	return agentMessages.map((tlMessage) => {
 		const content: UserContent = []
 

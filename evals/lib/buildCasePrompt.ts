@@ -28,6 +28,7 @@ export function buildCasePrompt(evalCase: EvalCase): AgentPrompt {
 		messages: { type: 'messages', agentMessages: [message], requestSource: 'user' },
 		data: { type: 'data', data: [] },
 		contextItems: { type: 'contextItems', items: [], requestSource: 'user' },
+		problem: { type: 'problem', problem: evalCase.problem ?? null },
 		tutorTurn: { type: 'tutorTurn', intent: evalCase.intent, hintsGiven: evalCase.hintsGiven ?? 0 },
 		screenshot: { type: 'screenshot', screenshot: '' },
 		userViewportBounds: { type: 'userViewportBounds', userBounds: bounds },

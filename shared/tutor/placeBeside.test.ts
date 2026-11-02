@@ -17,6 +17,14 @@ describe('placeBeside', () => {
 		expect(overlaps(box, blocker)).toBe(false)
 	})
 
+	it('stays inside `within` when there is room', () => {
+		const within = { x: -20, y: -20, w: 300, h: 300 }
+		const box = placeBeside(anchor, size, [anchor], { within })
+		expect(box.side).toBe('below')
+		const outside = placeBeside(anchor, { w: 400, h: 400 }, [anchor], { within })
+		expect(outside.side).toBe('right')
+	})
+
 	it('never overlaps any obstacle on a crowded board', () => {
 		// A wall of student lines around the anchor on every side.
 		const crowd = [

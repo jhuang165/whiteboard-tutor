@@ -22,11 +22,18 @@ Working now:
 - Tutor marks: `hint` (a violet card with an arrow to the student's work), `mark-error` (a
   red circle and a slip/misconception label), and `verdict` (a ✓ or ✗ stamp). The app
   picks where each mark goes, so it never covers student ink, and then locks it.
+- Problems and math: `pose-problem` puts one problem in a frame with a work area below it,
+  moves the view there, and hands the student the pen. `write-math` typesets a formula
+  with KaTeX in tutor ink.
 - The tutor can only add to the board. Every action that moves, edits, or deletes shapes is
-  turned off.
+  turned off, and everything the tutor draws is locked.
+- Claude calls use the official `@anthropic-ai/sdk` with adaptive thinking, per-button
+  effort (low for Hint, medium otherwise), a cached system prompt, and server-side
+  fallbacks.
+- Behavior evals (`npm run eval`).
 
-Not done yet: a problem frame, math rendering (KaTeX), the swap to the official
-`@anthropic-ai/sdk`, evals, quizzes, and evidence tracking. Real model turns have only run through
+Not done yet: a Quiz button and grading flow, code-execution answer checks, and evidence
+tracking. Real model turns have only run through
 the dev-only bridge below. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
 
 ## Run it
@@ -49,7 +56,7 @@ API calls by running the Claude Code CLI on your own login. Put these lines in `
 instead of a real key (they are in `.dev.vars.example`, commented out):
 
 ```bash
-ANTHROPIC_BASE_URL=http://127.0.0.1:8790/v1
+ANTHROPIC_BASE_URL=http://127.0.0.1:8790
 ANTHROPIC_API_KEY=claude-code-bridge
 CLAUDE_BRIDGE_COMMAND=claude   # or another CLI wrapper on your PATH
 ```

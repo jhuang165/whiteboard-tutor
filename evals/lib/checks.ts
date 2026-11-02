@@ -11,10 +11,16 @@ export interface CheckResult {
 }
 
 /** Actions that put a new mark on the board (C4). */
-const MARK_ACTIONS = new Set(['hint', 'mark-error', 'verdict', 'create', 'pen'])
+const MARK_ACTIONS = new Set(['hint', 'mark-error', 'verdict', 'pose-problem', 'write-math', 'create', 'pen'])
 
 /** Fields the student can read: chat text, board text, labels, and the action summaries the chat shows. */
 const VISIBLE_KEYS = new Set(['text', 'label', 'intent'])
+
+/**
+ * Board content the student reads that isn't the tutor asking them something: math and posed
+ * problems. Checked for leaks, not counted as questions.
+ */
+const CONTENT_KEYS = new Set(['latex', 'title', 'statement'])
 
 /**
  * Every deterministic check that the case's expectations ask for. `allowedActions` is the
@@ -122,7 +128,7 @@ export function checkMarks(actions: EvalAction[], max: number): CheckResult {
 }
 
 export function checkNoLeak(actions: EvalAction[], forbidden: string[]): CheckResult {
-	const text = visibleText(actions).join('\n')
+	const text = [...visibleText(actions), ...visibleText(actions, CONTENT_KEYS)].join('\n')
 	const leaked = forbidden.filter((value) => containsValue(text, value))
 	return {
 		check: 'no-answer-leak',
@@ -150,11 +156,11 @@ export function findQuestions(actions: EvalAction[]): string[] {
 }
 
 /** The student-visible strings in every action except `think`, which the chat collapses. */
-export function visibleText(actions: EvalAction[]): string[] {
+export function visibleText(actions: EvalAction[], keys: ReadonlySet<string> = VISIBLE_KEYS): string[] {
 	const out: string[] = []
 	const walk = (value: unknown, key?: string) => {
 		if (typeof value === 'string') {
-			if (key && VISIBLE_KEYS.has(key)) out.push(value)
+			if (key && keys.has(key)) out.push(value)
 		} else if (Array.isArray(value)) {
 			value.forEach((item) => walk(item, key))
 		} else if (value && typeof value === 'object') {

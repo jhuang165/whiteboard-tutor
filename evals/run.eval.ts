@@ -151,6 +151,6 @@ function readEnv(): Partial<Environment> {
 	}
 	const env = Object.fromEntries(keys.map((key) => [key, vars[key] ?? ''])) as Partial<Environment>
 	// Pass the default explicitly, or the Anthropic SDK falls back to the shell's ANTHROPIC_BASE_URL.
-	env.ANTHROPIC_BASE_URL ||= 'https://api.anthropic.com/v1'
+	env.ANTHROPIC_BASE_URL ||= 'https://api.anthropic.com'
 	return env
 }

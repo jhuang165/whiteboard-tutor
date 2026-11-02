@@ -1,5 +1,6 @@
 import type { BlurryShape } from '../../shared/format/BlurryShape'
 import type { AgentModelName } from '../../shared/models'
+import type { ProblemPart } from '../../shared/schema/PromptPartDefinitions'
 import type { TutorIntent } from '../../shared/tutor/TutorIntent'
 
 /**
@@ -18,6 +19,8 @@ export interface EvalCase {
 	message?: string
 	/** Defaults to the app's default model. */
 	model?: AgentModelName
+	/** A problem posed in a problem frame, if the case has one. Its shapeId must not be on the board. */
+	problem?: NonNullable<ProblemPart['problem']>
 	/** Student shapes, as the tutor sees them. Ids are simple ids, without `shape:`. */
 	board: BoardShape[]
 	expect: EvalExpectations

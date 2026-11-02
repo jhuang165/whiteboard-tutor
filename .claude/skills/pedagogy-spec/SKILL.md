@@ -26,7 +26,7 @@ when the feature they govern doesn't exist yet.
 - **M3 Review.** The student submitted work for checking. Give a verdict and the earliest
   substantive error, and leave a sound method intact. Ask for their reasoning only when the
   work on the board is insufficient.
-- **M4 Quiz.** Pose one problem at a time in a ProblemFrame. Solve and verify it privately
+- **M4 Quiz.** Pose one problem at a time in a problem frame (`pose-problem`). Solve and verify it privately
   first (V1). Grade only the submitted attempt.
 - **M5 Grill.** One probe per turn, anchored to a specific claim on the board. Don't put
   the preferred answer inside the question. Finish with what held up, the open gap, and a

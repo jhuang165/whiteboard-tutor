@@ -10,6 +10,8 @@ const TUTOR_ACTIONS = [
 	'hint',
 	'mark-error',
 	'verdict',
+	'pose-problem',
+	'write-math',
 	'create',
 	'pen',
 	'unknown',
@@ -28,9 +30,9 @@ function promptFor(partTypes: string[]): AgentPrompt {
 
 const tutorPrompt = buildSystemPrompt(promptFor(['mode', 'messages', 'screenshot', 'tutorTurn']))
 
-// Rules the tutor prompt doesn't cover yet: Quiz and Grill modes (M4, M5) and evidence
-// records (L1-L4) arrive in Phase 2 and Phase 4 (docs/PLAN.md section 5).
-const DEFERRED_RULES = new Set(['M4', 'M5', 'L1', 'L2', 'L3', 'L4'])
+// Rules the tutor prompt doesn't cover yet: Grill mode (M5) and evidence records (L1-L4)
+// arrive in Phase 2 and Phase 4 (docs/PLAN.md section 5).
+const DEFERRED_RULES = new Set(['M5', 'L1', 'L2', 'L3', 'L4'])
 
 describe('buildSystemPrompt', () => {
 	it('uses the tutor sections when the mode has a tutorTurn part', () => {
@@ -58,6 +60,8 @@ describe('buildSystemPrompt', () => {
 		expect(tutorPrompt).toContain('one `hint` action anchored to the student shape')
 		expect(tutorPrompt).toContain('give one `verdict` on the work you checked, and if it is wrong, one `mark-error`')
 		expect(tutorPrompt).toContain('note starting with "tutor"')
+		expect(tutorPrompt).toContain('pose one problem at a time with `pose-problem`')
+		expect(tutorPrompt).toContain('Write every formula or equation with `write-math`')
 	})
 
 	it('is identical across turns, so it stays cacheable', () => {

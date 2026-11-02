@@ -46,7 +46,18 @@ delta-encoded `segments`, and text uses rich text). Check before you write:
   finished stroke is a draw shape whose `isComplete` turns true. Debounce for idle. There is
   no official "drawing ended" event.
 - Crops for the model: `editor.toImage(shapes, { format, bounds, scale, padding })`.
-- Text: `toRichText()`. Math: the KaTeX MathShape adapted from the example.
+- Text: `toRichText()`. Math: `client/shapes/MathShapeUtil.tsx`, adapted from the KaTeX
+  example.
+- Custom shapes (5.6): augment `TLGlobalShapePropsMap` in `declare module 'tldraw'`, use
+  `TLShape<'type'>`, and implement `getIndicatorPath` (not `indicator`). Register them in
+  `client/shapes/tutorShapeUtils.ts`, which both `App.tsx` and the chat diff viewer
+  (`TldrawViewer.tsx`) use. A shape missing from the viewer crashes the chat panel.
+- Implement `getText` on custom shapes: the model sees it as `text` on unknown shapes.
+- The kit unlocks every shape it created when a turn ends
+  (`AgentLintManager.unlockCreatedShapes`); tutor shapes are skipped there so they stay
+  locked.
+- Vite hot reload re-runs `registerActionUtil` and logs "already registered". Reload the
+  page after editing action utils.
 
 ## License
 

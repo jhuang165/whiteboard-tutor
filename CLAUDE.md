@@ -31,13 +31,14 @@ and worked steps. The design, phases, and open decisions are in `docs/PLAN.md`. 
 before writing code. Status: Phase 0 scaffold is in place (the tldraw agent template,
 defaulting to `claude-opus-5-5`). Phase 1 has started: tutor buttons, the `tutorTurn` prompt
 part, the tutor system prompt, a tutor mode that can only add to the board, and the
-`hint`, `mark-error`, and `verdict` tutor-mark actions. Real model turns have run only
-through the dev-only Claude Code bridge (`npm run bridge`).
+`hint`, `mark-error`, `verdict`, `pose-problem` (a locked problem frame), and `write-math`
+(a KaTeX math shape) actions, with all tutor output locked, plus behavior evals. Real model
+turns have run only through the dev-only Claude Code bridge (`npm run bridge`).
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable
-Object (`AgentDurableObject`). The worker still calls Claude through the template's Vercel
-AI SDK (`@ai-sdk/anthropic`); swapping to the official `@anthropic-ai/sdk` is planned
-(PLAN §4). The template's own docs are in `docs/agent-starter-kit.md`.
+Object (`AgentDurableObject`). The worker calls Claude through the official
+`@anthropic-ai/sdk` (`worker/do/anthropicRequest.ts`); OpenAI and Google models stay on the
+template's Vercel AI SDK. The template's own docs are in `docs/agent-starter-kit.md`.
 
 ## Commands
 
@@ -54,7 +55,8 @@ npm run eval       # tutor evals: real model calls (vitest.eval.config.ts), brid
 npm run build
 ```
 
-Without a key, a chat message fails in the worker with `AI_LoadAPIKeyError`. For local
+Without a key, a chat message fails in the worker with "Could not resolve authentication
+method". The worker never reads `ANTHROPIC_*` from the shell, only from `.dev.vars`. For local
 testing without a key, run `npm run bridge` (`scripts/claude-code-bridge.mjs`) and point
 `ANTHROPIC_BASE_URL` at it; see the README. The bridge answers on the developer's own
 Claude Code login: dev only, never for other users.

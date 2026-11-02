@@ -12,6 +12,9 @@ import {
 	TldrawUiContextProvider,
 	TLShape,
 } from 'tldraw'
+import { TUTOR_SHAPE_UTILS } from '../../shapes/tutorShapeUtils'
+
+const shapeUtils = [...defaultShapeUtils, ...TUTOR_SHAPE_UTILS]
 
 export function TldrawViewer({
 	shapes,
@@ -45,7 +48,8 @@ export function TldrawViewer({
 		if (!editor || !isVisible) return
 		editor.updateInstanceState({ isReadonly: false })
 		editor.setCameraOptions({ isLocked: false })
-		editor.deleteShapes(editor.getCurrentPageShapes())
+		// Tutor shapes are locked, so clearing the previous diff has to ignore the lock.
+		editor.run(() => editor.deleteShapes(editor.getCurrentPageShapes()), { ignoreShapeLock: true })
 		editor.createShapes(shapes)
 		editor.updateInstanceState({ isReadonly: true })
 		editor.selectAll()
@@ -68,7 +72,7 @@ export function TldrawViewer({
 					autoFocus={false}
 					components={components ?? {}}
 					onMount={setEditor}
-					shapeUtils={defaultShapeUtils}
+					shapeUtils={shapeUtils}
 					bindingUtils={defaultBindingUtils}
 					tools={tools}
 					options={defaultOptions}

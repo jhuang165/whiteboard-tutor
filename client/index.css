@@ -794,3 +794,52 @@ button.prompt-tag span {
 .agent-action-type-message {
 	color: var(--tl-color-text-1);
 }
+
+/* Tutor shapes. Sizes are set here, not by tldraw variables, so the off-screen measurement
+   in client/shapes/latex.ts matches the rendered shape. */
+
+.tutor-math {
+	display: inline-block;
+	padding: 4px 8px;
+	font-size: 22px;
+	white-space: nowrap;
+}
+
+.tutor-math .katex-display {
+	margin: 0;
+}
+
+.tutor-problem-frame {
+	display: flex;
+	flex-direction: column;
+	border: 2px solid var(--tl-color-text-3);
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.tutor-problem-header {
+	flex: none;
+	padding: 14px 18px;
+	font-family: 'Inter', sans-serif;
+	font-size: 20px;
+	line-height: 1.45;
+	color: var(--tl-color-text-0);
+	background: var(--tl-color-muted-1);
+	border-bottom: 2px solid var(--tl-color-text-3);
+}
+
+.tutor-problem-title {
+	font-weight: 700;
+	margin-bottom: 4px;
+}
+
+.tutor-problem-work {
+	flex: 1;
+	margin: 10px;
+	padding: 6px 8px;
+	border: 2px dashed var(--tl-color-muted-2);
+	border-radius: 6px;
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	color: var(--tl-color-text-3);
+}

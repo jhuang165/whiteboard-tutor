@@ -60,7 +60,10 @@ export function getSystemPromptFlags(actions: AgentAction['_type'][], parts: Pro
 		hasHint: actions.includes('hint'),
 		hasMarkError: actions.includes('mark-error'),
 		hasVerdict: actions.includes('verdict'),
+		hasPoseProblem: actions.includes('pose-problem'),
+		hasWriteMath: actions.includes('write-math'),
 		hasTutorTurnPart: parts.includes('tutorTurn'),
+		hasProblemPart: parts.includes('problem'),
 
 		// Lints
 		hasCanvasLintsPart: parts.includes('canvasLints'),

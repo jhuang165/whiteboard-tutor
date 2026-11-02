@@ -33,8 +33,16 @@ interface BaseAgentModelDefinition {
 export interface AnthropicModelDefinition extends BaseAgentModelDefinition {
 	provider: 'anthropic'
 	thinking: AnthropicThinking
-	/** Effort level; omit for models that don't support it (e.g. Haiku 4.5). */
+	/**
+	 * Default effort level; omit for models that don't support it (e.g. Haiku 4.5). A tutor
+	 * turn can override it by intent (see `worker/do/anthropicRequest.ts`).
+	 */
 	effort?: AnthropicEffort
+	/**
+	 * Whether to send server-side `fallbacks: "default"`, which reruns a refused request on
+	 * another model. Haiku 5.5 has no server-side fallback.
+	 */
+	serverFallback: boolean
 }
 
 export interface GoogleModelDefinition extends BaseAgentModelDefinition {
@@ -65,6 +73,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		supportsTemperature: false,
 		thinking: 'adaptive',
 		effort: 'medium',
+		serverFallback: true,
 	},
 
 	'claude-sonnet-5-5': {
@@ -75,6 +84,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		supportsTemperature: false,
 		thinking: 'adaptive',
 		effort: 'low',
+		serverFallback: true,
 	},
 
 	'claude-haiku-5-5': {
@@ -85,6 +95,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		supportsTemperature: false,
 		thinking: 'adaptive',
 		effort: 'low',
+		serverFallback: false,
 	},
 
 	'claude-opus-5': {
@@ -95,6 +106,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		supportsTemperature: false,
 		thinking: 'adaptive',
 		effort: 'medium',
+		serverFallback: true,
 	},
 
 	'claude-sonnet-5': {
@@ -105,6 +117,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		supportsTemperature: false,
 		thinking: 'adaptive',
 		effort: 'low',
+		serverFallback: false,
 	},
 
 

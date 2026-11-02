@@ -90,12 +90,13 @@ export class AgentLintManager extends BaseAgentManager {
 
 	/**
 	 * Unlock all shapes created during the current prompt chain.
-	 * Called when the prompt completes to make shapes editable again.
+	 * Called when the prompt completes to make shapes editable again. Tutor shapes stay locked,
+	 * so the student can't nudge or erase them by accident (pedagogy-spec C1).
 	 */
 	unlockCreatedShapes(): void {
 		const { editor } = this.agent
 		const createdShapes = this.getCreatedShapes()
-		const lockedShapes = createdShapes.filter((shape) => shape.isLocked)
+		const lockedShapes = createdShapes.filter((shape) => shape.isLocked && shape.meta.author !== 'tutor')
 		if (lockedShapes.length === 0) return
 
 		editor.run(

@@ -2,6 +2,7 @@ import { Box, createShapeId, Editor, TLShapeId } from 'tldraw'
 import { PlacementBox, placeBeside, unionBoxes } from '../../shared/tutor/placeBeside'
 import { SimpleShapeId } from '../../shared/types/ids-schema'
 import { AgentHelpers } from '../AgentHelpers'
+import type { ProblemFrameShape } from '../shapes/ProblemFrameShapeUtil'
 
 /**
  * Tutor ink: the colors the tutor's own marks use, so they read apart from the student's
@@ -15,7 +16,7 @@ export const TUTOR_INK = {
 	incorrect: 'red',
 } as const
 
-export type TutorMarkKind = 'hint' | 'error' | 'verdict' | 'drawing'
+export type TutorMarkKind = 'hint' | 'error' | 'verdict' | 'drawing' | 'math' | 'problem'
 
 /**
  * Meta for a tutor mark. `note` is shown to the model in its shape list, so it can tell its
@@ -36,14 +37,51 @@ export function newTutorShapeId(helpers: AgentHelpers, base: string): TLShapeId 
 	return createShapeId(helpers.ensureShapeIdIsUnique(base as SimpleShapeId))
 }
 
-/** Page bounds of every shape on the current page except `exclude`. */
+/**
+ * Page bounds of every shape on the current page except `exclude`. A problem frame counts
+ * only as its header, so marks can go in its work area next to the student's ink.
+ */
 export function getBoardObstacles(editor: Editor, exclude: TLShapeId[] = []): PlacementBox[] {
 	return editor
 		.getCurrentPageShapes()
 		.filter((shape) => !exclude.includes(shape.id))
-		.map((shape) => editor.getShapePageBounds(shape))
+		.map((shape) => {
+			const box = editor.getShapePageBounds(shape)
+			if (box && editor.isShapeOfType(shape, 'problem-frame')) {
+				return new Box(box.x, box.y, box.w, shape.props.headerH)
+			}
+			return box
+		})
 		.filter((box): box is Box => !!box)
 		.map(toPlacementBox)
+}
+
+/** The work area of the problem frame whose work area holds `anchor`'s center, if any. */
+function getWorkAreaAround(editor: Editor, anchor: PlacementBox): PlacementBox | undefined {
+	const center = { x: anchor.x + anchor.w / 2, y: anchor.y + anchor.h / 2 }
+	for (const shape of editor.getCurrentPageShapes()) {
+		if (!editor.isShapeOfType(shape, 'problem-frame')) continue
+		const box = editor.getShapePageBounds(shape)
+		if (!box) continue
+		const work = { x: box.x, y: box.y + shape.props.headerH, w: box.w, h: box.h - shape.props.headerH }
+		if (
+			center.x >= work.x &&
+			center.x <= work.x + work.w &&
+			center.y >= work.y &&
+			center.y <= work.y + work.h
+		) {
+			return work
+		}
+	}
+	return undefined
+}
+
+/** The most recently posed problem frame on the current page, if any. */
+export function getLatestProblemFrame(editor: Editor): ProblemFrameShape | undefined {
+	return editor
+		.getCurrentPageShapes()
+		.filter((shape): shape is ProblemFrameShape => editor.isShapeOfType(shape, 'problem-frame'))
+		.sort((a, b) => Number(b.meta.posedAt ?? 0) - Number(a.meta.posedAt ?? 0))[0]
 }
 
 /**
@@ -70,6 +108,7 @@ export function moveBeside(editor: Editor, id: TLShapeId, anchor: PlacementBox, 
 	if (!bounds) return
 	const spot = placeBeside(anchor, { w: bounds.w, h: bounds.h }, getBoardObstacles(editor, [id]), {
 		gap,
+		within: getWorkAreaAround(editor, anchor),
 	})
 	const shape = editor.getShape(id)!
 	editor.updateShape({
