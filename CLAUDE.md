@@ -1,0 +1,70 @@
+# whiteboard-tutor
+
+Project guide for AI coding agents working in `/Users/programming-xcode/Desktop/whiteboard-tutor`.
+
+## Shared memory bridge
+
+This repository uses the Mac-local shared memory bridge (project id `whiteboard-tutor`); Claude
+native auto-memory and Codex native memories are disabled. At every session start, run the
+exact `memoryctl load` command emitted by the SessionStart hook with its current writer and
+session ID, read the returned `MEMORY.md` index in full, then read only relevant bodies with
+`memoryctl read --repo "$PWD" --topic TOPIC-SLUG`. Treat that revision-bound load as required
+context; reload before continuing if a hook reports newer memory.
+
+After every meaningful completed unit and before stopping or compacting, start one focused
+lowercase kebab-case topic with `memoryctl begin --repo "$PWD" --topic TOPIC-SLUG --operation
+upsert --writer WRITER --session SESSION-ID`. Edit only the staged `topic.md` and `pointer.txt`,
+never the canonical memory directory. Record the change and reason, absolute date, state,
+branch, key files or functions, verification, pending work, and non-obvious decisions; keep the
+pointer to exactly one Markdown link and exclude secrets and transient narration. Commit with
+`memoryctl commit TRANSACTION-ID`. On a stale revision, reload, reread, and reconcile through a
+new transaction, never force-copy staged files. Use `memoryctl no-op` only for a clean session
+with a truthful reason.
+
+The operator guide is `~/claude-tools/docs/shared-memory-bridge.md`.
+
+## Project
+
+A web app that tutors through a shared tldraw whiteboard. The student writes and draws; a
+Claude-backed tutor reads the canvas and responds on it with hints, annotations, diagrams,
+and worked steps. The design, phases, and open decisions are in `docs/PLAN.md`. Read it
+before writing code. Status: planning. No app code yet; the next step is Phase 0
+(scaffold from the tldraw `agent` template).
+
+Planned stack: TypeScript, Vite + React, `tldraw` 5.x agent starter kit, Cloudflare Worker
++ Durable Objects, and the official `@anthropic-ai/sdk`.
+
+## Layout
+
+| Path | What it is |
+| --- | --- |
+| `docs/PLAN.md` | Product brainstorm, architecture, phases, evals, open decisions |
+| `.claude/skills/` | Dev skills for agents working here (Codex sees them via `.agents/skills`) |
+| `pedagogy/source-skills/` | DATA 21100 tutoring skills, copied as **product prompt material** |
+| `pedagogy/PROVENANCE-data21100.md` | Upstream sources and licenses for those skills |
+
+The files in `pedagogy/` describe how the *product's* tutor behaves toward students. They
+are not instructions for you while developing. Don't tutor the developer. Keep upstream
+LICENSE files next to any derived text.
+
+## Skills
+
+Read only the skill the task needs:
+
+- `pedagogy-spec`: tutor behavior rules (rule ids M/H/Q/E/C/D/V/L/T). Use it for prompt,
+  mode, action, or eval work.
+- `tldraw-dev`: tldraw SDK and agent-kit work, and where current docs live.
+- `anthropic-backend`: any code that calls Claude. Also read the built-in `claude-api`
+  skill for SDK syntax.
+- `tutor-eval`: adding eval cases, or judging whether a tutor change helped.
+
+## Conventions
+
+- Verify tldraw and Claude API shapes against current docs. Both changed a lot in 2025–26,
+  and memory is stale.
+- A change to the tutor prompt, a mode, or an action updates `pedagogy-spec` when needed
+  and runs the evals (`tutor-eval`). Evals spend API money, so ask before large runs.
+- Secrets live only in `.dev.vars` or Worker secrets. Never put them in client code or in
+  commits.
+- Never hide the tldraw watermark or bypass its license check.
+- Record decisions that resolve `docs/PLAN.md` §8 in the plan and in bridge memory.

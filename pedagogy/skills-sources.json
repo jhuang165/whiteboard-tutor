@@ -1,0 +1,55 @@
+{
+  "researched_on": "2026-10-16",
+  "canonical_directory": ".claude/skills",
+  "codex_discovery_symlink": ".agents/skills",
+  "installed_sources": [
+    {
+      "repository": "https://github.com/cdmorozov/claude-tutors",
+      "revision": "0a76e25d99de25c8f925974f26a8df1da8a33865",
+      "skills": [
+        "math-tutor"
+      ],
+      "integration": "vendored with integration paragraph",
+      "license": "MIT"
+    },
+    {
+      "repository": "https://github.com/bevibing/tutor-skills",
+      "revision": "397110c9fefbc6bd5444277686600aec28063c05",
+      "skills": [
+        "tutor",
+        "tutor-setup"
+      ],
+      "integration": "rewritten project adaptation",
+      "license": "MIT"
+    },
+    {
+      "repository": "https://github.com/mattpocock/skills",
+      "revision": "49dd158d1076134a641b33efb035946536778336",
+      "skills": [
+        "teach",
+        "grill-me",
+        "wait-what"
+      ],
+      "integration": "rewritten project adaptation",
+      "license": "MIT"
+    }
+  ],
+  "original_skills": [
+    "academic-tutor"
+  ],
+  "design_references": [
+    {
+      "url": "https://mcpmarket.com/tools/skills/academic-tutor",
+      "use": "ideas only; no text copied; upstream license not verified"
+    },
+    {
+      "repository": "https://github.com/HKUDS/DeepTutor",
+      "revision": "6cf793bd868ba5ecbe64722936d4be8fab5a01df",
+      "paths": [
+        "deeptutor/capabilities/mastery/prompts/en/mastery_loop.yaml",
+        "deeptutor/capabilities/course_study/prompts/en/course_study.yaml"
+      ],
+      "use": "design ideas only; no code or prompt text copied"
+    }
+  ]
+}
