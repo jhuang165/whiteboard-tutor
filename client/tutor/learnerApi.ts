@@ -1,4 +1,5 @@
 import type { EvidenceEvent, EvidenceRecord } from '../../shared/tutor/evidence'
+import type { HistoryResponse } from '../../shared/tutor/history'
 import type { VerifyRequest, VerifyResponse } from '../../shared/tutor/verification'
 
 const LEARNER_ID_KEY = 'whiteboard-tutor:learner-id'
@@ -62,6 +63,13 @@ export async function fetchEvidence(): Promise<EvidenceRecord[]> {
 	if (!res.ok) throw new Error(await res.text())
 	const { records } = (await res.json()) as { records: EvidenceRecord[] }
 	return records
+}
+
+/** Posed problems (without answers) and evidence records, for session history. */
+export async function fetchHistory(): Promise<HistoryResponse> {
+	const res = await fetch(`/history?learnerId=${encodeURIComponent(getLearnerId())}`)
+	if (!res.ok) throw new Error(await res.text())
+	return (await res.json()) as HistoryResponse
 }
 
 /** Fired on `window` after a new evidence record is stored. */

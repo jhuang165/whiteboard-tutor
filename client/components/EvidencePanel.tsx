@@ -1,7 +1,7 @@
 import { ConceptSummary, EvidenceLevel } from '../../shared/tutor/evidence'
 import { useLearnerSummary, useNow } from '../tutor/useLearnerSummary'
 
-const LEVEL_LABELS: Record<EvidenceLevel, string> = {
+export const LEVEL_LABELS: Record<EvidenceLevel, string> = {
 	exposure: 'Seen',
 	assisted: 'Solved with help',
 	independent: 'Solved on your own',

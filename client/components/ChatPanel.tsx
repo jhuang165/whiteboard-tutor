@@ -1,9 +1,10 @@
-import { FormEventHandler, useCallback, useRef } from 'react'
+import { FormEventHandler, useCallback, useRef, useState } from 'react'
 import { TutorIntent } from '../../shared/tutor/TutorIntent'
 import { useAgent } from '../agent/TldrawAgentAppProvider'
 import { ChatHistory } from './chat-history/ChatHistory'
 import { ChatInput } from './ChatInput'
 import { EvidencePanel } from './EvidencePanel'
+import { HistoryPage } from './HistoryPage'
 import { ReviewQueue } from './ReviewQueue'
 import { TodoList } from './TodoList'
 import { TutorButtons } from './TutorButtons'
@@ -11,6 +12,8 @@ import { TutorButtons } from './TutorButtons'
 export function ChatPanel() {
 	const agent = useAgent()
 	const inputRef = useRef<HTMLTextAreaElement>(null)
+	const [historyOpen, setHistoryOpen] = useState(false)
+	const closeHistory = useCallback(() => setHistoryOpen(false), [])
 
 	// Start a student turn. Sending a new message interrupts the current request.
 	const send = useCallback(
@@ -57,6 +60,9 @@ export function ChatPanel() {
 		<div className="chat-panel tl-theme__dark">
 			<div className="chat-header">
 				<EvidencePanel />
+				<button className="history-button" onClick={() => setHistoryOpen(true)}>
+					History
+				</button>
 				<button className="new-chat-button" onClick={handleNewChat}>
 					+
 				</button>
@@ -68,6 +74,7 @@ export function ChatPanel() {
 				<TutorButtons onPress={send} />
 				<ChatInput handleSubmit={handleSubmit} inputRef={inputRef} />
 			</div>
+			{historyOpen && <HistoryPage onClose={closeHistory} />}
 		</div>
 	)
 }

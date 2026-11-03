@@ -240,7 +240,16 @@ tested on probability first (§8 #1: the app itself is general purpose).
   **Later** hides it for the page visit; it also hides while the tutor works and while
   that concept's problem is open. Problem titles now name the problem ("Spam emails with
   the word free") instead of "Problem 3".
-- [ ] A session history page.
+- [x] Session history page, 2026-11-02 (`client/components/HistoryPage.tsx`, opened from
+  **History** in the chat header). It lists sessions newest first, where a pause of more
+  than two hours starts a new one (`shared/tutor/history.ts`). Each posed problem shows its
+  title and statement, its outcome (solved on your own, with help, retained, talked
+  through, not solved, or flawed), the hint rungs it took, and **Show on board** when its
+  frame is still on the canvas. Explanations outside a problem are listed too. A problem
+  stays in the session it was posed in, even when it's solved the next day. The learner
+  store now keeps each problem from the moment it is posed (with its title and time), so a
+  failed check no longer drops it, and `GET /history` returns problems without the checked
+  answer or method. Tutor turns read only answers whose check finished.
 - [ ] Auth and a rate limit on `/verify` and `/evidence` before any deploy: the learner id
   is an unauthenticated browser UUID, and `/verify` spends API money per call.
 

@@ -1,5 +1,6 @@
 import { error, IRequest, json } from 'itty-router'
 import { z } from 'zod'
+import { HistoryResponse } from '../../shared/tutor/history'
 import { getLearnerStub, isLearnerId } from '../do/LearnerDurableObject'
 import { Environment } from '../environment'
 
@@ -34,4 +35,13 @@ export async function getEvidence(request: IRequest, env: Environment) {
 	if (!isLearnerId(learnerId)) return error(400, 'Bad request')
 	const records = await getLearnerStub(env, learnerId).listEvidence()
 	return json({ records })
+}
+
+/** A learner's posed problems (without answers) and evidence records, for session history. */
+export async function getHistory(request: IRequest, env: Environment) {
+	const learnerId = request.query.learnerId
+	if (!isLearnerId(learnerId)) return error(400, 'Bad request')
+	const learner = getLearnerStub(env, learnerId)
+	const [problems, records] = await Promise.all([learner.listProblems(), learner.listEvidence()])
+	return json({ problems, records } satisfies HistoryResponse)
 }

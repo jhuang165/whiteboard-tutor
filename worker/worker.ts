@@ -2,7 +2,7 @@ import { ExecutionContext } from '@cloudflare/workers-types'
 import { WorkerEntrypoint } from 'cloudflare:workers'
 import { AutoRouter, cors, error, IRequest } from 'itty-router'
 import { Environment } from './environment'
-import { getEvidence, postEvidence } from './routes/evidence'
+import { getEvidence, getHistory, postEvidence } from './routes/evidence'
 import { stream } from './routes/stream'
 import { verify } from './routes/verify'
 
@@ -20,6 +20,7 @@ const router = AutoRouter<IRequest, [env: Environment, ctx: ExecutionContext]>({
 	.post('/verify', verify)
 	.post('/evidence', postEvidence)
 	.get('/evidence', getEvidence)
+	.get('/history', getHistory)
 
 export default class extends WorkerEntrypoint<Environment> {
 	override fetch(request: Request): Promise<Response> {

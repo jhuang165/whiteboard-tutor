@@ -29,10 +29,18 @@ export async function verify(request: IRequest, env: Environment, ctx: Execution
 	}
 	const { learnerId, problemId, title, statement, concept } = parsed.data
 
+	const learner = getLearnerStub(env, learnerId)
+	await learner.notePosed({ problemId, concept, title, statement })
+
 	const check = (async () => {
-		const result = await verifyProblem(createAnthropicClient(env), title ? `${title}\n\n${statement}` : statement)
-		await getLearnerStub(env, learnerId).saveVerification({ problemId, concept, statement }, result)
-		return result
+		try {
+			const result = await verifyProblem(createAnthropicClient(env), title ? `${title}\n\n${statement}` : statement)
+			await learner.saveVerification({ problemId, concept, title, statement }, result)
+			return result
+		} catch (error) {
+			await learner.noteCheckFailed(problemId).catch(() => {})
+			throw error
+		}
 	})()
 	// Finish and store the check even if the browser stops waiting for it.
 	ctx.waitUntil(check.catch(() => {}))

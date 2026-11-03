@@ -41,10 +41,13 @@ Working now:
   **Progress** panel at the top of the chat lists it by concept, with review dates.
 - Reviews: when a review is due, a card above the tutor buttons offers it. **Review now**
   poses a new problem on that concept, so a clean solve counts as retained.
+- History: the **History** button in the chat header lists past sessions, newest first.
+  Each problem shows how it went and the hints it took, with **Show on board** for frames
+  still on the canvas. Checked answers never reach the page.
 - Behavior evals (`npm run eval`).
 
 Not done yet: accounts (progress is tied to an anonymous id in this browser), auth and rate
-limits on the routes, and a session history page. Real model turns have only run through the
+limits on the routes. Real model turns have only run through the
 dev-only bridge below, which has no code sandbox, so answer checks there run without code. See the phase list in [docs/PLAN.md](docs/PLAN.md#5-build-phases).
 
 ## Run it
