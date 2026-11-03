@@ -251,9 +251,9 @@ tested on probability first (§8 #1: the app itself is general purpose).
 
 **Phase 4: materials.**
 
-- PDF ingest (`tutor-setup`), a `teach` plan drawn as a concept graph, and Grill mode.
-- Canvas import: class materials from the student's Canvas course become problem frames,
-  read-only (§10).
+- PDF ingest (`tutor-setup`): uploaded class materials become problem frames with page
+  citations (§10), a `teach` plan drawn as a concept graph, and Grill mode. The Canvas API
+  route is parked (§10.8).
 
 **Phase 5: stretch.**
 
@@ -324,8 +324,8 @@ Written once the code they describe exists (Phase 1–3):
 - **MCP:** Playwright MCP (drive the canvas), Chrome DevTools MCP (debug streaming and
   performance), Context7 (`/tldraw/tldraw` lags at v4.2, so prefer `tldraw.dev/llms-*.txt`),
   and the **tldraw MCP app**, whose `exec` against a live canvas is useful for prototyping
-  actions. **canvas-mcp** (vishalsachdev/canvas-mcp, MIT) is for exploring a real Canvas
-  course in development only; the product doesn't depend on it (§10).
+  actions. **canvas-mcp** (vishalsachdev/canvas-mcp, MIT) needs a Canvas access token, which
+  the user's school doesn't allow, so it is parked with the Canvas API route (§10.8).
 
 ### 7.3 Research that becomes rules or evals
 
@@ -375,10 +375,12 @@ hosting.
 5. **Voice in v1?** It's a large scope jump. The recommendation is Phase 5.
 6. **Hosting.** Cloudflare (the kit's default, Durable Objects fit per-student state) or
    something else?
-7. **Canvas access.** Scope decided 2026-11-02: read-only, class materials only (§10.1).
-   Still open: does your Canvas let students create access tokens (step C0)?
-8. **Graded assignments.** Show them as context only (recommended), or turn them into
-   problem frames too (§10.6)?
+7. **Canvas access.** Decided 2026-11-02: manual uploads of PDFs and text, not the Canvas
+   API. New Access Token is disabled on the user's Canvas (the old step C0), so the token
+   route is closed and the app never touches Canvas (§10.1). The API design is parked in
+   §10.8. Still open and optional: ask the school whether it issues tokens on request.
+8. **Graded work in uploads.** The app can't tell whether an upload is open graded work.
+   Treat it like any problem (recommended), or cap help on it (§10.6)?
 
 ## 9. Risks
 
@@ -396,128 +398,168 @@ hosting.
   harjothkhara/whiteboard-tutor (built on the agent kit), abdulhamid-n/AI-notebook
   (Mathpix OCR), and SohailElskhawy/ai-live-tutor. Skim them in Phase 0 for pitfalls. The
   differentiator here is the pedagogy, the evidence model, and the evals.
-- **Canvas token and course data** (§10). A personal access token is a credential for the
-  student's whole Canvas account, and course pages can hold instructor answer keys.
-  Mitigations: a GET-only endpoint allowlist that excludes grades and submissions, a token
-  the worker never stores or logs, and solution text kept on the worker side.
+- **Uploaded class materials** (§10). Problem sets and notes can print instructor answer
+  keys, belong to the instructor or publisher, and cost money to read (about 1,500–3,000
+  tokens a page). Mitigations: solution text kept on the worker side, the PDF held in memory
+  and never stored, size and page caps, a per-learner upload cap, and a rate limit on
+  `/ingest`.
 
-## 10. Canvas integration (draft)
+## 10. Class materials from uploads (draft)
 
-Drafted 2026-11-02. Not started; step C0 gates the rest.
+Drafted 2026-11-02 as a Canvas API integration, then rewritten the same day as an upload
+path after step C0 failed (10.1). Not started.
 
-The tutor can pull class materials from the student's Canvas course (lecture pages, module
-items, files, the syllabus) and turn them into problems on the board. Where a course
-already lives in Canvas, this replaces manual upload for the Phase 4 `tutor-setup` path.
+The student downloads their class materials from Canvas, or anywhere else, and gives them to
+the tutor: problem sets, lecture notes, and slides saved as PDF. The tutor extracts the
+problems and poses each one in a frame on the board, with a citation back to the source page.
+This is the Phase 4 `tutor-setup` path (§2). The app never talks to Canvas, so it holds no
+Canvas credentials.
 
-### 10.1 Scope (decided 2026-11-02)
+### 10.1 Why uploads (decided 2026-11-02)
 
-**Read-only, class materials only.** The app never writes to Canvas.
+The first draft had the worker read the course through the Canvas REST API with a personal
+access token. Step C0 found that New Access Token is disabled on the user's Canvas. Schools
+turn it off on purpose (UW–Madison did from November 2025 and now issues tokens on request),
+and the Canvas docs say an app with more than one user needs OAuth2 and a developer key from
+the institution's admin. So the token route is closed unless the school opens it, and the
+plan doesn't work around the block.
 
-- **In:** the course list; the syllabus (`include[]=syllabus_body` on the course); modules
-  and their items; pages (the `body` field is HTML); course files such as PDFs and slides
-  (Files API); assignment descriptions and due dates, as context.
-- **Out:** grades, submissions, quiz questions and answers, discussions, other users, and
-  every POST, PUT, and DELETE. Announcements, the calendar, and the inbox are out for v1.
-- The limit lives in code, not only in the prompt. The Canvas client has a fixed allowlist
-  of GET path patterns and throws on anything else. A test fails if a non-GET method or a
-  path outside the list gets through.
+Uploads need nobody's permission, work for any course or LMS, and cover the part that
+matters: problems from the student's own materials. They give up live browsing of modules
+and the syllabus, and automatic due dates. The Canvas API design is kept in 10.8 in case a
+token ever becomes available.
 
-### 10.2 A thin client instead of the canvas-mcp server
+### 10.2 Scope
 
-canvas-mcp (vishalsachdev/canvas-mcp, MIT, Python) runs over stdio or as a self-hosted
-HTTP service. A Cloudflare Worker can't launch it, the product needs about seven GET
-endpoints out of its 100+ tools, and every extra hop is another place student data passes
-through. So the worker calls the Canvas REST API directly. canvas-mcp stays a development
-aid (§7.2). The switch criteria are in 10.8.
+- **In:** PDFs (standard, no password or encryption) and plain text (`.txt`, `.md`, or pasted
+  text). A Canvas page can be saved with the browser's Print to PDF. That also turns
+  equation-editor images into page pixels, which the model reads by vision, so nothing here
+  depends on how Canvas stores equations in its HTML.
+- **Out for v1:** `.docx`, `.pptx`, and `.xlsx` (the PDF docs say document blocks don't
+  accept them, so save as PDF first), password-protected PDFs, any file fetched from a URL
+  (the worker never fetches an address the student supplies), and any account credentials.
 
-### 10.3 Auth, storage, and limits
+### 10.3 Intake, limits, and storage
 
-- **Token.** The student creates a personal access token in Canvas (profile, Approved
-  Integrations, New Access Token) and the worker sends it as `Authorization: Bearer`. The
-  Canvas docs say an app used by more than one user must use OAuth2, and on Canvas Cloud
-  developer keys are issued by the institution's admin. A personal token therefore fits you
-  and classmates (§8 #2, hobby scope) and doesn't carry over to a public product without
-  institutional sign-off. The docs don't say whether an institution can turn token creation
-  off; step C0 checks.
-- **Storage.** v1 keeps the token in the browser's `sessionStorage` and sends it on each
-  request in a header. The worker doesn't store or log it: the router's error handler must
-  not print request headers, and a test covers that. No token goes into a Durable Object
-  until accounts exist (§8 #2).
-- **Base URL.** Set by the deployment (`CANVAS_BASE_URL`, https only, optional in
-  `Environment`), never taken from the client, so the worker can't be pointed at an
-  arbitrary host.
-- **Pagination.** The default page size is 10. Set `per_page`, follow `rel="next"` in the
-  `Link` header as opaque URLs, and never assume a page is complete.
-- **Throttling.** A request over quota gets 429. `X-Rate-Limit-Remaining` appears only
-  when throttling applies, and each token has its own quota. Fetch one request at a time
-  and back off on 429.
+- **Route.** `POST /ingest` takes one file from the client. The worker sends the PDF inline
+  as a base64 `document` block in a single extraction call and drops it when the call ends.
+  The Files API is for PDFs reused across calls, and v1 makes one call per upload.
+- **API limits** (PDF docs, read 2026-11-02): 128 MB per request on the first-party API, 600
+  pages per request (100 when the request's context window is under 1M tokens), and no
+  passwords or encryption. Each page costs about 1,500–3,000 text tokens plus the page image.
+- **Proposed v1 caps** (our choices, not API limits): 20 MB and 40 pages per upload, and a
+  small daily upload cap per learner. Forty pages is roughly $0.25–$0.50 in text tokens at
+  Opus 5.5's $4 per MTok of input, before the images, so the cap matters. The page count has
+  to come from a parser that runs in Workers, chosen in U2. The byte cap is enforced first.
+- **Money and auth.** `/ingest` spends API money per call like `/verify`, so it sits behind
+  the same open Phase 2 item: auth and a rate limit before any deploy.
+- **Storage.** The LearnerDO keeps the upload's title and, per problem, the statement, a
+  source label with the page, a concept guess, and any solution the document printed. The PDF
+  itself is never stored. Printed solutions stay in the worker next to checked answers (the
+  `problems` table) and the client never receives them. Each upload can be deleted from the
+  panel, which removes its problems and solutions. Uploads belong to one learner and are
+  never shared.
+- **Copyright.** Course materials usually belong to the instructor or the publisher. The
+  design keeps only extracted problem text, per learner, and deletable. Whether that is
+  acceptable beyond you and your classmates is a question for the school, not the code
+  (§8 #2).
 
 ### 10.4 Pieces
 
-- `worker/canvas/canvasClient.ts`: GET-only fetch with the allowlist, Link pagination, 429
-  backoff, a timeout, and a size cap on bodies.
-- `worker/canvas/htmlToText.ts`: Canvas HTML to plain text. Equation-editor images are
-  expected to carry their LaTeX in a `data-equation-content` attribute. That is from
-  memory and has to be checked against a real page before the code relies on it. Output
-  uses `$...$`, so it goes through the existing KaTeX path.
-- `worker/routes/canvas.ts`: `GET /canvas/courses`, `GET /canvas/courses/:id/materials`
-  (syllabus, modules with items, file list), and `POST /canvas/import` for one item.
-- File import: the worker fetches the file through the Files API with the token and sends
-  PDFs to Claude as document blocks, the same path as Phase 4 PDF ingest. The docs don't
-  say whether a file's `url` expires or needs auth, so the worker fetches it right away and
-  never hands it to the client. A size cap applies.
-- Client: a class-materials picker in the chat panel (course, module, item) with an Import
-  button, in `client/components/`.
+- `worker/routes/ingest.ts` and `worker/ingest/extractProblems.ts`: validate the type, size,
+  and page count, make the extraction call, and return problems without their solutions.
+- The extraction call: Opus 5.5, `medium` effort, JSON-schema output. It never solves a
+  problem. Per problem it returns the statement (math as `$...$`, so it goes through the
+  KaTeX path), the page, a kebab-case concept guess, and any printed solution, separately.
+  A problem that depends on a figure or on earlier parts is either returned with the figure
+  described or skipped and counted. U1 decides which works better.
+- LearnerDO: an `uploads` table and an `upload_problems` table next to `problems`. When a
+  problem is posed it gets a `/verify` check like a quiz problem, and the checked answer
+  lands in `problems`.
+- `shared/`: the types for the route's response.
+- Client: `client/components/MaterialsPanel.tsx` with a file picker, progress, each upload's
+  problem list with a Pose button, and a Delete button. Posing uses the existing
+  `pose-problem` path, and the frame meta carries a `source` that shows as a small citation
+  label.
 
-### 10.5 Import to problem frames
+### 10.5 Posing imported problems
 
-- An extraction call (Opus 5.5, `medium` effort, JSON-schema output) turns a page or PDF
-  into a list of problems: statement, citation (course, item title, page), and a kebab-case
-  concept guess. It doesn't solve them.
-- Each problem is posed through the existing `pose-problem` path, so it is a normal locked
-  frame with hints, Check, and evidence. A `source` field in the frame meta shows the
-  citation.
-- Imported problems get a `/verify` check like quiz problems. Instructor problems can have
-  typos or missing context, and a flawed one already won't count against the student.
-- **Solution secrecy.** Pages and PDFs often print worked solutions or an answer key. The
-  extraction call returns any solution text separately, and the worker keeps it with the
-  verified answer, where the client never sees it. The statements sent to the client must
-  not contain it.
-- Canvas data never creates evidence. Levels stay decided in `shared/tutor/evidence.ts`.
+- Each problem goes through `pose-problem`, so it is a normal locked frame with hints, Check,
+  and evidence. Instructor problems can have typos or missing context. A problem the check
+  finds flawed is marked as the question's fault and doesn't count against the student.
+- **Solution secrecy.** Problem sets and notes often print worked solutions or an answer
+  key. The extraction call returns them separately, and the worker keeps them with the
+  verified answer. The statements sent to the client must not contain them.
+- **Page labels.** The model's page numbers aren't guaranteed to be right, and nobody has
+  checked them yet. The SDK's PDF citations return a `page_location`, which is the fallback
+  if U1 shows the labels drift.
+- Uploads never create evidence. Levels stay decided in `shared/tutor/evidence.ts`.
 
 ### 10.6 Graded work (your call, §8 #8)
 
-An assignment with a future `due_at` and `points_possible` above zero is graded work.
-Recommended for v1: show its description and due date as context, but don't turn it into
-problem frames. Skip `online_quiz` submission types, anything with a `quiz_id`, and
-anything `locked_for_user`. Pages, files, and the syllabus are imported as practice
-material.
+An upload can be open graded work, and the app can't tell on its own. Two options:
+
+- **A. Same rules as any problem.** The hint ladder applies, and an explicit full-solution
+  request still gets the solution (D1). No new code.
+- **B. Cap help on open graded work.** The extractor flags a document with signs of it (a
+  future due date, points, "submit"), and for those the tutor stops short of the full worked
+  solution and says why. This needs the flag in the extraction schema and a carve-out to D1 in
+  `pedagogy-spec`.
+
+Recommended for v1: A, and store the flag now so B stays cheap.
 
 ### 10.7 Steps
 
-- [ ] **C0.** In Canvas, open Settings and check that New Access Token is there. If it
-  isn't, stop and ask the instructor or the institution's Canvas admin. Note the base URL.
-- [ ] **C1.** Explore a real course through canvas-mcp in Claude Code (development only).
-  Note the real response shapes and write synthetic fixtures from them. Don't commit
-  course material: it may be copyrighted and can carry names.
-- [ ] **C2.** `canvasClient` and the allowlist, with vitest tests on a mocked fetch:
-  non-GET and unlisted paths rejected, Link pagination, 429 backoff, token absent from
-  logs.
-- [ ] **C3.** Materials routes, `htmlToText`, and the picker.
-- [ ] **C4.** Import, extraction, `pose-problem` with a citation, `/verify`, and solution
-  secrecy. Eval cases: a page with inline solutions (no leak), equation images, an
-  instructor problem with a flaw, and extraction counts and citations.
-- [ ] **C5.** Optional: upcoming assignment titles and dates (`bucket=upcoming`) in the
-  `learner` part, to nudge which concept Quiz me picks. Titles and dates only.
-- Done when: choosing a module page in the picker poses its problems in frames with
-  citations, the page's printed answers never reach the client, and the allowlist test
-  fails on any non-GET or grade endpoint.
+- [ ] **U0.** Download two or three real files you'd study from (a problem set, lecture notes,
+  slides saved as PDF). Note their page counts and sizes. Don't commit them: they may be
+  copyrighted and can carry names. Optional, in parallel: ask your instructor or Canvas admin
+  whether the school issues tokens on request (10.8).
+- [ ] **U1.** Extraction spike on the U0 files: the schema, page-label accuracy, and how
+  figure-dependent problems come out. The dev bridge folds the conversation into one text
+  turn and probably can't pass document blocks (check), so this needs a real API key and a
+  small budget you've approved. Write synthetic fixtures from the real response shapes and
+  commit only those.
+- [ ] **U2.** The `/ingest` route and its limits, with vitest tests on a mocked SDK: oversized,
+  non-PDF, and encrypted files rejected, solutions never in the response, the per-learner
+  cap, and the page-count parser choice.
+- [ ] **U3.** LearnerDO tables, the materials panel, and Delete.
+- [ ] **U4.** Pose imported problems through `pose-problem` and `/verify` with a citation.
+  Eval cases: a page with inline solutions (no leak), an instructor problem with a flaw,
+  extraction counts and page citations, and math from equation images.
+- [ ] **U5.** Optional: page images as locked backgrounds (the original `tutor-setup`
+  idea), rendered in the browser, and Quiz me drawing from uploaded material. Check that the
+  renderer works under Vite and Workers first.
+- Done when: uploading a PDF problem set poses its problems in frames with page citations,
+  the printed answers never reach the client, and `/ingest` rejects oversized, non-PDF, and
+  encrypted files.
 
-### 10.8 When to switch to the MCP connector
+### 10.8 Parked: the Canvas API route
 
-Move to the Messages API MCP connector if the tutor needs to decide mid-turn what to fetch,
-the app needs more than about ten Canvas calls, or a second LMS shows up. The installed SDK
-(1.3.0) has `mcp_servers` and `mcp_toolset` under the `mcp-client-2026-09-15` beta. Then
-self-host canvas-mcp over HTTP, which is read-only unless `ALLOWED_WRITE_TOOLS` is set, add
-a toolset allowlist, and turn on `ENABLE_DATA_ANONYMIZATION`. The dev bridge can't exercise
-it (it runs the model with `--strict-mcp-config`), so testing needs a real API key.
+Revive it only if the school issues a token. The design, kept so the research isn't lost:
+
+- **Client.** A thin GET-only client in the worker (`worker/canvas/canvasClient.ts`) with a
+  fixed allowlist of path patterns: courses, the syllabus (`include[]=syllabus_body`), modules
+  and items, pages, files, and assignment descriptions and due dates. It throws on any other
+  method or path, and a test fails if one gets through. Out of scope: grades, submissions,
+  quiz answers, discussions, other users, and every write.
+- **Token.** Kept in the browser's `sessionStorage`, sent per request, and never stored or
+  logged by the worker. The base URL is a deployment setting, https only, never from the
+  client.
+- **Canvas behavior** (checked against the docs): a throttled request gets 429,
+  `X-Rate-Limit-Remaining` appears only when throttling applies, pagination follows opaque
+  `Link rel="next"` URLs with a default page size of 10, a page's `body` is HTML, and an
+  assignment's `bucket` accepts upcoming, past, overdue, undated, ungraded, unsubmitted, and
+  future. Not checked: whether a file's download `url` expires or needs auth, and whether
+  equation images carry LaTeX in `data-equation-content`.
+- **Reuse.** What the client fetches would feed the same `/ingest` extraction and posing
+  path, so the upload work isn't thrown away.
+- **canvas-mcp** (vishalsachdev/canvas-mcp, MIT, Python) needs the same token, so it is no
+  use for exploring a course until one exists. If the tutor ever has to decide mid-turn what
+  to fetch, the route is the Messages API MCP connector (SDK 1.3.0, `mcp_servers` and
+  `mcp_toolset`, beta `mcp-client-2026-09-15`) with canvas-mcp self-hosted over HTTP
+  (read-only unless `ALLOWED_WRITE_TOOLS` is set), a toolset allowlist, and
+  `ENABLE_DATA_ANONYMIZATION`. The dev bridge can't test it (`--strict-mcp-config`).
+- **Calendar feed.** Canvas gives students a private `.ics` URL with assignment titles and due
+  dates and no materials, going by third-party guides, not Instructure's docs. It could feed
+  the `learner` part so Quiz me leans toward what is due soon. Not planned. The URL works
+  like a password.
