@@ -36,7 +36,7 @@ export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: Tut
 			]
 		case 'wait-what':
 			return [
-				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, tree, reduced sample space, area model, or number line). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
+				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, graph, tree, area model, number line, reduced sample space, or a worked numeric example). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
 			]
 		case 'quiz':
 			if (reviewConcept) {

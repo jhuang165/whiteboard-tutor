@@ -194,6 +194,13 @@ tested on probability first (§8 #1: the app itself is general purpose).
   and rejects bare-number problem titles. Through the bridge, 141/142 checks passed over two
   runs of all 13 cases; the one failure was a second question in a hint's `intent` on
   posed-problem-hint.
+- [x] General math, 2026-11-02 (§8 #1). The tutor prompt, the `pose-problem` description,
+  and the `/verify` prompt no longer name probability, and the Wait-what representation
+  list gained graphs and worked numeric examples. Six non-probability cases: an algebra
+  sign slip (Check), a product-rule misconception (Check), a Pythagorean hint, a correct
+  determinant (Check), a derivative Explain, and a Quiz me whose learner record holds only
+  algebra concepts (checked with a new `posesConceptIn` expectation). Through the bridge,
+  206/206 checks passed over two runs of all 19 cases.
 - [ ] The judged MRBench rubric, long-session replays, and a handwriting case the model
   actually misreads (on the fixture it read 0.63 both times).
 - Done when: in a probability problem with a planted error, Check points at the right line,
@@ -353,10 +360,12 @@ hosting.
 
 ## 8. Open decisions (yours)
 
-1. **Subject scope.** Decided 2026-11-02: a general-purpose tutor, not probability only.
-   Probability stays the first tested subject, since the materials, misconceptions, and
-   seed evals are there. Still open: whether general means any subject or general math
-   first, and what that changes in the prompt, `pedagogy-spec`, the evals, and `/verify`.
+1. **Subject scope.** Decided 2026-11-02: a general-purpose tutor that starts with math,
+   not probability only. Other subjects come after math works. Probability stays the best
+   tested topic, since the materials, misconceptions, and seed evals are there. Done
+   2026-11-02: the probability wording is out of the tutor prompt, the `pose-problem`
+   description, and the `/verify` prompt, and six non-probability math cases are in (§5).
+   In `pedagogy-spec` only the M6 representation list changed.
 2. **Audience.** Just you and classmates (hobby license, simple auth), or a product for
    others (commercial license, accounts, privacy)?
 3. **Second model for triage.** Haiku 5.5 for "should I intervene?", or Opus 5.5 at low

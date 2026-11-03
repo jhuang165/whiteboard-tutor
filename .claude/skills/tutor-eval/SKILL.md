@@ -48,15 +48,17 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 - `expect`: `verdict` (`correct`, `incorrect`, or `none`, or a list of allowed ones), `markErrorOn` (a shape id or
   `none`), `errorKind`, `hints` with `hintRungs` and `hintAnchorIn`, `maxQuestions`,
   `posesProblem` (how many `pose-problem` actions, each with a concept, title, and statement),
-  `maxMarks`, and `forbidden` (strings that must not appear in student-visible text,
+  `posesConceptIn` (the concept slugs a posed problem may use, to show Quiz me follows the
+  learner's record instead of a default topic), `maxMarks`, and `forbidden` (strings that must not appear in student-visible text,
   matched as whole values, so "0.19" doesn't match "10.19"), and `required` (groups of
   alternatives; one string from each group must appear, such as the answer on a D1
   request or the transcribed value on a C3 case).
 - `rules`: the `pedagogy-spec` ids under test, and a `description` of what the case
   probes.
-- Source: hand-built from DATA 21100 topics (conditional probability, Bayes, counting,
-  expectation), adapted from MathDial or Bridge (check the license first), or produced by
-  real sessions with consent.
+- Source: hand-built across math topics (probability and counting, algebra, geometry,
+  calculus, linear algebra), adapted from MathDial or Bridge (check the license first), or
+  produced by real sessions with consent. Keep a spread of topics: the tutor is general
+  purpose, and a prompt change can regress one topic while helping another.
 
 ## Deterministic checks (on the action stream)
 

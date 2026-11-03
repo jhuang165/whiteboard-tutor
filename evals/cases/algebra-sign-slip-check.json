@@ -1,0 +1,54 @@
+{
+	"id": "algebra-sign-slip-check",
+	"description": "Linear equation where the last step subtracts instead of adding (5 - 6 for 5 + 6). Check must mark that line as a slip, not call the method wrong, and not give the right value.",
+	"rules": [
+		"M3",
+		"E1",
+		"Q1"
+	],
+	"intent": "check",
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: Solve 3(x - 2) = 2x + 5.",
+			"x": 0,
+			"y": 0,
+			"w": 462,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "3x - 6 = 2x + 5",
+			"x": 0,
+			"y": 80,
+			"w": 210,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "x - 6 = 5",
+			"x": 0,
+			"y": 160,
+			"w": 126,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "x = -1",
+			"x": 0,
+			"y": 240,
+			"w": 84,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "incorrect",
+		"markErrorOn": "line3",
+		"errorKind": "slip",
+		"maxQuestions": 1,
+		"forbidden": [
+			"11",
+			"x = 11"
+		]
+	}
+}

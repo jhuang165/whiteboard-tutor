@@ -34,7 +34,7 @@ export function runChecks(evalCase: EvalCase, actions: EvalAction[], allowedActi
 	if (expect.markErrorOn) results.push(checkMarkError(actions, expect.markErrorOn, expect.errorKind))
 	if (expect.hints !== undefined) results.push(checkHints(actions, expect.hints, expect.hintRungs, expect.hintAnchorIn))
 	if (expect.maxQuestions !== undefined) results.push(checkQuestions(actions, expect.maxQuestions))
-	if (expect.posesProblem !== undefined) results.push(checkPosedProblems(actions, expect.posesProblem))
+	if (expect.posesProblem !== undefined) results.push(checkPosedProblems(actions, expect.posesProblem, expect.posesConceptIn))
 	if (expect.maxMarks !== undefined) results.push(checkMarks(actions, expect.maxMarks))
 	if (expect.forbidden?.length) results.push(checkNoLeak(actions, expect.forbidden))
 	if (expect.required?.length) results.push(checkRequired(actions, expect.required, evalCase.rules))
@@ -124,13 +124,16 @@ export function checkQuestions(actions: EvalAction[], max: number): CheckResult 
 	}
 }
 
-export function checkPosedProblems(actions: EvalAction[], expectedCount: number): CheckResult {
+export function checkPosedProblems(actions: EvalAction[], expectedCount: number, conceptIn?: string[]): CheckResult {
 	const posed = actions.filter((a) => a._type === 'pose-problem')
 	const problems: string[] = []
 	if (posed.length !== expectedCount) problems.push(`expected ${expectedCount} posed problem(s), got ${posed.length}`)
 	for (const action of posed) {
 		const missing = ['concept', 'title', 'statement'].filter((key) => !String(action[key] ?? '').trim())
 		if (missing.length) problems.push(`a problem is missing ${missing.join(', ')}`)
+		if (conceptIn && !conceptIn.includes(String(action.concept ?? ''))) {
+			problems.push(`concept "${String(action.concept)}" is not one of ${conceptIn.join(', ')}`)
+		}
 		// A title names the problem; "Problem 3" doesn't tell problems apart later.
 		if (/^\s*(practice\s+|review\s+)?(problem|question|quiz)\s*#?\d*\s*$/i.test(String(action.title ?? ''))) {
 			problems.push(`title "${String(action.title)}" doesn't name the problem`)

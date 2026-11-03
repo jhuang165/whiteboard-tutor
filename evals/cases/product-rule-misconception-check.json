@@ -1,0 +1,48 @@
+{
+	"id": "product-rule-misconception-check",
+	"description": "Calculus: the derivative of a product taken as the product of the derivatives. Check must mark the first line as a misconception (not a slip) and not write out the correct derivative.",
+	"rules": [
+		"M3",
+		"E1",
+		"Q1"
+	],
+	"intent": "check",
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: Find d/dx [x^2 sin x].",
+			"x": 0,
+			"y": 0,
+			"w": 434,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "d/dx [x^2 sin x] = (2x)(cos x)",
+			"x": 0,
+			"y": 80,
+			"w": 420,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "= 2x cos x",
+			"x": 0,
+			"y": 160,
+			"w": 140,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "incorrect",
+		"markErrorOn": "line1",
+		"errorKind": "misconception",
+		"maxQuestions": 1,
+		"forbidden": [
+			"2x sin x + x^2 cos x",
+			"x^2 cos x + 2x sin x",
+			"2x sin x",
+			"x^2 cos x"
+		]
+	}
+}

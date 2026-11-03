@@ -1,0 +1,43 @@
+{
+	"id": "quiz-algebra-record",
+	"description": "Quiz me with a learner record that holds only algebra concepts, one of them solved only with help. The posed problem must reuse that concept, not drift to probability. Exactly one problem, nothing else on the board, no hint, verdict, or question.",
+	"rules": [
+		"M4",
+		"V1",
+		"C4",
+		"Q2"
+	],
+	"intent": "quiz",
+	"learnerSummary": [
+		{
+			"concept": "factoring-quadratics",
+			"best": "assisted",
+			"independent": 0,
+			"assisted": 2,
+			"exposures": 1,
+			"lastAt": 1793300000000,
+			"reviewDueAt": null
+		},
+		{
+			"concept": "solving-linear-equations",
+			"best": "independent",
+			"independent": 2,
+			"assisted": 0,
+			"exposures": 0,
+			"lastAt": 1793200000000,
+			"reviewDueAt": 1893456000000
+		}
+	],
+	"board": [],
+	"expect": {
+		"posesProblem": 1,
+		"posesConceptIn": [
+			"factoring-quadratics"
+		],
+		"hints": 0,
+		"verdict": "none",
+		"markErrorOn": "none",
+		"maxMarks": 1,
+		"maxQuestions": 0
+	}
+}

@@ -1,6 +1,6 @@
 # whiteboard-tutor
 
-A general-purpose tutor that works on a shared whiteboard. The student writes and sketches on a
+A general-purpose tutor that works on a shared whiteboard, starting with math. The student writes and sketches on a
 [tldraw](https://tldraw.dev) canvas. A Claude-backed tutor reads the board and answers on
 it: a hint card next to the line where the student is stuck, a circle around the first
 wrong step, a ✓ or ✗ beside a finished answer, or a worked example in its own ink.
@@ -12,8 +12,9 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in. The eval cases and
-example problems so far are all probability; other subjects aren't tested yet.
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in. Most eval cases
+and example problems are probability, with a few in algebra, geometry, calculus, and linear
+algebra; other subjects aren't tested yet.
 
 Working now:
 
