@@ -56,6 +56,10 @@ delta-encoded `segments`, and text uses rich text). Check before you write:
 - The kit unlocks every shape it created when a turn ends
   (`AgentLintManager.unlockCreatedShapes`); tutor shapes are skipped there so they stay
   locked.
+- New tutor marks from a finished action are written in by `client/tutor/TutorPresence.ts`
+  (called from `AgentActionManager.act` with the action's diff). It hides them with a
+  stylesheet rule keyed on `data-shape-id`, never a store change, so don't set opacity on
+  tutor shapes to animate them. Streaming actions (`pen`, `create`) are followed, not hidden.
 - Vite hot reload re-runs `registerActionUtil` and logs "already registered". Reload the
   page after editing action utils.
 

@@ -16,6 +16,7 @@ import { ChatPanel } from './components/ChatPanel'
 import { ChatPanelFallback } from './components/ChatPanelFallback'
 import { CustomHelperButtons } from './components/CustomHelperButtons'
 import { AgentHighlightOverlayUtil } from './overlays/AgentHighlightOverlayUtil'
+import { TutorCursorOverlayUtil } from './overlays/TutorCursorOverlayUtil'
 import { TUTOR_SHAPE_UTILS } from './shapes/tutorShapeUtils'
 import { TargetAreaTool } from './tools/TargetAreaTool'
 import { TargetShapeTool } from './tools/TargetShapeTool'
@@ -25,7 +26,7 @@ DefaultSizeStyle.setDefaultValue('s')
 
 // Custom tools for picking context items
 const tools = [TargetShapeTool, TargetAreaTool]
-const overlayUtils = [AgentHighlightOverlayUtil]
+const overlayUtils = [AgentHighlightOverlayUtil, TutorCursorOverlayUtil]
 const overrides: TLUiOverrides = {
 	tools: (editor, tools) => {
 		return {

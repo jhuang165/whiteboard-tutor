@@ -4,6 +4,7 @@ import { ChatHistoryItem } from '../../../shared/types/ChatHistoryItem'
 import { Streaming } from '../../../shared/types/Streaming'
 import { AgentActionUtil, getAgentActionUtilsRecordForMode } from '../../actions/AgentActionUtil'
 import { AgentHelpers } from '../../AgentHelpers'
+import { TutorPresence } from '../../tutor/TutorPresence'
 import type { TldrawAgent } from '../TldrawAgent'
 import { BaseAgentManager } from './BaseAgentManager'
 
@@ -112,6 +113,9 @@ export class AgentActionManager extends BaseAgentManager {
 		} finally {
 			this.agent.setIsActingOnEditor(false)
 		}
+
+		// Let the tutor's cursor go to new marks and write them in (PLAN §3).
+		TutorPresence.get(editor).onActionDiff(diff, action.complete)
 
 		// Add the action to chat history
 		if (util.savesToHistory()) {

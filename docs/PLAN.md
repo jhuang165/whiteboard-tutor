@@ -270,9 +270,23 @@ tested on probability first (§8 #1: the app itself is general purpose).
   new `corrected-read-check` where the student's correction turns a right read into a wrong
   answer. Through the bridge, 218/218 checks passed over two runs of all 20 cases: the tutor
   transcribed each line before its verdict, and with chips already on the board it didn't
-  transcribe again and graded the corrected 0.68 as a slip.
-- Tutor presence cursor and stroke animation, the representation library, and opt-in
-  proactive watching with triage.
+  transcribe again and graded the corrected 0.68 as a slip. On 2026-11-03 a live Check turn
+  in the app (bridge, synthetic ink for `2x = 10`, `x = 5`) put one high-confidence chip on
+  each line before a correct verdict.
+- [x] Tutor presence, 2026-11-03 (`client/tutor/TutorPresence.ts`,
+  `client/overlays/TutorCursorOverlayUtil.ts`). A violet "Tutor" cursor shows up beside the
+  student's work when a turn starts, with cycling dots while the tutor thinks. Each new
+  tutor mark waits hidden; the cursor travels to it and the mark writes in along its
+  writing direction (arrows from start to end) while the cursor moves across it, one mark
+  at a time, faster when several are waiting. Marks that already stream in (`pen`,
+  `create`) aren't hidden, and the cursor follows their leading edge. The reveal is a
+  stylesheet rule on the shape's DOM node, not a store change, so undo, the chat's diff
+  previews, and the model's screenshots never see a half-written mark. The cursor fades
+  about a second after the tutor goes idle. Reduced motion (tldraw's animation speed 0)
+  turns it all off. Checked on live Check and Hint turns through the bridge. A page in a
+  background tab gets no animation frames, so its marks write in when the student comes
+  back.
+- The representation library, and opt-in proactive watching with triage.
 
 **Phase 4: materials.**
 

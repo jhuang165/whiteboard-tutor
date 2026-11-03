@@ -12,7 +12,7 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip. Most eval cases
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip and tutor cursor. Most eval cases
 and example problems are probability, with a few in algebra, geometry, calculus, and linear
 algebra; other subjects aren't tested yet.
 
@@ -28,6 +28,8 @@ Working now:
   read" chip beside it. A read it isn't sure of is dashed and says which part is unclear,
   and the tutor won't mark it wrong until the student confirms. **Not what I wrote** on the
   chip lets the student type the line, and the tutor grades that.
+- Tutor presence: a violet tutor cursor appears when a turn starts, goes to each new mark,
+  and writes it in instead of popping it onto the board.
 - Problems and math: `pose-problem` puts one problem in a frame with a work area below it,
   moves the view there, and hands the student the pen. `write-math` typesets a formula
   with KaTeX in tutor ink.
