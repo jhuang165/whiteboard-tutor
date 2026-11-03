@@ -17,7 +17,7 @@ export const TUTOR_INK = {
 	incorrect: 'red',
 } as const
 
-export type TutorMarkKind = 'hint' | 'error' | 'verdict' | 'drawing' | 'math' | 'problem'
+export type TutorMarkKind = 'hint' | 'error' | 'verdict' | 'drawing' | 'math' | 'problem' | 'transcription'
 
 /**
  * Meta for a tutor mark. `note` is shown to the model in its shape list, so it can tell its

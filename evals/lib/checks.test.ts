@@ -8,6 +8,7 @@ import {
 	checkPosedProblems,
 	checkQuestions,
 	checkRequired,
+	checkTranscription,
 	checkVerdict,
 	containsValue,
 	type EvalAction,
@@ -30,6 +31,14 @@ const hint = (rung: string, anchorShapeId: string, text = 'Look at the second li
 	anchorShapeId,
 })
 const message = (text: string): EvalAction => ({ _type: 'message', text })
+const transcribe = (shapeIds: string[], confidence = 'high', unsure = ''): EvalAction => ({
+	_type: 'transcribe',
+	intent: 'Read the line',
+	shapeIds,
+	latex: '0.63',
+	confidence,
+	unsure,
+})
 
 describe('containsValue', () => {
 	it('matches whole numbers only', () => {
@@ -50,6 +59,12 @@ describe('findQuestions', () => {
 			message('Good start. What happens when A is false?'),
 		]
 		expect(findQuestions(actions)).toEqual(['Does B only happen when A happens?', 'What happens when A is false?'])
+	})
+
+	it('skips an intent the chat shows the hint text in place of', () => {
+		const hint = { _type: 'hint', rung: 'H2', text: 'Which events split the sample space?', intent: 'Is it Bayes?' }
+		expect(findQuestions([hint])).toEqual(['Which events split the sample space?'])
+		expect(findQuestions([{ ...hint, text: '' }])).toEqual(['Is it Bayes?'])
 	})
 
 	it('keeps decimals inside a question', () => {
@@ -134,6 +149,26 @@ describe('checks', () => {
 		expect(checkPosedProblems([pose('factoring-quadratics')], 1, ['factoring-quadratics']).pass).toBe(true)
 		expect(checkPosedProblems([pose('bayes-rule')], 1, ['factoring-quadratics']).pass).toBe(false)
 		expect(checkPosedProblems([pose('bayes-rule')], 1).pass).toBe(true)
+	})
+
+	it('transcribes-first wants each line read before the first judgment', () => {
+		expect(checkTranscription([transcribe(['line1', 'line3']), verdict('correct')], ['line3']).pass).toBe(true)
+		expect(checkTranscription([verdict('correct'), transcribe(['line3'])], ['line3']).pass).toBe(false)
+		expect(checkTranscription([transcribe(['line1']), verdict('correct')], ['line3']).pass).toBe(false)
+		expect(checkTranscription([transcribe(['line3'])], ['line3']).pass).toBe(true)
+	})
+
+	it('transcribes-first fails a wrong mark on a low-confidence read', () => {
+		const unsure = transcribe(['line1'], 'low', 'the last digit could be a 3 or an 8')
+		expect(checkTranscription([unsure, markError('line1')], ['line1']).pass).toBe(false)
+		expect(checkTranscription([unsure, verdict('incorrect')], ['line1']).pass).toBe(false)
+		expect(checkTranscription([unsure, verdict('correct')], ['line1']).pass).toBe(true)
+		expect(checkTranscription([unsure, message('Is that last digit a 3 or an 8?')], ['line1']).pass).toBe(true)
+		expect(checkTranscription([transcribe(['line1']), markError('line1')], ['line1']).pass).toBe(true)
+	})
+
+	it('counts the unsure note as visible text', () => {
+		expect(findQuestions([transcribe(['line1'], 'low', 'Is it a 3 or an 8?')])).toHaveLength(1)
 	})
 
 	it('flags actions outside the mode', () => {

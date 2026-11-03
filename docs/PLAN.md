@@ -193,7 +193,9 @@ tested on probability first (§8 #1: the app itself is general purpose).
   (`evals/fixtures/`), `reviewConcept`, `required` content, and a list of allowed verdicts,
   and rejects bare-number problem titles. Through the bridge, 141/142 checks passed over two
   runs of all 13 cases; the one failure was a second question in a hint's `intent` on
-  posed-problem-hint.
+  posed-problem-hint. That was a false positive, fixed 2026-11-03: the chat shows a hint's
+  text, an error label, or a problem statement in place of the action's `intent`, so the
+  question count skips the intent there (leak checks still read it).
 - [x] General math, 2026-11-02 (§8 #1). The tutor prompt, the `pose-problem` description,
   and the `/verify` prompt no longer name probability, and the Wait-what representation
   list gained graphs and worked numeric examples. Six non-probability cases: an algebra
@@ -255,8 +257,22 @@ tested on probability first (§8 #1: the app itself is general purpose).
 
 **Phase 3: feel.**
 
-- Tutor presence cursor and stroke animation, the transcription chip, the representation
-  library, and opt-in proactive watching with triage.
+- [x] Transcription chip, 2026-11-03 (C3). The `transcribe` action puts a faint "Here's
+  what I read" chip beside one line of student ink, with the read in KaTeX
+  (`client/shapes/TranscriptionShapeUtil.tsx`, `client/actions/TranscribeActionUtil.ts`).
+  A low-confidence read gets a dashed amber border and names the unsure part. The tutor
+  transcribes each line it judges before the verdict or error mark, and never marks wrong on
+  a low-confidence read. The chip is locked, but the student can click **Not what I wrote**
+  and type what they wrote. The correction is in the chip's text in the tutor's shape list,
+  and the tutor grades it instead of its own read. Chips don't count toward the C4 mark
+  budget. Shapes the model sees now carry their `note` (`meta.note`), which the prompt
+  already promised for tutor marks. Evals: `transcribes` on `ambiguous-digit-check`, and a
+  new `corrected-read-check` where the student's correction turns a right read into a wrong
+  answer. Through the bridge, 218/218 checks passed over two runs of all 20 cases: the tutor
+  transcribed each line before its verdict, and with chips already on the board it didn't
+  transcribe again and graded the corrected 0.68 as a slip.
+- Tutor presence cursor and stroke animation, the representation library, and opt-in
+  proactive watching with triage.
 
 **Phase 4: materials.**
 

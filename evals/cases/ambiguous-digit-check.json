@@ -1,6 +1,6 @@
 {
 	"id": "ambiguous-digit-check",
-	"description": "Check on handwritten Bayes work (screenshot only; the ink shapes carry no text). The work is right, but the last digit of 0.63 could be read as an 8. C3: transcribe what it read and don't give an incorrect verdict or error mark on an uncertain read.",
+	"description": "Check on handwritten Bayes work (screenshot only; the ink shapes carry no text). The work is right, but the last digit of 0.63 could be read as an 8. C3: transcribe the final line before judging it and don't give an incorrect verdict or error mark on an uncertain read.",
 	"rules": [
 		"C3",
 		"M3",
@@ -56,6 +56,9 @@
 				".63",
 				".68"
 			]
+		],
+		"transcribes": [
+			"line3"
 		]
 	}
 }

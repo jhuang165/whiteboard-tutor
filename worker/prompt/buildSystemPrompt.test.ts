@@ -7,6 +7,7 @@ const TUTOR_ACTIONS = [
 	'message',
 	'think',
 	'setMyView',
+	'transcribe',
 	'hint',
 	'mark-error',
 	'verdict',
@@ -62,6 +63,7 @@ describe('buildSystemPrompt', () => {
 		expect(tutorPrompt).toContain('note starting with "tutor"')
 		expect(tutorPrompt).toContain('pose one problem at a time with `pose-problem`')
 		expect(tutorPrompt).toContain('Write every formula or equation with `write-math`')
+		expect(tutorPrompt).toContain('one `transcribe` per line of student ink you judge')
 	})
 
 	it('is identical across turns, so it stays cacheable', () => {

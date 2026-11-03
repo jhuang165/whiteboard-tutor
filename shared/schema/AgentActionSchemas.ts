@@ -194,6 +194,24 @@ export const WriteMathAction = z
 
 export type WriteMathAction = z.infer<typeof WriteMathAction>
 
+// Transcribe Action
+export const TranscribeAction = z
+	.object({
+		_type: z.literal('transcribe'),
+		intent: z.string(),
+		shapeIds: z.array(SimpleShapeIdSchema),
+		latex: z.string(),
+		confidence: z.enum(['high', 'low']),
+		unsure: z.string(),
+	})
+	.meta({
+		title: 'Transcribe',
+		description:
+			"The tutor shows what it read from the student's handwriting, in a faint \"Here's what I read\" chip beside it, before judging it (C3). `shapeIds` are the student ink shapes that make up one line of work. `latex` is the read, as KaTeX-compatible LaTeX without surrounding `$`. `confidence` is `low` when any part could be read another way; then `unsure` names that part as a short statement (\"the last digit: 3 or 8\"), otherwise it is an empty string. The student can click the chip to correct the read. Use it for handwriting only, not typed text. The chip is placed automatically and does not count as a mark.",
+	})
+
+export type TranscribeAction = z.infer<typeof TranscribeAction>
+
 // Delete Action
 export const DeleteAction = z
 	.object({

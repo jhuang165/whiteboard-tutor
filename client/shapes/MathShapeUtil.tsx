@@ -94,18 +94,19 @@ function MathComponent({ shape }: { shape: MathShape }) {
 }
 
 /** Keep `w` and `h` equal to the rendered size. The shape is locked, so ignore the lock. */
-function useFitToContent(editor: Editor, id: TLShapeId, ref: RefObject<HTMLElement | null>) {
+export function useFitToContent(editor: Editor, id: TLShapeId, ref: RefObject<HTMLElement | null>) {
 	useLayoutEffect(() => {
 		const el = ref.current
 		if (!el) return
 
 		const fit = () => {
-			const shape = editor.getShape<MathShape>(id)
+			// Any tutor shape whose props hold its own `w` and `h`.
+			const shape = editor.getShape(id) as MathShape | undefined
 			const w = Math.ceil(el.offsetWidth)
 			const h = Math.ceil(el.offsetHeight)
 			if (!shape || w === 0 || h === 0) return
 			if (shape.props.w === w && shape.props.h === h) return
-			editor.run(() => editor.updateShape<MathShape>({ id, type: 'math', props: { w, h } }), {
+			editor.run(() => editor.updateShape<MathShape>({ id, type: shape.type, props: { w, h } }), {
 				ignoreShapeLock: true,
 				history: 'ignore',
 			})

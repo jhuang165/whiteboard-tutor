@@ -25,6 +25,7 @@ import { SendToBackActionUtil } from '../actions/SendToBackActionUtil'
 import { SetMyViewActionUtil } from '../actions/SetMyViewActionUtil'
 import { StackActionUtil } from '../actions/StackActionUtil'
 import { ThinkActionUtil } from '../actions/ThinkActionUtil'
+import { TranscribeActionUtil } from '../actions/TranscribeActionUtil'
 import { UnknownActionUtil } from '../actions/UnknownActionUtil'
 import { UpdateActionUtil } from '../actions/UpdateActionUtil'
 import { UpsertTodoListItemActionUtil } from '../actions/UpsertTodoListItemActionUtil'
@@ -156,6 +157,7 @@ export const AGENT_MODE_DEFINITIONS = [
 			SetMyViewActionUtil.type,
 
 			// Tutor marks (placed beside student work, locked)
+			TranscribeActionUtil.type,
 			HintActionUtil.type,
 			MarkErrorActionUtil.type,
 			VerdictActionUtil.type,

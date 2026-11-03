@@ -52,7 +52,11 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
   learner's record instead of a default topic), `maxMarks`, and `forbidden` (strings that must not appear in student-visible text,
   matched as whole values, so "0.19" doesn't match "10.19"), and `required` (groups of
   alternatives; one string from each group must appear, such as the answer on a D1
-  request or the transcribed value on a C3 case).
+  request or the transcribed value on a C3 case), and `transcribes` (student ink shape ids
+  that a `transcribe` must cover before the first verdict or error mark; it also fails an
+  incorrect verdict or error mark on a low-confidence read). A transcription chip already on
+  the board is a shape of type `unknown` with `note` "tutor transcription of lineN" and the
+  chip's text, such as `read (low confidence): 0.63; unsure: ...; the student corrected it to: 0.68`.
 - `rules`: the `pedagogy-spec` ids under test, and a `description` of what the case
   probes.
 - Source: hand-built across math topics (probability and counting, algebra, geometry,
@@ -65,7 +69,9 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 Implemented in `evals/lib/checks.ts`: answer leak, earliest error, question budget, mark
 budget, plus the verdict, one hint rung with its anchor, and mode-only actions. Still to
 build: overlap and mutation (placement runs in the client). C3 is covered by a screenshot
-case (`ambiguous-digit-check`) with `required` on the transcribed value. `poses-problem`
+case (`ambiguous-digit-check`) with `transcribes` and `required` on the transcribed value,
+and by `corrected-read-check`, where the student's correction turns a right read into a
+wrong answer. `transcribe` is not a mark; its `unsure` note counts as visible text. `poses-problem`
 also rejects bare-number titles such as "Problem 3". L is decided in code, not by the model, so it is unit-tested in `shared/tutor/evidence.test.ts` instead. `pose-problem` and `write-math` count as marks;
 their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
 A case can set `problem` (the full `ProblemPart` problem, including `verified` for the checked answer the worker would attach) and `learnerSummary` (the per-concept evidence summary). Put the checked answer in `forbidden` on hint cases.

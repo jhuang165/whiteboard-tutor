@@ -1,0 +1,87 @@
+{
+	"id": "corrected-read-check",
+	"description": "Check after the student corrected a transcription chip. The tutor read the last line as 0.63 (low confidence), and the student says they wrote 0.68, which is wrong (0.12/0.19 is about 0.632). C3: grade what the student says they wrote, not the earlier read, and don't transcribe lines that already have a chip.",
+	"rules": [
+		"C3",
+		"M3",
+		"E1",
+		"Q1"
+	],
+	"intent": "check",
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: P(A) = 0.3, P(B|A) = 0.4, P(B|not A) = 0.1. Find P(A|B).",
+			"x": 0,
+			"y": 0,
+			"w": 910,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"type": "draw",
+			"x": 0,
+			"y": 80,
+			"w": 505,
+			"h": 50
+		},
+		{
+			"shapeId": "read1",
+			"type": "unknown",
+			"note": "tutor transcription of line1",
+			"text": "read (high confidence): P(B) = .4(.3) + .1(.7) = .19",
+			"x": 520,
+			"y": 80,
+			"w": 300,
+			"h": 50
+		},
+		{
+			"shapeId": "line2",
+			"type": "draw",
+			"x": 0,
+			"y": 170,
+			"w": 340,
+			"h": 50
+		},
+		{
+			"shapeId": "read2",
+			"type": "unknown",
+			"note": "tutor transcription of line2",
+			"text": "read (high confidence): P(A|B) = .12 / .19",
+			"x": 360,
+			"y": 170,
+			"w": 220,
+			"h": 50
+		},
+		{
+			"shapeId": "line3",
+			"type": "draw",
+			"x": 0,
+			"y": 260,
+			"w": 120,
+			"h": 60
+		},
+		{
+			"shapeId": "read3",
+			"type": "unknown",
+			"note": "tutor transcription of line3",
+			"text": "read (low confidence): \\approx 0.63; unsure: the last digit could be a 3 or an 8; the student corrected it to: ≈ 0.68",
+			"x": 140,
+			"y": 260,
+			"w": 260,
+			"h": 80
+		}
+	],
+	"expect": {
+		"verdict": "incorrect",
+		"markErrorOn": "line3",
+		"errorKind": "slip",
+		"maxQuestions": 1,
+		"forbidden": [
+			"0.632",
+			".632",
+			"0.6316",
+			".6316"
+		]
+	}
+}

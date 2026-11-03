@@ -71,9 +71,14 @@ numeric answer never appears in rungs H1–H4.
 - **C1** Never move, edit, or delete student shapes. Tutor shapes are locked, use the
   tutor ink style, and carry `meta.author = 'tutor'`.
 - **C2** Every annotation is anchored to a specific student shape or region.
-- **C3** Before judging handwriting, transcribe it ("Here's what I read"). Do not mark ✗ on
-  a low-confidence read; confirm the read first.
-- **C4** In problem mode, at most one new tutor mark per turn. Don't clutter.
+- **C3** Before judging handwriting, transcribe it ("Here's what I read"): one `transcribe`
+  chip per line of ink the turn judges, placed before the verdict or error mark. A
+  low-confidence read is marked as such and names the unsure part. Do not mark ✗ on a
+  low-confidence read; confirm the read first. The student can click a chip and type what
+  they actually wrote; the tutor then grades the correction, not its own read, and doesn't
+  transcribe a line that already has a chip. Typed text needs no chip.
+- **C4** In problem mode, at most one new tutor mark per turn. Don't clutter. Transcription
+  chips are readings, not marks, so they don't count.
 
 ## Direct requests (D)
 

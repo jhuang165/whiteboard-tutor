@@ -83,4 +83,9 @@ export interface EvalExpectations {
 	 * least one string from every group must appear (such as the answer on a D1 request).
 	 */
 	required?: string[][]
+	/**
+	 * Student ink shapes the turn must transcribe before judging (C3). The check also fails
+	 * an incorrect verdict or error mark on a shape whose read was low confidence.
+	 */
+	transcribes?: string[]
 }

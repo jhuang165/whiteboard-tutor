@@ -32,7 +32,7 @@ export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: Tut
 		}
 		case 'check':
 			return [
-				'Tutor turn: the student pressed **Check**. Use M3 Review. Transcribe the handwriting you are judging first (C3). Give a verdict, then mark only the earliest substantive error and classify it as a slip or a misconception (E1). If the work is correct, say so specifically (T). Leave a sound method intact.',
+				'Tutor turn: the student pressed **Check**. Use M3 Review. Transcribe the handwriting you are judging first, and confirm any unsure read before marking it wrong (C3). Give a verdict, then mark only the earliest substantive error and classify it as a slip or a misconception (E1). If the work is correct, say so specifically (T). Leave a sound method intact.',
 			]
 		case 'wait-what':
 			return [

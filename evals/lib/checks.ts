@@ -14,7 +14,17 @@ export interface CheckResult {
 const MARK_ACTIONS = new Set(['hint', 'mark-error', 'verdict', 'pose-problem', 'write-math', 'create', 'pen'])
 
 /** Fields the student can read: chat text, board text, labels, and the action summaries the chat shows. */
-const VISIBLE_KEYS = new Set(['text', 'label', 'intent'])
+const VISIBLE_KEYS = new Set(['text', 'label', 'intent', 'unsure'])
+
+/**
+ * The field each action's chat line shows in place of its `intent` (its util's `getInfo`).
+ * When that field is set, the intent never reaches the student.
+ */
+const SHOWN_INSTEAD_OF_INTENT: Record<string, string> = {
+	hint: 'text',
+	'mark-error': 'label',
+	'pose-problem': 'statement',
+}
 
 /**
  * Board content the student reads that isn't the tutor asking them something: math and posed
@@ -38,8 +48,43 @@ export function runChecks(evalCase: EvalCase, actions: EvalAction[], allowedActi
 	if (expect.maxMarks !== undefined) results.push(checkMarks(actions, expect.maxMarks))
 	if (expect.forbidden?.length) results.push(checkNoLeak(actions, expect.forbidden))
 	if (expect.required?.length) results.push(checkRequired(actions, expect.required, evalCase.rules))
+	if (expect.transcribes?.length) results.push(checkTranscription(actions, expect.transcribes))
 
 	return results
+}
+
+/**
+ * C3: every listed ink shape is transcribed before the first verdict or error mark, and no
+ * incorrect verdict or error mark rests on a low-confidence read.
+ */
+export function checkTranscription(actions: EvalAction[], shapes: string[]): CheckResult {
+	const problems: string[] = []
+	const reads = actions.filter((a) => a._type === 'transcribe')
+	const readIds = (a: EvalAction) => (Array.isArray(a.shapeIds) ? a.shapeIds.map(String) : [])
+
+	const missing = shapes.filter((id) => !reads.some((r) => readIds(r).includes(id)))
+	if (missing.length) problems.push(`not transcribed: ${missing.join(', ')}`)
+
+	const firstRead = actions.findIndex((a) => a._type === 'transcribe')
+	const firstJudgment = actions.findIndex((a) => a._type === 'verdict' || a._type === 'mark-error')
+	if (firstJudgment !== -1 && (firstRead === -1 || firstRead > firstJudgment)) {
+		problems.push('judged before transcribing')
+	}
+
+	const unsure = new Set(reads.filter((r) => r.confidence === 'low').flatMap(readIds))
+	const judgedUnsure = actions.filter(
+		(a) =>
+			(a._type === 'mark-error' && unsure.has(String(a.shapeId))) ||
+			(a._type === 'verdict' && a.verdict === 'incorrect' && readIds(a).some((id) => unsure.has(id)))
+	)
+	if (judgedUnsure.length) problems.push(`marked wrong on a low-confidence read: ${judgedUnsure.map((a) => a._type).join(', ')}`)
+
+	return {
+		check: 'transcribes-first',
+		rule: 'C3',
+		pass: problems.length === 0,
+		detail: problems.length ? problems.join('; ') : `transcribed ${shapes.join(', ')} before judging`,
+	}
 }
 
 export function checkAllowedActions(actions: EvalAction[], allowed: readonly string[]): CheckResult {
@@ -188,11 +233,12 @@ export function checkRequired(actions: EvalAction[], groups: string[][], rules: 
 
 /**
  * Distinct questions in the student-visible text. A question the tutor repeats, such as a
- * mark's label echoed in its intent, counts once.
+ * mark's label echoed in its intent, counts once. An intent the chat doesn't show is skipped
+ * here; the leak checks still read it, to stay strict.
  */
 export function findQuestions(actions: EvalAction[]): string[] {
 	const questions = new Map<string, string>()
-	for (const text of visibleText(actions)) {
+	for (const text of visibleText(actions.map(withoutHiddenIntent))) {
 		// A sentence ends at ?, !, a newline, or a period not inside a number like 0.1.
 		for (const match of text.matchAll(/(?:[^.?!\n]|\.(?=\d))*\?/g)) {
 			const question = match[0].trim()
@@ -201,6 +247,13 @@ export function findQuestions(actions: EvalAction[]): string[] {
 		}
 	}
 	return [...questions.values()]
+}
+
+function withoutHiddenIntent(action: EvalAction): EvalAction {
+	const shown = SHOWN_INSTEAD_OF_INTENT[action._type]
+	if (!shown || typeof action[shown] !== 'string' || action[shown] === '') return action
+	const { intent: _hidden, ...rest } = action
+	return rest as EvalAction
 }
 
 /** The student-visible strings in every action except `think`, which the chat collapses. */

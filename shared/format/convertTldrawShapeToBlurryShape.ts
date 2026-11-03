@@ -20,6 +20,7 @@ export function convertTldrawShapeToBlurryShape(
 	const text = util.getText(shape)
 
 	const shapeType = convertTldrawShapeToFocusedType(shape)
+	const note = typeof shape.meta.note === 'string' ? shape.meta.note : ''
 
 	return {
 		x: Math.round(bounds.x),
@@ -29,5 +30,6 @@ export function convertTldrawShapeToBlurryShape(
 		type: shapeType as FocusedShape['_type'],
 		shapeId: convertTldrawIdToSimpleId(shape.id),
 		text,
+		...(note ? { note } : {}),
 	}
 }

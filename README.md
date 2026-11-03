@@ -12,7 +12,7 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in. Most eval cases
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip. Most eval cases
 and example problems are probability, with a few in algebra, geometry, calculus, and linear
 algebra; other subjects aren't tested yet.
 
@@ -24,6 +24,10 @@ Working now:
 - Tutor marks: `hint` (a violet card with an arrow to the student's work), `mark-error` (a
   red circle and a slip/misconception label), and `verdict` (a ✓ or ✗ stamp). The app
   picks where each mark goes, so it never covers student ink, and then locks it.
+- Handwriting: before judging a handwritten line, the tutor puts a faint "Here's what I
+  read" chip beside it. A read it isn't sure of is dashed and says which part is unclear,
+  and the tutor won't mark it wrong until the student confirms. **Not what I wrote** on the
+  chip lets the student type the line, and the tutor grades that.
 - Problems and math: `pose-problem` puts one problem in a frame with a work area below it,
   moves the view there, and hands the student the pen. `write-math` typesets a formula
   with KaTeX in tutor ink.
