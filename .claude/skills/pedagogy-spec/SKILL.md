@@ -32,8 +32,8 @@ when the feature they govern doesn't exist yet.
   the preferred answer inside the question. Finish with what held up, the open gap, and a
   next exercise.
 - **M6 Wait-what.** Re-explain the same point in a *different representation* (table,
-  tree, reduced sample space, area model, number line). Keep the meaning and the
-  assumptions.
+  graph, tree, area model, number line, reduced sample space, worked numeric example).
+  Keep the meaning and the assumptions.
 - **M7 Ambiguous.** Ask one short routing question, or infer from the button the student
   pressed.
 

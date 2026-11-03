@@ -129,6 +129,13 @@ describe('checks', () => {
 		expect(checkPosedProblems([titled('Two dice, at least one six')], 1).pass).toBe(true)
 	})
 
+	it('poses-problem can limit the concept to the learner record', () => {
+		const pose = (concept: string): EvalAction => ({ _type: 'pose-problem', concept, title: 'A parabola', statement: 'Factor x^2 - 5x + 6.' })
+		expect(checkPosedProblems([pose('factoring-quadratics')], 1, ['factoring-quadratics']).pass).toBe(true)
+		expect(checkPosedProblems([pose('bayes-rule')], 1, ['factoring-quadratics']).pass).toBe(false)
+		expect(checkPosedProblems([pose('bayes-rule')], 1).pass).toBe(true)
+	})
+
 	it('flags actions outside the mode', () => {
 		expect(checkAllowedActions([message('x'), { _type: 'delete' }], ['message']).pass).toBe(false)
 	})

@@ -72,6 +72,8 @@ export interface EvalExpectations {
 	maxQuestions?: number
 	/** How many `pose-problem` actions the turn must contain, each with a concept, title, and statement (M4). */
 	posesProblem?: number
+	/** The concept slugs a posed problem may test, such as the one the learner's record points at (M4). */
+	posesConceptIn?: string[]
 	/** Most new tutor marks allowed (C4). */
 	maxMarks?: number
 	/** Strings that must not appear in student-visible text, such as the final answer. */

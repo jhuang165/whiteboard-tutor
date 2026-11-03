@@ -1,0 +1,25 @@
+{
+	"id": "derivative-power-explain",
+	"description": "A calculus concept question under Explain. M1 explains directly with zero questions and no verdict or error mark.",
+	"rules": [
+		"M1",
+		"Q2",
+		"Q3"
+	],
+	"intent": "explain",
+	"board": [
+		{
+			"shapeId": "question",
+			"text": "Why does the derivative of x^2 come out as 2x?",
+			"x": 0,
+			"y": 0,
+			"w": 658,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"maxQuestions": 0
+	}
+}

@@ -1,0 +1,71 @@
+{
+	"id": "ladder-wrong-side-hint",
+	"description": "Geometry: the ladder's length (the hypotenuse) is used as a leg in the Pythagorean theorem. First Hint press: exactly one hint below H5, anchored at the broken step, one mark, no answer.",
+	"rules": [
+		"M2",
+		"H",
+		"C2",
+		"C4",
+		"Q1"
+	],
+	"intent": "hint",
+	"hintsGiven": 0,
+	"board": [
+		{
+			"shapeId": "problem",
+			"text": "Problem: A 10 ft ladder leans against a wall. Its base is 6 ft from the wall. How high up the wall does it reach?",
+			"x": 0,
+			"y": 0,
+			"w": 1582,
+			"h": 40
+		},
+		{
+			"shapeId": "line1",
+			"text": "a^2 + b^2 = c^2",
+			"x": 0,
+			"y": 80,
+			"w": 210,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "6^2 + 10^2 = c^2",
+			"x": 0,
+			"y": 160,
+			"w": 224,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "c^2 = 136, c = 11.66",
+			"x": 0,
+			"y": 240,
+			"w": 280,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 1,
+		"hintRungs": [
+			"H1",
+			"H2",
+			"H3",
+			"H4"
+		],
+		"hintAnchorIn": [
+			"line2",
+			"line3"
+		],
+		"maxMarks": 1,
+		"maxQuestions": 1,
+		"forbidden": [
+			"8",
+			"8 ft",
+			"8 feet",
+			"64",
+			"sqrt(64)"
+		]
+	}
+}

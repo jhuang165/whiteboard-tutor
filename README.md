@@ -1,18 +1,20 @@
 # whiteboard-tutor
 
-A math tutor that works on a shared whiteboard. The student writes and sketches on a
+A general-purpose tutor that works on a shared whiteboard, starting with math. The student writes and sketches on a
 [tldraw](https://tldraw.dev) canvas. A Claude-backed tutor reads the board and answers on
 it: a hint card next to the line where the student is stuck, a circle around the first
 wrong step, a ✓ or ✗ beside a finished answer, or a worked example in its own ink.
 
-The tutoring behavior comes from a set of DATA 21100 (probability) tutoring skills, turned
+The tutoring behavior comes from a set of probability tutoring skills, turned
 into rules for a canvas: one hint rung per turn, at most one question per turn, never give
 away the answer unasked, and never write over or change the student's work. The full
 design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in.
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence) are in. Most eval cases
+and example problems are probability, with a few in algebra, geometry, calculus, and linear
+algebra; other subjects aren't tested yet.
 
 Working now:
 
@@ -127,5 +129,5 @@ as they arrive.
   hobby, or commercial). The "made with tldraw" watermark stays.
 - The agent starter kit template is MIT: [LICENSE-tldraw-agent-template.md](LICENSE-tldraw-agent-template.md).
 - Each adapted skill under `pedagogy/source-skills/` keeps its upstream LICENSE in its own
-  folder. `academic-tutor` was written for the course and has no upstream. Sources are
-  listed in [pedagogy/PROVENANCE-data21100.md](pedagogy/PROVENANCE-data21100.md).
+  folder. `academic-tutor` has no upstream. Sources are listed in the provenance note in
+  [pedagogy/](pedagogy/).

@@ -134,8 +134,8 @@ license.
 - [x] Vitest (`npm test`), added with the first Phase 1 slice.
 - [ ] Lint and Playwright. Deferred until there is UI flow worth testing end to end.
 
-**Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; v1 subject
-assumed to be probability (§8 #1 recommendation) until decided.
+**Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; built and
+tested on probability first (§8 #1: the app itself is general purpose).
 
 - [x] Problem frame plus pen, 2026-11-02. `pose-problem` puts one problem in a locked
   `problem-frame` shape (`client/shapes/ProblemFrameShapeUtil.tsx`): the statement on top,
@@ -194,6 +194,13 @@ assumed to be probability (§8 #1 recommendation) until decided.
   and rejects bare-number problem titles. Through the bridge, 141/142 checks passed over two
   runs of all 13 cases; the one failure was a second question in a hint's `intent` on
   posed-problem-hint.
+- [x] General math, 2026-11-02 (§8 #1). The tutor prompt, the `pose-problem` description,
+  and the `/verify` prompt no longer name probability, and the Wait-what representation
+  list gained graphs and worked numeric examples. Six non-probability cases: an algebra
+  sign slip (Check), a product-rule misconception (Check), a Pythagorean hint, a correct
+  determinant (Check), a derivative Explain, and a Quiz me whose learner record holds only
+  algebra concepts (checked with a new `posesConceptIn` expectation). Through the bridge,
+  206/206 checks passed over two runs of all 19 cases.
 - [ ] The judged MRBench rubric, long-session replays, and a handwriting case the model
   actually misreads (on the fixture it read 0.63 both times).
 - Done when: in a probability problem with a planted error, Check points at the right line,
@@ -245,6 +252,8 @@ assumed to be probability (§8 #1 recommendation) until decided.
 **Phase 4: materials.**
 
 - PDF ingest (`tutor-setup`), a `teach` plan drawn as a concept graph, and Grill mode.
+- Canvas import: class materials from the student's Canvas course become problem frames,
+  read-only (§10).
 
 **Phase 5: stretch.**
 
@@ -315,7 +324,8 @@ Written once the code they describe exists (Phase 1–3):
 - **MCP:** Playwright MCP (drive the canvas), Chrome DevTools MCP (debug streaming and
   performance), Context7 (`/tldraw/tldraw` lags at v4.2, so prefer `tldraw.dev/llms-*.txt`),
   and the **tldraw MCP app**, whose `exec` against a live canvas is useful for prototyping
-  actions.
+  actions. **canvas-mcp** (vishalsachdev/canvas-mcp, MIT) is for exploring a real Canvas
+  course in development only; the product doesn't depend on it (§10).
 
 ### 7.3 Research that becomes rules or evals
 
@@ -350,8 +360,12 @@ hosting.
 
 ## 8. Open decisions (yours)
 
-1. **Subject scope for v1.** Probability/DATA 21100 only (recommended: we have the
-   materials, misconceptions, and seed evals), or general math?
+1. **Subject scope.** Decided 2026-11-02: a general-purpose tutor that starts with math,
+   not probability only. Other subjects come after math works. Probability stays the best
+   tested topic, since the materials, misconceptions, and seed evals are there. Done
+   2026-11-02: the probability wording is out of the tutor prompt, the `pose-problem`
+   description, and the `/verify` prompt, and six non-probability math cases are in (§5).
+   In `pedagogy-spec` only the M6 representation list changed.
 2. **Audience.** Just you and classmates (hobby license, simple auth), or a product for
    others (commercial license, accounts, privacy)?
 3. **Second model for triage.** Haiku 5.5 for "should I intervene?", or Opus 5.5 at low
@@ -361,6 +375,10 @@ hosting.
 5. **Voice in v1?** It's a large scope jump. The recommendation is Phase 5.
 6. **Hosting.** Cloudflare (the kit's default, Durable Objects fit per-student state) or
    something else?
+7. **Canvas access.** Scope decided 2026-11-02: read-only, class materials only (§10.1).
+   Still open: does your Canvas let students create access tokens (step C0)?
+8. **Graded assignments.** Show them as context only (recommended), or turn them into
+   problem frames too (§10.6)?
 
 ## 9. Risks
 
@@ -378,3 +396,128 @@ hosting.
   harjothkhara/whiteboard-tutor (built on the agent kit), abdulhamid-n/AI-notebook
   (Mathpix OCR), and SohailElskhawy/ai-live-tutor. Skim them in Phase 0 for pitfalls. The
   differentiator here is the pedagogy, the evidence model, and the evals.
+- **Canvas token and course data** (§10). A personal access token is a credential for the
+  student's whole Canvas account, and course pages can hold instructor answer keys.
+  Mitigations: a GET-only endpoint allowlist that excludes grades and submissions, a token
+  the worker never stores or logs, and solution text kept on the worker side.
+
+## 10. Canvas integration (draft)
+
+Drafted 2026-11-02. Not started; step C0 gates the rest.
+
+The tutor can pull class materials from the student's Canvas course (lecture pages, module
+items, files, the syllabus) and turn them into problems on the board. Where a course
+already lives in Canvas, this replaces manual upload for the Phase 4 `tutor-setup` path.
+
+### 10.1 Scope (decided 2026-11-02)
+
+**Read-only, class materials only.** The app never writes to Canvas.
+
+- **In:** the course list; the syllabus (`include[]=syllabus_body` on the course); modules
+  and their items; pages (the `body` field is HTML); course files such as PDFs and slides
+  (Files API); assignment descriptions and due dates, as context.
+- **Out:** grades, submissions, quiz questions and answers, discussions, other users, and
+  every POST, PUT, and DELETE. Announcements, the calendar, and the inbox are out for v1.
+- The limit lives in code, not only in the prompt. The Canvas client has a fixed allowlist
+  of GET path patterns and throws on anything else. A test fails if a non-GET method or a
+  path outside the list gets through.
+
+### 10.2 A thin client instead of the canvas-mcp server
+
+canvas-mcp (vishalsachdev/canvas-mcp, MIT, Python) runs over stdio or as a self-hosted
+HTTP service. A Cloudflare Worker can't launch it, the product needs about seven GET
+endpoints out of its 100+ tools, and every extra hop is another place student data passes
+through. So the worker calls the Canvas REST API directly. canvas-mcp stays a development
+aid (§7.2). The switch criteria are in 10.8.
+
+### 10.3 Auth, storage, and limits
+
+- **Token.** The student creates a personal access token in Canvas (profile, Approved
+  Integrations, New Access Token) and the worker sends it as `Authorization: Bearer`. The
+  Canvas docs say an app used by more than one user must use OAuth2, and on Canvas Cloud
+  developer keys are issued by the institution's admin. A personal token therefore fits you
+  and classmates (§8 #2, hobby scope) and doesn't carry over to a public product without
+  institutional sign-off. The docs don't say whether an institution can turn token creation
+  off; step C0 checks.
+- **Storage.** v1 keeps the token in the browser's `sessionStorage` and sends it on each
+  request in a header. The worker doesn't store or log it: the router's error handler must
+  not print request headers, and a test covers that. No token goes into a Durable Object
+  until accounts exist (§8 #2).
+- **Base URL.** Set by the deployment (`CANVAS_BASE_URL`, https only, optional in
+  `Environment`), never taken from the client, so the worker can't be pointed at an
+  arbitrary host.
+- **Pagination.** The default page size is 10. Set `per_page`, follow `rel="next"` in the
+  `Link` header as opaque URLs, and never assume a page is complete.
+- **Throttling.** A request over quota gets 429. `X-Rate-Limit-Remaining` appears only
+  when throttling applies, and each token has its own quota. Fetch one request at a time
+  and back off on 429.
+
+### 10.4 Pieces
+
+- `worker/canvas/canvasClient.ts`: GET-only fetch with the allowlist, Link pagination, 429
+  backoff, a timeout, and a size cap on bodies.
+- `worker/canvas/htmlToText.ts`: Canvas HTML to plain text. Equation-editor images are
+  expected to carry their LaTeX in a `data-equation-content` attribute. That is from
+  memory and has to be checked against a real page before the code relies on it. Output
+  uses `$...$`, so it goes through the existing KaTeX path.
+- `worker/routes/canvas.ts`: `GET /canvas/courses`, `GET /canvas/courses/:id/materials`
+  (syllabus, modules with items, file list), and `POST /canvas/import` for one item.
+- File import: the worker fetches the file through the Files API with the token and sends
+  PDFs to Claude as document blocks, the same path as Phase 4 PDF ingest. The docs don't
+  say whether a file's `url` expires or needs auth, so the worker fetches it right away and
+  never hands it to the client. A size cap applies.
+- Client: a class-materials picker in the chat panel (course, module, item) with an Import
+  button, in `client/components/`.
+
+### 10.5 Import to problem frames
+
+- An extraction call (Opus 5.5, `medium` effort, JSON-schema output) turns a page or PDF
+  into a list of problems: statement, citation (course, item title, page), and a kebab-case
+  concept guess. It doesn't solve them.
+- Each problem is posed through the existing `pose-problem` path, so it is a normal locked
+  frame with hints, Check, and evidence. A `source` field in the frame meta shows the
+  citation.
+- Imported problems get a `/verify` check like quiz problems. Instructor problems can have
+  typos or missing context, and a flawed one already won't count against the student.
+- **Solution secrecy.** Pages and PDFs often print worked solutions or an answer key. The
+  extraction call returns any solution text separately, and the worker keeps it with the
+  verified answer, where the client never sees it. The statements sent to the client must
+  not contain it.
+- Canvas data never creates evidence. Levels stay decided in `shared/tutor/evidence.ts`.
+
+### 10.6 Graded work (your call, §8 #8)
+
+An assignment with a future `due_at` and `points_possible` above zero is graded work.
+Recommended for v1: show its description and due date as context, but don't turn it into
+problem frames. Skip `online_quiz` submission types, anything with a `quiz_id`, and
+anything `locked_for_user`. Pages, files, and the syllabus are imported as practice
+material.
+
+### 10.7 Steps
+
+- [ ] **C0.** In Canvas, open Settings and check that New Access Token is there. If it
+  isn't, stop and ask the instructor or the institution's Canvas admin. Note the base URL.
+- [ ] **C1.** Explore a real course through canvas-mcp in Claude Code (development only).
+  Note the real response shapes and write synthetic fixtures from them. Don't commit
+  course material: it may be copyrighted and can carry names.
+- [ ] **C2.** `canvasClient` and the allowlist, with vitest tests on a mocked fetch:
+  non-GET and unlisted paths rejected, Link pagination, 429 backoff, token absent from
+  logs.
+- [ ] **C3.** Materials routes, `htmlToText`, and the picker.
+- [ ] **C4.** Import, extraction, `pose-problem` with a citation, `/verify`, and solution
+  secrecy. Eval cases: a page with inline solutions (no leak), equation images, an
+  instructor problem with a flaw, and extraction counts and citations.
+- [ ] **C5.** Optional: upcoming assignment titles and dates (`bucket=upcoming`) in the
+  `learner` part, to nudge which concept Quiz me picks. Titles and dates only.
+- Done when: choosing a module page in the picker poses its problems in frames with
+  citations, the page's printed answers never reach the client, and the allowlist test
+  fails on any non-GET or grade endpoint.
+
+### 10.8 When to switch to the MCP connector
+
+Move to the Messages API MCP connector if the tutor needs to decide mid-turn what to fetch,
+the app needs more than about ten Canvas calls, or a second LMS shows up. The installed SDK
+(1.3.0) has `mcp_servers` and `mcp_toolset` under the `mcp-client-2026-09-15` beta. Then
+self-host canvas-mcp over HTTP, which is read-only unless `ALLOWED_WRITE_TOOLS` is set, add
+a toolset allowlist, and turn on `ENABLE_DATA_ANONYMIZATION`. The dev bridge can't exercise
+it (it runs the model with `--strict-mcp-config`), so testing needs a real API key.

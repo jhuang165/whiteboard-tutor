@@ -7,9 +7,9 @@ const MAX_TOKENS = 16000
 /** Server-side tool loops stop with `pause_turn` after 10 iterations; resume this many times. */
 const MAX_CONTINUATIONS = 3
 
-const VERIFY_SYSTEM_PROMPT = `You check practice problems for a probability and statistics tutor before a student is graded on them.
+const VERIFY_SYSTEM_PROMPT = `You check practice problems for a math tutor before a student is graded on them.
 
-Solve the problem yourself, independently. Then verify the answer with code: exact enumeration or exact arithmetic (fractions, sympy) where possible, and simulation only as a cross-check. Report the answer exactly (a fraction first, then a decimal to 4 places when that helps).
+Solve the problem yourself, independently. Then verify the answer with code: exact enumeration or exact arithmetic (fractions, sympy) where possible, and simulation only as a cross-check. Report the answer exactly (a fraction or closed form first, then a decimal to 4 places when that helps).
 
 Set status to "flawed" if the problem is ambiguous, under-specified, inconsistent, or has no single correct answer; put one plain sentence on what is wrong in "issue", addressed to the student. Otherwise set status to "checked" and leave "issue" empty.
 
