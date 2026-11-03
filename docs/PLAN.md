@@ -134,8 +134,8 @@ license.
 - [x] Vitest (`npm test`), added with the first Phase 1 slice.
 - [ ] Lint and Playwright. Deferred until there is UI flow worth testing end to end.
 
-**Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; v1 subject
-assumed to be probability (§8 #1 recommendation) until decided.
+**Phase 1: tutor MVP, single-player, explicit triggers.** Started 2026-11-01; built and
+tested on probability first (§8 #1: the app itself is general purpose).
 
 - [x] Problem frame plus pen, 2026-11-02. `pose-problem` puts one problem in a locked
   `problem-frame` shape (`client/shapes/ProblemFrameShapeUtil.tsx`): the statement on top,
@@ -353,8 +353,10 @@ hosting.
 
 ## 8. Open decisions (yours)
 
-1. **Subject scope for v1.** Probability/DATA 21100 only (recommended: we have the
-   materials, misconceptions, and seed evals), or general math?
+1. **Subject scope.** Decided 2026-11-02: a general-purpose tutor, not probability only.
+   Probability stays the first tested subject, since the materials, misconceptions, and
+   seed evals are there. Still open: whether general means any subject or general math
+   first, and what that changes in the prompt, `pedagogy-spec`, the evals, and `/verify`.
 2. **Audience.** Just you and classmates (hobby license, simple auth), or a product for
    others (commercial license, accounts, privacy)?
 3. **Second model for triage.** Haiku 5.5 for "should I intervene?", or Opus 5.5 at low
