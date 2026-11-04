@@ -53,6 +53,13 @@ delta-encoded `segments`, and text uses rich text). Check before you write:
   `client/shapes/tutorShapeUtils.ts`, which both `App.tsx` and the chat diff viewer
   (`TldrawViewer.tsx`) use. A shape missing from the viewer crashes the chat panel.
 - Implement `getText` on custom shapes: the model sees it as `text` on unknown shapes.
+- Implement `toSvg(shape, ctx)` on any custom shape the model should see: screenshots and
+  exports go through it, and a shape without it comes out blank. Use
+  `editor.getCurrentTheme().colors[ctx.colorMode]` and `getColorValue` for colors.
+  `client/shapes/DiagramShapeUtil.tsx` renders the same SVG in `component` and `toSvg`
+  from a pure layout (`shared/diagram/layout.ts`), so the two never drift.
+- `selectAll` skips locked shapes, so never frame "everything" through the selection:
+  use `editor.getCurrentPageBounds()` (the chat diff viewer does).
 - The kit unlocks every shape it created when a turn ends
   (`AgentLintManager.unlockCreatedShapes`); tutor shapes are skipped there so they stay
   locked.

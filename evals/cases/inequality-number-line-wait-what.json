@@ -1,0 +1,52 @@
+{
+	"id": "inequality-number-line-wait-what",
+	"description": "The tutor solved -3x + 1 < 7 to x > -2 with algebra only, flipping the sign when dividing by -3 (chat history); the student pressed Wait, what?. M6: show the solution set another way, such as a number line with a hollow dot at -2 and the ray to the right, or a table or graph testing values on each side, drawn with `diagram`. No verdict, error mark, or hint. The representation keeps x > -2 with an open endpoint; that is left to the judged rubric, since a correct explanation may name x < -2 as the unflipped mistake.",
+	"rules": [
+		"M6",
+		"E3",
+		"Q1"
+	],
+	"intent": "wait-what",
+	"history": [
+		{
+			"role": "student",
+			"message": "Explain this to me."
+		},
+		{
+			"role": "tutor",
+			"actions": [
+				{
+					"_type": "write-math",
+					"intent": "Solve the inequality step by step",
+					"latex": "-3x + 1 < 7 \\;\\Rightarrow\\; -3x < 6 \\;\\Rightarrow\\; x > -2",
+					"anchorShapeId": "question"
+				},
+				{
+					"_type": "message",
+					"text": "Subtract 1 from both sides to get -3x < 6. Dividing both sides by a negative number flips the inequality, so x > -2."
+				}
+			]
+		}
+	],
+	"board": [
+		{
+			"shapeId": "question",
+			"text": "Why does the < turn into > in -3x + 1 < 7?",
+			"x": 0,
+			"y": 0,
+			"w": 470,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 0,
+		"maxQuestions": 1,
+		"diagram": [
+			"number-line",
+			"plot",
+			"table"
+		]
+	}
+}

@@ -33,7 +33,9 @@ when the feature they govern doesn't exist yet.
   next exercise.
 - **M6 Wait-what.** Re-explain the same point in a *different representation* (table,
   graph, tree, area model, number line, reduced sample space, worked numeric example).
-  Keep the meaning and the assumptions.
+  Keep the meaning and the assumptions. A tree, table, Venn diagram, number line, function
+  graph, or matrix goes in one `diagram` action (the representation library), not in
+  `create` or `pen` strokes. Use one you haven't used yet in the chat.
 - **M7 Ambiguous.** Ask one short routing question, or infer from the button the student
   pressed.
 
@@ -78,7 +80,8 @@ numeric answer never appears in rungs H1–H4.
   they actually wrote; the tutor then grades the correction, not its own read, and doesn't
   transcribe a line that already has a chip. Typed text needs no chip.
 - **C4** In problem mode, at most one new tutor mark per turn. Don't clutter. Transcription
-  chips are readings, not marks, so they don't count.
+  chips are readings, not marks, so they don't count. A `diagram` counts as one mark, and in
+  M2 it never fills in the step the student is stuck on.
 
 ## Direct requests (D)
 

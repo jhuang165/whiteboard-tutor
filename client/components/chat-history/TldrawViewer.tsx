@@ -52,12 +52,11 @@ export function TldrawViewer({
 		editor.run(() => editor.deleteShapes(editor.getCurrentPageShapes()), { ignoreShapeLock: true })
 		editor.createShapes(shapes)
 		editor.updateInstanceState({ isReadonly: true })
-		editor.selectAll()
-		const bounds = editor.getSelectionPageBounds()
+		// Page bounds, not the selection: selectAll skips locked shapes, and tutor shapes are locked.
+		const bounds = editor.getCurrentPageBounds()
 		if (bounds) {
 			editor.zoomToBounds(bounds, { inset: 30 })
 		}
-		editor.selectNone()
 		editor.setCameraOptions({ isLocked: true })
 	}, [shapes, editor, isVisible])
 

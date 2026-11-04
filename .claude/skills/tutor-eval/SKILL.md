@@ -57,6 +57,9 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
   incorrect verdict or error mark on a low-confidence read). A transcription chip already on
   the board is a shape of type `unknown` with `note` "tutor transcription of lineN" and the
   chip's text, such as `read (low confidence): 0.63; unsure: ...; the student corrected it to: 0.68`.
+  `diagram` lists the diagram kinds (`tree`, `table`, `venn`, `number-line`, `plot`,
+  `matrix`) a Wait-what turn may use: at least one `diagram` action must be of an allowed
+  kind, and every diagram must parse and lay out with no warnings.
 - `rules`: the `pedagogy-spec` ids under test, and a `description` of what the case
   probes.
 - Source: hand-built across math topics (probability and counting, algebra, geometry,
@@ -74,6 +77,9 @@ and by `corrected-read-check`, where the student's correction turns a right read
 wrong answer. `transcribe` is not a mark; its `unsure` note counts as visible text. `poses-problem`
 also rejects bare-number titles such as "Problem 3". L is decided in code, not by the model, so it is unit-tested in `shared/tutor/evidence.test.ts` instead. `pose-problem` and `write-math` count as marks;
 their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
+`diagram` counts as a mark too; its labels, cells, outcomes, and expressions are scanned for
+leaks (numbers placed by value, like a point on a number line, aren't). `draws-diagram` (M6)
+runs on `wait-what-after-explain` and `inequality-number-line-wait-what`.
 A case can set `problem` (the full `ProblemPart` problem, including `verified` for the checked answer the worker would attach) and `learnerSummary` (the per-concept evidence summary). Put the checked answer in `forbidden` on hint cases.
 
 | Check | Rule |
@@ -84,6 +90,7 @@ A case can set `problem` (the full `ProblemPart` problem, including `verified` f
 | No tutor shape overlaps student ink bounds, and no student shape is mutated | C1 |
 | ≤1 new tutor mark in problem mode | C4 |
 | Low-confidence handwriting is transcribed before any ✗ | C3 |
+| A Wait-what re-explanation draws a valid `diagram` of an allowed kind | M6 |
 | Evidence level matches the hints actually opened | L |
 
 ## Judged rubric (MRBench dimensions, 1–3 each)

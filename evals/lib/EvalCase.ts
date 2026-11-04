@@ -1,3 +1,4 @@
+import type { DiagramKind } from '../../shared/diagram/DiagramSpec'
 import type { BlurryShape } from '../../shared/format/BlurryShape'
 import type { AgentModelName } from '../../shared/models'
 import type { ProblemPart } from '../../shared/schema/PromptPartDefinitions'
@@ -88,4 +89,9 @@ export interface EvalExpectations {
 	 * an incorrect verdict or error mark on a shape whose read was low confidence.
 	 */
 	transcribes?: string[]
+	/**
+	 * Diagram kinds the turn may draw with `diagram` (M6): at least one diagram of one of these
+	 * kinds, and every diagram must parse and lay out cleanly.
+	 */
+	diagram?: DiagramKind[]
 }

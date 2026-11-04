@@ -1,4 +1,5 @@
 import z from 'zod'
+import { DiagramSpecSchema } from '../diagram/DiagramSpec'
 import { FocusedColor } from '../format/FocusedColor'
 import { FocusedFillSchema } from '../format/FocusedFill'
 import { FocusedShapeSchema, FocusedTextAnchorSchema } from '../format/FocusedShape'
@@ -193,6 +194,23 @@ export const WriteMathAction = z
 	})
 
 export type WriteMathAction = z.infer<typeof WriteMathAction>
+
+// Diagram Action (the representation library)
+export const DiagramAction = z
+	.object({
+		_type: z.literal('diagram'),
+		intent: z.string(),
+		title: z.string(),
+		anchorShapeId: SimpleShapeIdSchema.nullable(),
+		diagram: DiagramSpecSchema,
+	})
+	.meta({
+		title: 'Diagram',
+		description:
+			"The tutor places one ready-made diagram in tutor ink, laid out for it: use it instead of drawing a tree, table, Venn diagram, number line, graph, or matrix with `create` or `pen`. `title` is a short caption, or an empty string. `anchorShapeId` is the shape the diagram belongs next to, or null to place it in view. Every label is plain text, not LaTeX: write symbols directly, such as P(B|A), ∩, ≤, ∞, √, ½, x². Pick one `diagram.kind`:\n- `tree`: a probability tree drawn left to right. `root` labels the start (or empty). Each branch has a `label` (the outcome, such as \"D\" or \"not D\"), a `probability` on its edge (\"0.01\", \"1/6\", or empty), an `outcome` shown at the end of a leaf (such as the joint probability, or empty), and its own `branches` (empty for a leaf). Up to 4 levels and 16 leaves.\n- `table`: a two-way or contingency table. `corner` is the top-left cell, `columns` the header labels, each row a `label` and one cell per column. `highlightRows` and `highlightColumns` are 0-based indices of data rows and columns to tint, such as the column you condition on.\n- `venn`: 1 to 3 `sets` in a `universe` box (its label, or empty). Each region lists the sets it is `in` by name (empty for outside all of them), a `label` such as a count, and `shaded`.\n- `number-line`: from `min` to `max` with ticks every `step`. `points` are dots (`open` for a hollow dot); `intervals` are thick segments, where a null `from` or `to` runs off to infinity and `includeFrom`/`includeTo` pick filled or hollow ends.\n- `plot`: graphs of y as a function of x over the given ranges. Each curve's `expression` uses x, numbers, + - * / ^, parentheses, pi, e, and sin cos tan exp ln log sqrt abs, such as \"x^2 - 3*x + 2\" or \"exp(-x^2/2)/sqrt(2*pi)\"; `label` names it in the legend. `points` are labeled dots.\n- `matrix`: `rows` of cell strings in brackets, with an optional `name` such as \"A\". `highlightRows` and `highlightColumns` are 0-based.\nThe position is chosen automatically, and the diagram is locked.",
+	})
+
+export type DiagramAction = z.infer<typeof DiagramAction>
 
 // Transcribe Action
 export const TranscribeAction = z

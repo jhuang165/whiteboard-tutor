@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
 	checkAllowedActions,
+	checkDiagram,
 	checkHints,
 	checkMarkError,
 	checkMarks,
@@ -31,6 +32,21 @@ const hint = (rung: string, anchorShapeId: string, text = 'Look at the second li
 	anchorShapeId,
 })
 const message = (text: string): EvalAction => ({ _type: 'message', text })
+const TABLE = {
+	kind: 'table',
+	corner: '',
+	columns: ['B', 'not B'],
+	rows: [{ label: 'A', cells: ['0.6', '0.1'] }],
+	highlightRows: [],
+	highlightColumns: [0],
+}
+const diagram = (spec: Record<string, unknown>): EvalAction => ({
+	_type: 'diagram',
+	intent: 'Show it as a table',
+	title: '',
+	anchorShapeId: null,
+	diagram: spec,
+})
 const transcribe = (shapeIds: string[], confidence = 'high', unsure = ''): EvalAction => ({
 	_type: 'transcribe',
 	intent: 'Read the line',
@@ -173,5 +189,20 @@ describe('checks', () => {
 
 	it('flags actions outside the mode', () => {
 		expect(checkAllowedActions([message('x'), { _type: 'delete' }], ['message']).pass).toBe(false)
+	})
+
+	it('draws-diagram needs a valid diagram of an allowed kind', () => {
+		expect(checkDiagram([diagram(TABLE)], ['table', 'tree']).pass).toBe(true)
+		expect(checkDiagram([message('Picture a table.')], ['table']).pass).toBe(false)
+		expect(checkDiagram([diagram(TABLE)], ['tree']).detail).toMatch(/drew table/)
+		expect(checkDiagram([diagram({ ...TABLE, columns: 'B' })], ['table']).pass).toBe(false)
+		const badCurve = { kind: 'plot', xMin: 0, xMax: 1, yMin: 0, yMax: 1, xLabel: '', yLabel: '', points: [], curves: [{ expression: 'x +* 1', label: '' }] }
+		expect(checkDiagram([diagram(badCurve)], ['plot']).pass).toBe(false)
+	})
+
+	it('reads diagram text for leaks and counts a diagram as a mark', () => {
+		expect(checkNoLeak([diagram(TABLE)], ['0.6']).pass).toBe(false)
+		expect(checkNoLeak([diagram(TABLE)], ['0.75']).pass).toBe(true)
+		expect(checkMarks([diagram(TABLE)], 0).pass).toBe(false)
 	})
 })

@@ -9,6 +9,7 @@ import { CountryInfoActionUtil } from '../actions/CountryInfoActionUtil'
 import { CountShapesActionUtil } from '../actions/CountShapesActionUtil'
 import { CreateActionUtil } from '../actions/CreateActionUtil'
 import { DeleteActionUtil } from '../actions/DeleteActionUtil'
+import { DiagramActionUtil } from '../actions/DiagramActionUtil'
 import { DistributeActionUtil } from '../actions/DistributeActionUtil'
 import { HintActionUtil } from '../actions/HintActionUtil'
 import { LabelActionUtil } from '../actions/LabelActionUtil'
@@ -162,9 +163,10 @@ export const AGENT_MODE_DEFINITIONS = [
 			MarkErrorActionUtil.type,
 			VerdictActionUtil.type,
 
-			// Tutor content (a posed problem, typeset math)
+			// Tutor content (a posed problem, typeset math, a diagram from the library)
 			PoseProblemActionUtil.type,
 			WriteMathActionUtil.type,
+			DiagramActionUtil.type,
 
 			// Adding to the board (locked once drawn)
 			CreateActionUtil.type,

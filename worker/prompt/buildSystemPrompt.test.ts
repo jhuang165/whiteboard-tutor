@@ -13,6 +13,7 @@ const TUTOR_ACTIONS = [
 	'verdict',
 	'pose-problem',
 	'write-math',
+	'diagram',
 	'create',
 	'pen',
 	'unknown',
@@ -64,6 +65,8 @@ describe('buildSystemPrompt', () => {
 		expect(tutorPrompt).toContain('pose one problem at a time with `pose-problem`')
 		expect(tutorPrompt).toContain('Write every formula or equation with `write-math`')
 		expect(tutorPrompt).toContain('one `transcribe` per line of student ink you judge')
+		expect(tutorPrompt).toContain('Draw trees, tables, Venn diagrams, number lines, graphs of functions, and matrices with `diagram`')
+		expect(tutorPrompt).toContain('Hint, mark-error, verdict, problem, math, and diagram marks are placed for you')
 	})
 
 	it('is identical across turns, so it stays cacheable', () => {

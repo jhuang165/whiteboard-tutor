@@ -12,7 +12,7 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip and tutor cursor. Most eval cases
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip, tutor cursor, and diagram library. Most eval cases
 and example problems are probability, with a few in algebra, geometry, calculus, and linear
 algebra; other subjects aren't tested yet.
 
@@ -33,6 +33,9 @@ Working now:
 - Problems and math: `pose-problem` puts one problem in a frame with a work area below it,
   moves the view there, and hands the student the pen. `write-math` typesets a formula
   with KaTeX in tutor ink.
+- Diagrams: `diagram` draws a probability tree, table, Venn diagram, number line, function
+  graph, or matrix from a structured spec, laid out in code instead of drawn stroke by
+  stroke. **Wait, what?** uses them to re-explain with a different picture.
 - The tutor can only add to the board. Every action that moves, edits, or deletes shapes is
   turned off, and everything the tutor draws is locked.
 - Claude calls use the official `@anthropic-ai/sdk` with adaptive thinking, per-button

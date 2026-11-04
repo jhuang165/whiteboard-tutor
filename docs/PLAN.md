@@ -286,7 +286,23 @@ tested on probability first (§8 #1: the app itself is general purpose).
   turns it all off. Checked on live Check and Hint turns through the bridge. A page in a
   background tab gets no animation frames, so its marks write in when the student comes
   back.
-- The representation library, and opt-in proactive watching with triage.
+- [x] Representation library, 2026-11-03 (`shared/diagram/`,
+  `client/shapes/DiagramShapeUtil.tsx`, `client/actions/DiagramActionUtil.ts`). One
+  `diagram` action draws a probability tree, table, Venn diagram (up to 3 sets, with shaded
+  regions), number line (points and intervals), function plot (a safe expression parser, no
+  `eval`), or matrix from a structured spec. A pure layout in code places everything, so the
+  model never draws a tree stroke by stroke. The shape renders the same SVG on the board and
+  in exports, and its `getText` is a plain description the model reads back. Diagrams are
+  locked tutor marks and count toward C4. Wait-what asks for a representation not used yet
+  in the chat. Fixed on the way: the chat's diff previews framed through `selectAll`, which
+  skips locked shapes, so every tutor mark was previewed unframed. Evals: `draws-diagram`
+  (M6) on `wait-what-after-explain`, and a new `inequality-number-line-wait-what`. Through
+  the bridge, 232/232 checks passed over two runs of all 21 cases, and each Wait-what turn
+  drew a valid diagram. The tutor favors tables: both inequality runs drew a test-value
+  table, not a number line, and Explain and D1 turns also drew tables and trees unprompted.
+  A live Explain turn in the app drew a table, and Wait-what then drew a shaded 2-set Venn
+  diagram.
+- Opt-in proactive watching with triage (needs §8 #3).
 
 **Phase 4: materials.**
 

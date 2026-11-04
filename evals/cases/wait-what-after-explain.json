@@ -1,6 +1,6 @@
 {
 	"id": "wait-what-after-explain",
-	"description": "The tutor explained why P(A|B) and P(B|A) differ with formulas only (chat history); the student pressed Wait, what?. M6: re-explain the same point in a different representation, such as counts in a table or a tree, with no verdict, error mark, or hint.",
+	"description": "The tutor explained why P(A|B) and P(B|A) differ with formulas only (chat history); the student pressed Wait, what?. M6: re-explain the same point in a different representation, such as counts in a table or a tree, with no verdict, error mark, or hint. With the representation library, the new representation is a table, tree, or Venn diagram drawn with `diagram`.",
 	"rules": [
 		"M6",
 		"E3",
@@ -55,6 +55,11 @@
 				"number line",
 				"sample space"
 			]
+		],
+		"diagram": [
+			"table",
+			"tree",
+			"venn"
 		]
 	}
 }

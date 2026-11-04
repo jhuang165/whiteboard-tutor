@@ -1,3 +1,5 @@
+import { DiagramSpecSchema } from '../../shared/diagram/DiagramSpec'
+import { layoutDiagram } from '../../shared/diagram/layout'
 import type { EvalCase, ExpectedVerdict } from './EvalCase'
 
 /** A completed action from the model, loosely typed so a malformed one still gets judged. */
@@ -11,7 +13,7 @@ export interface CheckResult {
 }
 
 /** Actions that put a new mark on the board (C4). */
-const MARK_ACTIONS = new Set(['hint', 'mark-error', 'verdict', 'pose-problem', 'write-math', 'create', 'pen'])
+const MARK_ACTIONS = new Set(['hint', 'mark-error', 'verdict', 'pose-problem', 'write-math', 'diagram', 'create', 'pen'])
 
 /** Fields the student can read: chat text, board text, labels, and the action summaries the chat shows. */
 const VISIBLE_KEYS = new Set(['text', 'label', 'intent', 'unsure'])
@@ -27,10 +29,30 @@ const SHOWN_INSTEAD_OF_INTENT: Record<string, string> = {
 }
 
 /**
- * Board content the student reads that isn't the tutor asking them something: math and posed
- * problems. Checked for leaks, not counted as questions.
+ * Board content the student reads that isn't the tutor asking them something: math, posed
+ * problems, and the text inside diagrams (their `label`s are in VISIBLE_KEYS). Checked for
+ * leaks, not counted as questions. Numbers a diagram places by value, such as a point on a
+ * number line, aren't text and aren't checked.
  */
-const CONTENT_KEYS = new Set(['latex', 'title', 'statement'])
+const CONTENT_KEYS = new Set([
+	'latex',
+	'title',
+	'statement',
+	// diagram specs
+	'root',
+	'probability',
+	'outcome',
+	'corner',
+	'columns',
+	'cells',
+	'rows',
+	'sets',
+	'universe',
+	'expression',
+	'xLabel',
+	'yLabel',
+	'name',
+])
 
 /**
  * Every deterministic check that the case's expectations ask for. `allowedActions` is the
@@ -49,6 +71,7 @@ export function runChecks(evalCase: EvalCase, actions: EvalAction[], allowedActi
 	if (expect.forbidden?.length) results.push(checkNoLeak(actions, expect.forbidden))
 	if (expect.required?.length) results.push(checkRequired(actions, expect.required, evalCase.rules))
 	if (expect.transcribes?.length) results.push(checkTranscription(actions, expect.transcribes))
+	if (expect.diagram?.length) results.push(checkDiagram(actions, expect.diagram))
 
 	return results
 }
@@ -192,6 +215,36 @@ export function checkPosedProblems(actions: EvalAction[], expectedCount: number,
 			problems.length === 0
 				? `posed: [${posed.map((a) => `${String(a.concept)}: ${String(a.title)}`).join('; ')}]`
 				: problems.join('; '),
+	}
+}
+
+/**
+ * M6: the turn draws at least one `diagram` of an allowed kind, and every diagram it draws
+ * matches the schema and lays out without dropping anything (an unreadable curve, a region
+ * naming a set that isn't there).
+ */
+export function checkDiagram(actions: EvalAction[], kinds: string[]): CheckResult {
+	const diagrams = actions.filter((a) => a._type === 'diagram')
+	const problems: string[] = []
+	const drawn: string[] = []
+	for (const action of diagrams) {
+		const parsed = DiagramSpecSchema.safeParse(action.diagram)
+		if (!parsed.success) {
+			problems.push(`a diagram doesn't match the schema: ${parsed.error.issues[0]?.message ?? 'invalid'}`)
+			continue
+		}
+		drawn.push(parsed.data.kind)
+		const warnings = layoutDiagram(parsed.data).warnings
+		if (warnings.length) problems.push(`${parsed.data.kind}: ${warnings.join('; ')}`)
+	}
+	if (!drawn.some((kind) => kinds.includes(kind))) {
+		problems.unshift(`no diagram of kind ${kinds.join(' / ')}${drawn.length ? ` (drew ${drawn.join(', ')})` : ''}`)
+	}
+	return {
+		check: 'draws-diagram',
+		rule: 'M6',
+		pass: problems.length === 0,
+		detail: problems.length === 0 ? `drew ${drawn.join(', ')}` : problems.join('; '),
 	}
 }
 

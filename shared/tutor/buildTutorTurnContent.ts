@@ -36,7 +36,7 @@ export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: Tut
 			]
 		case 'wait-what':
 			return [
-				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, graph, tree, area model, number line, reduced sample space, or a worked numeric example). Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
+				'Tutor turn: the student pressed **Wait, what?**. Use M6: re-explain your most recent point in a different representation (table, graph, tree, area model, number line, reduced sample space, or a worked numeric example). Pick one you have not used yet in this chat, and put it on the board: a tree, table, Venn diagram, number line, graph, or matrix goes in one `diagram`. Keep the meaning and the assumptions. Do not repeat the same explanation louder (E3).',
 			]
 		case 'quiz':
 			if (reviewConcept) {
