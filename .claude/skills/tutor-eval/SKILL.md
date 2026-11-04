@@ -32,9 +32,11 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
 
 ## Case format (`evals/cases/<id>.json`, type `EvalCase` in `evals/lib/EvalCase.ts`)
 
-- `intent` (the button: `check`, `hint`, `explain`, `wait-what`, `quiz`, `chat`), `hintsGiven`,
-  and an optional `message` (defaults to the button's message) and `model`. `reviewConcept`
-  makes a `quiz` case a review started from the review queue.
+- `intent` (the button: `check`, `hint`, `explain`, `wait-what`, `quiz`, `chat`, or `watch` for
+  a proactive Watch turn), `hintsGiven`, and an optional `message` (defaults to the button's
+  message) and `model`. `reviewConcept` makes a `quiz` case a review started from the review
+  queue. `watchReason` is what triage flagged on a `watch` case; set `expect.allowNoActions`
+  when doing nothing is a valid reply (a triage false alarm).
 - `history`: earlier turns, oldest first, as `{ "role": "student", "message" }` or
   `{ "role": "tutor", "actions": [...] }` with actions as the model streams them. Leave out
   `think` actions: pasted-back thoughts get refused as reasoning extraction. Needed for a
@@ -66,6 +68,15 @@ to `evals/results/<stamp>.json` with a table in `latest.md` (gitignored).
   calculus, linear algebra), adapted from MathDial or Bridge (check the license first), or
   produced by real sessions with consent. Keep a spread of topics: the tutor is general
   purpose, and a prompt change can regress one topic while helping another.
+
+## Triage cases (`evals/triage-cases/<id>.json`)
+
+`evals/triage.eval.ts` runs the proactive-watching classifier (`worker/triage/triageWork.ts`,
+Sonnet 5.5) on each case: `problemId`, `title`, `statement`, `verified` (the checked answer),
+`shapes` (typed work as `TriageShape`s with `author` student or tutor; no image is sent), and
+`expect: { intervene, shapeId? }`. A yes must name the right shape and must not quote the
+answer in its reason. Keep the no cases at least as many as the yes cases: the default is
+don't. `npm run eval -- -t triage` runs only these.
 
 ## Deterministic checks (on the action stream)
 

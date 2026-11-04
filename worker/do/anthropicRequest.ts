@@ -6,8 +6,8 @@ import type { AgentMessage } from '../../shared/types/AgentMessage'
 import type { AgentPrompt } from '../../shared/types/AgentPrompt'
 
 /**
- * Effort per tutor button (anthropic-backend skill): `low` for hints, `medium` for
- * explaining, reviewing, and posing quiz problems. A chat turn keeps the model's default.
+ * Effort per tutor button (anthropic-backend skill): `low` for hints and watch marks, `medium`
+ * for explaining, reviewing, and posing quiz problems. A chat turn keeps the model's default.
  */
 const TUTOR_EFFORT: Partial<Record<TutorIntent, AnthropicEffort>> = {
 	hint: 'low',
@@ -15,6 +15,7 @@ const TUTOR_EFFORT: Partial<Record<TutorIntent, AnthropicEffort>> = {
 	'wait-what': 'medium',
 	check: 'medium',
 	quiz: 'medium',
+	watch: 'low',
 }
 
 export const SERVER_FALLBACK_BETA = 'server-side-fallback-2026-07-01'
@@ -63,7 +64,7 @@ const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp'] as co
 type ImageType = (typeof IMAGE_TYPES)[number]
 
 /** A `data:image/...;base64,` URL from the screenshot part becomes a base64 image block. */
-function toImageBlock(dataUrl: string): Anthropic.Beta.Messages.BetaImageBlockParam {
+export function toImageBlock(dataUrl: string): Anthropic.Beta.Messages.BetaImageBlockParam {
 	const match = /^data:(image\/[a-z+]+);base64,(.*)$/s.exec(dataUrl)
 	if (!match || !IMAGE_TYPES.includes(match[1] as ImageType)) {
 		throw new Error(`Unsupported image for the Anthropic API: ${dataUrl.slice(0, 40)}`)

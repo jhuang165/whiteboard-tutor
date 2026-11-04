@@ -95,9 +95,8 @@ worker (Cloudflare)
   thinking, which can't be disabled on 5.5. Set `effort` explicitly: its default is
   `medium`. Try `low` for hint and annotation turns where latency matters, and `high` for
   review and verification. Enable server-side `fallbacks: "default"` for refusals.
-- **Triage for proactive watching:** a cheaper second model (`claude-haiku-5-5`, $0.10/$0.50)
-  is the natural fit. Per the house default, that's your call (see §8). Opus 5.5 at `low`
-  effort is the single-model alternative, and it keeps a single prompt cache.
+- **Triage for proactive watching:** `claude-sonnet-5-5` at `low` effort (decided 2026-11-04,
+  §8 #3), a classifier with a JSON-schema answer: intervene or not, and why.
 - **Answer verification:** server tool `code_execution_20260521` (sympy, exact enumeration), the newest version, with a JSON-schema `output_config.format` for the answer. Built in Phase 2.
   Output arrives as `bash_code_execution_tool_result` blocks.
 - **Prompt caching:** put the frozen pedagogy system prompt and action schema first, with a
@@ -306,7 +305,33 @@ tested on probability first (§8 #1: the app itself is general purpose).
   shows the tutor doesn't repeat a table it already drew. It drew a "distance from 3"
   number line in 3/3 runs on the current prompt. A fit guide in the prompt (which kind suits
   which point) changed nothing measurable, so it was dropped.
-- Opt-in proactive watching with triage (needs §8 #3).
+- [x] Opt-in proactive watching, 2026-11-04 (M8; `client/tutor/ProactiveWatcher.ts`,
+  `worker/routes/triage.ts`, `worker/triage/triageWork.ts`, `shared/tutor/watchGate.ts`).
+  **Watch** in the chat header turns it on (off by default, kept in localStorage). A
+  `store.listen` watcher waits for 6 s with no board change, then asks `/triage` only when
+  every gate in `checkWatchGate` holds: no tutor turn running, the latest problem frame is
+  open with a checked answer, no stroke in progress, at least two pieces of student work,
+  work changed since the last triage, 30 s since the last call, and under 8 triage calls and
+  2 Watch turns on this problem. Triage gets a JPEG of the frame, the work-area shapes
+  (student and tutor), and the checked answer and method from the learner store, never from
+  the client. Sonnet 5.5 at low effort answers `{intervene, reason, shapeId}` as structured
+  output; the default is no, and it says yes only on a clear, substantive, unmarked error
+  with later work after it. A yes on a shape that isn't student work becomes a no, and any
+  failure is a no. On a yes for unchanged work, the app starts a `watch` turn (effort
+  `low`) shown in the chat as an italic "Looking over your work…" (`source: 'other-agent'`).
+  The tutor checks for itself and may do nothing; otherwise it puts one error mark, adds one
+  short line, and gives no verdict, hint, or answer. A Watch mark files a `watch` rung on the
+  problem, so a later solve is assisted. Evals: three `watch` tutor cases (two errors moved
+  past, one triage false alarm on a valid method, where an empty reply passes via
+  `allowNoActions`) and a triage classifier runner (`evals/triage.eval.ts`, six cases in
+  `evals/triage-cases/`: two yes, and no for correct work in progress, an error on the last
+  line, an error already marked, and a valid alternative method). Through the bridge, triage
+  went 18/18 over three runs, the Watch cases passed 59/60 checks over three runs (one error
+  label phrased as a question; after tightening the turn text, 5/5 more runs were clean), and
+  the full suite passed 142/142 checks over 25 cases plus 6/6 triage. On 2026-11-04 a live
+  run in the app (bridge) went from typed work with a distribution error to triage, then a
+  Watch turn that circled line 1 as a misconception with one chat line. Not yet measured: triage
+  on real handwriting images, and how often it fires in a real session.
 
 **Phase 4: materials.**
 
@@ -427,8 +452,10 @@ hosting.
    In `pedagogy-spec` only the M6 representation list changed.
 2. **Audience.** Just you and classmates (hobby license, simple auth), or a product for
    others (commercial license, accounts, privacy)?
-3. **Second model for triage.** Haiku 5.5 for "should I intervene?", or Opus 5.5 at low
-   effort for everything?
+3. **Second model for triage.** Decided 2026-11-04: Sonnet 5.5 (`claude-sonnet-5-5`, $2/$10
+   per MTok) at `low` effort, with structured output and server-side fallbacks. It costs half
+   of Opus 5.5 and is stronger than Haiku 5.5 at reading handwriting and judging whether an
+   error is real, which is the whole job of a classifier whose default is "don't".
 4. **Input device.** Laptop trackpad and mouse, or iPad with Apple Pencil as the primary
    target? This changes stroke-pause heuristics and layout.
 5. **Voice in v1?** It's a large scope jump. The recommendation is Phase 5.

@@ -11,6 +11,7 @@ import {
 	TUTOR_INK,
 	tutorMeta,
 } from '../tutor/tutorMarks'
+import { noteWatchMark } from '../tutor/problemTracking'
 import { AgentActionUtil, registerActionUtil } from './AgentActionUtil'
 
 /** Padding between the student's shape and the circle drawn around it. */
@@ -90,6 +91,7 @@ export const MarkErrorActionUtil = registerActionUtil(
 			moveBeside(editor, labelId, getAnchorBox(editor, [circleId]), 12)
 
 			lockShapes(editor, [circleId, labelId])
+			if (this.agent.tutor.getState().intent === 'watch') noteWatchMark(editor, targetId)
 		}
 	}
 )

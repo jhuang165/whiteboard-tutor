@@ -2,7 +2,7 @@ import { getAgentModeDefinition } from '../../client/modes/AgentModeDefinitions'
 import { readFileSync } from 'node:fs'
 import type { BlurryShape } from '../../shared/format/BlurryShape'
 import { DEFAULT_MODEL_NAME } from '../../shared/models'
-import { TUTOR_BUTTONS } from '../../shared/tutor/TutorIntent'
+import { TUTOR_BUTTONS, WATCH_MESSAGE } from '../../shared/tutor/TutorIntent'
 import type { AgentPrompt } from '../../shared/types/AgentPrompt'
 import type { ChatHistoryItem } from '../../shared/types/ChatHistoryItem'
 import type { EvalCase, EvalHistoryTurn } from './EvalCase'
@@ -23,15 +23,20 @@ export function buildCasePrompt(evalCase: EvalCase): AgentPrompt {
 	const shapes: BlurryShape[] = evalCase.board.map((shape) => ({ type: 'text', ...shape }))
 	const bounds = viewportAround(shapes)
 	const message =
-		evalCase.message ?? TUTOR_BUTTONS.find((button) => button.intent === evalCase.intent)?.message ?? ''
+		evalCase.message ??
+		(evalCase.intent === 'watch' ? WATCH_MESSAGE : undefined) ??
+		TUTOR_BUTTONS.find((button) => button.intent === evalCase.intent)?.message ??
+		''
+	// A Watch turn isn't from the student; the app sends it as another agent's message.
+	const source = evalCase.intent === 'watch' ? 'other-agent' : 'user'
 
 	const prompt: Partial<AgentPrompt> = {
 		mode: { type: 'mode', modeType: mode.type, partTypes: [...mode.parts], actionTypes: [...mode.actions] },
 		debug: { type: 'debug', logSystemPrompt: false, logMessages: false },
 		modelName: { type: 'modelName', modelName: evalCase.model ?? DEFAULT_MODEL_NAME },
-		messages: { type: 'messages', agentMessages: [message], requestSource: 'user' },
+		messages: { type: 'messages', agentMessages: [message], requestSource: source },
 		data: { type: 'data', data: [] },
-		contextItems: { type: 'contextItems', items: [], requestSource: 'user' },
+		contextItems: { type: 'contextItems', items: [], requestSource: source },
 		learner: { type: 'learner', learnerId: EVAL_LEARNER_ID, summary: evalCase.learnerSummary ?? [] },
 		problem: { type: 'problem', problem: evalCase.problem ?? null },
 		tutorTurn: {
@@ -39,6 +44,7 @@ export function buildCasePrompt(evalCase: EvalCase): AgentPrompt {
 			intent: evalCase.intent,
 			hintsGiven: evalCase.hintsGiven ?? 0,
 			...(evalCase.reviewConcept ? { reviewConcept: evalCase.reviewConcept } : {}),
+			...(evalCase.watchReason ? { watchReason: evalCase.watchReason } : {}),
 		},
 		screenshot: { type: 'screenshot', screenshot: evalCase.screenshot ? loadFixture(evalCase.screenshot) : '' },
 		userViewportBounds: { type: 'userViewportBounds', userBounds: bounds },

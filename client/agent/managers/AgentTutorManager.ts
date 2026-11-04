@@ -30,14 +30,21 @@ export class AgentTutorManager extends BaseAgentManager {
 	}
 
 	/**
-	 * Start a new student turn with the given intent.
+	 * Start a new turn with the given intent.
 	 * For a hint, `hintsGiven` is the number of hints before this one. `reviewConcept` starts a
-	 * Quiz turn as the scheduled review of that concept.
+	 * Quiz turn as the scheduled review of that concept; `watchReason` is what triage flagged on
+	 * a Watch turn.
 	 */
-	beginTurn(intent: TutorIntent, reviewConcept?: string): void {
+	beginTurn(intent: TutorIntent, detail: { reviewConcept?: string; watchReason?: string } = {}): void {
 		const hintsGiven = this.hintPresses
 		if (intent === 'hint') this.hintPresses++
-		this.$state.set({ intent, hintsGiven, ...(intent === 'quiz' && reviewConcept ? { reviewConcept } : {}) })
+		const { reviewConcept, watchReason } = detail
+		this.$state.set({
+			intent,
+			hintsGiven,
+			...(intent === 'quiz' && reviewConcept ? { reviewConcept } : {}),
+			...(intent === 'watch' && watchReason ? { watchReason } : {}),
+		})
 		this.exposurePending = intent === 'explain' || intent === 'wait-what'
 	}
 

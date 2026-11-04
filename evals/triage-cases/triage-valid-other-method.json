@@ -1,0 +1,39 @@
+{
+	"id": "triage-valid-other-method",
+	"description": "Dividing both sides by 3 first is valid, though the reference distributes. Stay quiet.",
+	"problemId": "eval-triage-valid-other-method",
+	"title": "Divide or distribute",
+	"statement": "Solve 3(x − 2) = 12.",
+	"verified": {
+		"status": "checked",
+		"answer": "x = 6",
+		"method": "Distribute: 3x − 6 = 12, so 3x = 18 and x = 6.",
+		"issue": "",
+		"checkedWithCode": true
+	},
+	"shapes": [
+		{
+			"id": "line1",
+			"author": "student",
+			"type": "text",
+			"text": "x − 2 = 4",
+			"x": 40,
+			"y": 220,
+			"w": 300,
+			"h": 40
+		},
+		{
+			"id": "line2",
+			"author": "student",
+			"type": "text",
+			"text": "x = 6",
+			"x": 40,
+			"y": 290,
+			"w": 300,
+			"h": 40
+		}
+	],
+	"expect": {
+		"intervene": false
+	}
+}

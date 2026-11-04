@@ -1,5 +1,6 @@
 import type { EvidenceEvent, EvidenceRecord } from '../../shared/tutor/evidence'
 import type { HistoryResponse } from '../../shared/tutor/history'
+import type { TriageRequest, TriageResponse } from '../../shared/tutor/triage'
 import type { VerifyRequest, VerifyResponse } from '../../shared/tutor/verification'
 
 const LEARNER_ID_KEY = 'whiteboard-tutor:learner-id'
@@ -36,6 +37,24 @@ export async function verifyProblem(request: Omit<VerifyRequest, 'learnerId'>): 
 		return (await res.json()) as VerifyResponse
 	} catch (error) {
 		return { status: 'failed', checkedWithCode: false, error: String(error) }
+	}
+}
+
+const TRIAGE_TIMEOUT_MS = 60 * 1000
+
+/** Ask the worker whether the tutor should step in on this work (M8). Any failure is a no. */
+export async function triageWork(request: Omit<TriageRequest, 'learnerId'>): Promise<TriageResponse> {
+	try {
+		const res = await fetch('/triage', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ ...request, learnerId: getLearnerId() } satisfies TriageRequest),
+			signal: AbortSignal.timeout(TRIAGE_TIMEOUT_MS),
+		})
+		const body = (await res.json().catch(() => null)) as TriageResponse | null
+		return body ?? { intervene: false, reason: '', shapeId: '', error: `HTTP ${res.status}` }
+	} catch (error) {
+		return { intervene: false, reason: '', shapeId: '', error: String(error) }
 	}
 }
 

@@ -35,7 +35,9 @@ part, the tutor system prompt, a tutor mode that can only add to the board, and 
 (a KaTeX math shape) actions, with all tutor output locked, plus behavior evals. Phase 2 has
 started: the Quiz me button with grading on Check, `/verify` answer checks with code
 execution (answers stay in the worker), and evidence records in a per-learner SQLite
-Durable Object (`LearnerDurableObject`) with a Progress panel. Real model turns have run
+Durable Object (`LearnerDurableObject`) with a Progress panel. Phase 3 has the transcription
+chip, the tutor cursor, the diagram library, and opt-in proactive watching (`/triage` on
+`claude-sonnet-5-5`, then a `watch` turn). Real model turns have run
 only through the dev-only Claude Code bridge (`npm run bridge`).
 
 Stack: TypeScript, Vite + React, `tldraw` 5.6 agent starter kit, Cloudflare Worker + Durable

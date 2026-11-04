@@ -1,0 +1,39 @@
+{
+	"id": "triage-correct-in-progress",
+	"description": "Correct work, not finished yet. Stay quiet.",
+	"problemId": "eval-triage-correct-in-progress",
+	"title": "Brackets on one side",
+	"statement": "Solve 4(x + 3) = 2x + 20.",
+	"verified": {
+		"status": "checked",
+		"answer": "x = 4",
+		"method": "Distribute: 4x + 12 = 2x + 20. Subtract 2x and 12: 2x = 8, so x = 4.",
+		"issue": "",
+		"checkedWithCode": true
+	},
+	"shapes": [
+		{
+			"id": "line1",
+			"author": "student",
+			"type": "text",
+			"text": "4x + 12 = 2x + 20",
+			"x": 40,
+			"y": 220,
+			"w": 300,
+			"h": 40
+		},
+		{
+			"id": "line2",
+			"author": "student",
+			"type": "text",
+			"text": "2x + 12 = 20",
+			"x": 40,
+			"y": 290,
+			"w": 300,
+			"h": 40
+		}
+	],
+	"expect": {
+		"intervene": false
+	}
+}

@@ -1,0 +1,55 @@
+{
+	"id": "watch-false-alarm-valid-method",
+	"description": "Proactive watch (M8) on a triage false alarm: the student divided both sides of 3(x − 2) = 12 by 3, a valid method, and reached x = 6. Triage claimed line 1 drops the 3. The tutor must check for itself and not mark anything, give a verdict, or hint.",
+	"rules": [
+		"M8",
+		"M3",
+		"C4"
+	],
+	"intent": "watch",
+	"watchReason": "Line 1 drops the factor 3 from 3(x − 2) instead of distributing it. (shape line1)",
+	"problem": {
+		"shapeId": "frame1",
+		"problemId": "eval-watch-divide",
+		"concept": "linear-equations",
+		"title": "Divide or distribute",
+		"statement": "Solve 3(x − 2) = 12.",
+		"status": "open",
+		"hintRungs": [],
+		"incorrectChecks": 0,
+		"verification": "checked",
+		"verified": {
+			"status": "checked",
+			"answer": "x = 6",
+			"method": "Distribute: 3x − 6 = 12, so 3x = 18 and x = 6. Dividing both sides by 3 first (x − 2 = 4) is equally valid.",
+			"issue": "",
+			"checkedWithCode": true
+		}
+	},
+	"board": [
+		{
+			"shapeId": "line1",
+			"text": "x − 2 = 4",
+			"x": 40,
+			"y": 220,
+			"w": 150,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "x = 6",
+			"x": 40,
+			"y": 290,
+			"w": 100,
+			"h": 40
+		}
+	],
+	"expect": {
+		"allowNoActions": true,
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 0,
+		"maxQuestions": 0,
+		"maxMarks": 0
+	}
+}

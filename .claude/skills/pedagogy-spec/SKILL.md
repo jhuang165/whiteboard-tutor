@@ -38,6 +38,15 @@ when the feature they govern doesn't exist yet.
   `create` or `pen` strokes. Use one you haven't used yet in the chat.
 - **M7 Ambiguous.** Ask one short routing question, or infer from the button the student
   pressed.
+- **M8 Watch.** (Proactive watching, opt-in with the Watch toggle; the student did not ask.)
+  After the student pauses on an open, checked problem, a triage call (`/triage`, Sonnet 5.5)
+  decides whether to step in, and the default is no. It says yes only on a clear, substantive
+  error the student has already written past, that no tutor mark covers, and whose
+  handwriting reads clearly; never on the last line, a valid alternative method, or a slow
+  start. The tutor then checks it itself and may still do nothing (no actions). If it agrees:
+  transcribe the line (C3), one `mark-error` on the earliest error, and at most one short
+  chat line with no question. No verdict, hint, method, or answer. The app caps triage calls
+  and Watch turns per problem and never interrupts a turn the student started.
 
 ## Hint ladder (H), problem mode only
 
@@ -97,7 +106,7 @@ numeric answer never appears in rungs H1–H4.
 
 ## Evidence (L)
 
-Each turn writes at most one evidence record per concept. The app decides the level from what it counted (hint rungs opened, earlier wrong checks), never the model (`shared/tutor/evidence.ts`); a solve after any hint or wrong check is assisted. A problem the answer check found flawed records nothing (V2).
+Each turn writes at most one evidence record per concept. The app decides the level from what it counted (hint rungs opened, earlier wrong checks), never the model (`shared/tutor/evidence.ts`); a solve after any hint, wrong check, or Watch error mark (filed as the `watch` rung) is assisted. A problem the answer check found flawed records nothing (V2).
 
 - **L1** `exposure`: the student saw an explanation or a worked example.
 - **L2** `assisted`: the student solved it after hints. Record which rungs were opened.

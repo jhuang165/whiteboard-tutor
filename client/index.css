@@ -1078,6 +1078,11 @@ button.prompt-tag span {
 	background-color: var(--tl-color-muted-2);
 }
 
+.watch-button[aria-pressed='true'] {
+	color: var(--tl-color-primary);
+	font-weight: 600;
+}
+
 .history-page {
 	position: fixed;
 	inset: 0;

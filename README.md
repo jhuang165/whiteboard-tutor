@@ -12,7 +12,7 @@ design is in [docs/PLAN.md](docs/PLAN.md).
 
 ## Status
 
-Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip, tutor cursor, and diagram library. Most eval cases
+Early. Phase 0 (the scaffold) is done, Phase 1 (the tutor MVP) is under way, and the first Phase 2 pieces (quizzes, answer checks, evidence, history) are in, plus the Phase 3 transcription chip, tutor cursor, diagram library, and opt-in proactive watching. Most eval cases
 and example problems are probability, with a few in algebra, geometry, calculus, and linear
 algebra; other subjects aren't tested yet.
 
@@ -36,6 +36,11 @@ Working now:
 - Diagrams: `diagram` draws a probability tree, table, Venn diagram, number line, function
   graph, or matrix from a structured spec, laid out in code instead of drawn stroke by
   stroke. **Wait, what?** uses them to re-explain with a different picture.
+- Watching (opt-in): with **Watch** on in the chat header, the tutor may step in after the
+  student pauses on a posed problem. A quick `/triage` check on Sonnet 5.5 decides, and the
+  answer is usually no. It steps in only on a clear mistake the student has already written
+  past: one error mark and one short line, never the answer. It's capped per problem and
+  never interrupts a turn the student started.
 - The tutor can only add to the board. Every action that moves, edits, or deletes shapes is
   turned off, and everything the tutor draws is locked.
 - Claude calls use the official `@anthropic-ai/sdk` with adaptive thinking, per-button
@@ -112,7 +117,8 @@ scores the tutor's actions: the verdict, which line the error mark targets, slip
 misconception, one hint rung, the question budget, and no answer leaks. It reads its keys
 from `.dev.vars` like the worker does. It refuses to call the real API unless
 `EVAL_ALLOW_API=1` is set, so the default is to run it through the bridge. Results go to
-`evals/results/` (gitignored), with a summary in `latest.md`. The `tutor-eval` skill
+`evals/results/` (gitignored), with a summary in `latest.md`. `evals/triage.eval.ts` runs
+the proactive-watching classifier on `evals/triage-cases/`. The `tutor-eval` skill
 describes the case format.
 
 ## How it fits together

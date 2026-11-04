@@ -1,0 +1,77 @@
+{
+	"id": "watch-double-count-moved-past",
+	"description": "Proactive watch (M8): the student added P(heart) and P(king) for overlapping events, counting the king of hearts twice, then converted the result to a decimal. Triage flagged line 3. The tutor must mark line 3 as a misconception with no verdict, hint, question, or corrected probability.",
+	"rules": [
+		"M8",
+		"E1",
+		"C4",
+		"Q1"
+	],
+	"intent": "watch",
+	"watchReason": "Line 3 adds P(heart) and P(king) as if the events could not happen together, so one card is counted twice; line 4 carries it on. (shape line3)",
+	"problem": {
+		"shapeId": "frame1",
+		"problemId": "eval-watch-heart-king",
+		"concept": "addition-rule",
+		"title": "Heart or king",
+		"statement": "One card is drawn from a standard 52-card deck. What is the probability that it is a heart or a king?",
+		"status": "open",
+		"hintRungs": [],
+		"incorrectChecks": 0,
+		"verification": "checked",
+		"verified": {
+			"status": "checked",
+			"answer": "16/52 = 4/13 ≈ 0.3077",
+			"method": "P(heart) = 13/52 and P(king) = 4/52 overlap in the king of hearts (1/52). By inclusion-exclusion, 13/52 + 4/52 − 1/52 = 16/52 = 4/13.",
+			"issue": "",
+			"checkedWithCode": true
+		}
+	},
+	"board": [
+		{
+			"shapeId": "line1",
+			"text": "P(heart) = 13/52",
+			"x": 40,
+			"y": 220,
+			"w": 220,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "P(king) = 4/52",
+			"x": 40,
+			"y": 290,
+			"w": 200,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "P(heart or king) = 13/52 + 4/52 = 17/52",
+			"x": 40,
+			"y": 360,
+			"w": 460,
+			"h": 40
+		},
+		{
+			"shapeId": "line4",
+			"text": "≈ 0.327",
+			"x": 40,
+			"y": 430,
+			"w": 120,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "line3",
+		"errorKind": "misconception",
+		"hints": 0,
+		"maxQuestions": 0,
+		"maxMarks": 1,
+		"forbidden": [
+			"16/52",
+			"4/13",
+			"0.308"
+		]
+	}
+}

@@ -6,14 +6,27 @@ describe('buildTutorTurnContent', () => {
 	it('names a mode for every intent', () => {
 		for (const intent of TUTOR_INTENTS) {
 			const text = buildTutorTurnContent({ intent, hintsGiven: 0 }).join('\n')
-			expect(text).toMatch(/\bM[1-7]\b/)
+			expect(text).toMatch(/\bM[1-8]\b/)
 		}
 	})
 
-	it('has a button for every intent except chat', () => {
+	it('has a button for every intent except chat and watch', () => {
 		expect(TUTOR_BUTTONS.map((b) => b.intent).sort()).toEqual(
-			TUTOR_INTENTS.filter((i) => i !== 'chat').sort()
+			TUTOR_INTENTS.filter((i) => i !== 'chat' && i !== 'watch').sort()
 		)
+	})
+
+	it('passes the triage reason on a Watch turn and allows doing nothing (M8)', () => {
+		const text = buildTutorTurnContent({ intent: 'watch', hintsGiven: 0, watchReason: 'Line 2 adds\n the two  probabilities.' }).join()
+		expect(text).toContain('M8 Watch')
+		expect(text).toContain('"Line 2 adds the two probabilities."')
+		expect(text).toContain('no actions')
+		expect(text).toContain('no verdict, hint, method, or answer')
+	})
+
+	it('caps a long triage reason', () => {
+		const text = buildTutorTurnContent({ intent: 'watch', hintsGiven: 0, watchReason: 'x'.repeat(1000) }).join()
+		expect(text.length).toBeLessThan(1500)
 	})
 
 	it('asks for zero questions on Explain (Q2)', () => {

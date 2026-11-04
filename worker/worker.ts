@@ -4,6 +4,7 @@ import { AutoRouter, cors, error, IRequest } from 'itty-router'
 import { Environment } from './environment'
 import { getEvidence, getHistory, postEvidence } from './routes/evidence'
 import { stream } from './routes/stream'
+import { triage } from './routes/triage'
 import { verify } from './routes/verify'
 
 const { preflight, corsify } = cors({ origin: '*' })
@@ -18,6 +19,7 @@ const router = AutoRouter<IRequest, [env: Environment, ctx: ExecutionContext]>({
 })
 	.post('/stream', stream)
 	.post('/verify', verify)
+	.post('/triage', triage)
 	.post('/evidence', postEvidence)
 	.get('/evidence', getEvidence)
 	.get('/history', getHistory)

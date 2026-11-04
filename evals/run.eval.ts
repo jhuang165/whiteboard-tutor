@@ -7,18 +7,19 @@
  *   EVAL_ALLOW_API=1               required unless .dev.vars points at the local bridge, since the API costs money
  *   npm run eval -- -t bayes       only cases whose id matches
  */
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { afterAll, describe, expect, it } from 'vitest'
 import { getAgentModeDefinition } from '../client/modes/AgentModeDefinitions'
 import { isValidModelName } from '../shared/models'
 import { AgentService } from '../worker/do/AgentService'
 import type { Environment } from '../worker/environment'
+import { isBridge, readEnv } from './lib/env'
 import { buildCasePrompt } from './lib/buildCasePrompt'
 import { type CheckResult, type EvalAction, runChecks } from './lib/checks'
 import type { EvalCase } from './lib/EvalCase'
 
 const env = readEnv()
-const viaBridge = /^https?:\/\/(127\.0\.0\.1|localhost)(:|\/)/.test(env.ANTHROPIC_BASE_URL ?? '')
+const viaBridge = isBridge(env)
 const repeat = Math.max(1, Number(process.env.EVAL_REPEAT ?? 1))
 const modelOverride = process.env.EVAL_MODEL
 if (modelOverride && !isValidModelName(modelOverride)) throw new Error(`Unknown EVAL_MODEL ${modelOverride}`)
@@ -82,7 +83,7 @@ async function runCase(evalCase: EvalCase, run: number): Promise<RunResult> {
 			const { complete: _complete, time: _time, ...action } = event as typeof event & { time?: number }
 			actions.push(action as EvalAction)
 		}
-		if (actions.length === 0) error = 'the model returned no actions'
+		if (actions.length === 0 && !evalCase.expect.allowNoActions) error = 'the model returned no actions'
 	} catch (e) {
 		error = e instanceof Error ? e.message : String(e)
 	}
@@ -132,25 +133,4 @@ function loadCases(): EvalCase[] {
 		.filter((file) => file.endsWith('.json'))
 		.sort()
 		.map((file) => JSON.parse(readFileSync(new URL(file, dir), 'utf8')) as EvalCase)
-}
-
-/**
- * Model keys from `.dev.vars` only, the same source the worker uses. The shell environment
- * is ignored on purpose: a host app can export ANTHROPIC_BASE_URL, which would silently send
- * these calls somewhere else.
- */
-function readEnv(): Partial<Environment> {
-	const keys = ['ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'OPENAI_API_KEY', 'GOOGLE_API_KEY'] as const
-	const file = new URL('../.dev.vars', import.meta.url)
-	const vars: Record<string, string> = {}
-	if (existsSync(file)) {
-		for (const line of readFileSync(file, 'utf8').split('\n')) {
-			const match = /^\s*([A-Z_]+)\s*=\s*(.*?)\s*$/.exec(line)
-			if (match) vars[match[1]] = match[2].replace(/^["']|["']$/g, '')
-		}
-	}
-	const env = Object.fromEntries(keys.map((key) => [key, vars[key] ?? ''])) as Partial<Environment>
-	// Pass the default explicitly, or the Anthropic SDK falls back to the shell's ANTHROPIC_BASE_URL.
-	env.ANTHROPIC_BASE_URL ||= 'https://api.anthropic.com'
-	return env
 }

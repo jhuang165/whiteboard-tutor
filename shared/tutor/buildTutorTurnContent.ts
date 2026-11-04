@@ -1,4 +1,5 @@
 import { conceptSlug } from './evidence'
+import { cleanWatchReason } from './triage'
 import type { TutorIntent } from './TutorIntent'
 
 export interface TutorTurnState {
@@ -7,6 +8,8 @@ export interface TutorTurnState {
 	hintsGiven: number
 	/** On a Quiz turn, the due review the student chose to start (L4). */
 	reviewConcept?: string
+	/** On a Watch turn, what the triage check flagged (M8). */
+	watchReason?: string
 }
 
 /**
@@ -14,7 +17,7 @@ export interface TutorTurnState {
  * Rule ids refer to `.claude/skills/pedagogy-spec/SKILL.md`; the full rules are in the
  * system prompt, so this only names the mode and the turn-specific state.
  */
-export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: TutorTurnState): string[] {
+export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept, watchReason }: TutorTurnState): string[] {
 	switch (intent) {
 		case 'chat':
 			return [
@@ -49,5 +52,12 @@ export function buildTutorTurnContent({ intent, hintsGiven, reviewConcept }: Tut
 			return [
 				"Tutor turn: the student pressed **Quiz me**. Use M4 Quiz: pose exactly one practice problem with `pose-problem`, then stop. Choose its concept from the learner's record: a review that is due first, then a concept they have only seen or solved with help, then the topic they are working on now. Match the difficulty to their recent work. Solve it yourself first (V1); it is also checked with code before you grade it. Give no hint, method, or answer. Any chat message is one short line with no question.",
 			]
+		case 'watch': {
+			// The reason comes from the triage model via the client; keep it to one short line.
+			const flagged = watchReason ? cleanWatchReason(watchReason) : ''
+			return [
+				`Tutor turn: **proactive watch**. The student did not ask for help; they paused while working on the current problem. Use M8 Watch. A quick triage check flagged this: "${flagged || 'a possible error'}". It can be wrong. Check the work yourself against the problem's checked answer first. Step in only if you agree that a line has a clear, substantive error and the student has already written work after it. Then transcribe that line (C3), put one \`mark-error\` on the earliest such error, and add at most one short chat line. Neither the mark's label nor the chat line asks a question: state what to recheck. Give no verdict, hint, method, or answer. If you do not see a clear error the student has moved past, do nothing: return no actions at all.`,
+			]
+		}
 	}
 }

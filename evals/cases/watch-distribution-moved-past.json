@@ -1,0 +1,68 @@
+{
+	"id": "watch-distribution-moved-past",
+	"description": "Proactive watch (M8): the student distributed 4 to x only (4(x + 3) became 4x + 3) and wrote two more lines on top of it. Triage flagged line 1. The tutor must put one error mark on line 1 without a verdict, a hint, a question, or the corrected expression.",
+	"rules": [
+		"M8",
+		"E1",
+		"C4",
+		"Q1"
+	],
+	"intent": "watch",
+	"watchReason": "Line 1 multiplies only the x by 4, so 4(x + 3) became 4x + 3; lines 2 and 3 build on it. (shape line1)",
+	"problem": {
+		"shapeId": "frame1",
+		"problemId": "eval-watch-distribute",
+		"concept": "linear-equations",
+		"title": "Brackets on one side",
+		"statement": "Solve 4(x + 3) = 2x + 20.",
+		"status": "open",
+		"hintRungs": [],
+		"incorrectChecks": 0,
+		"verification": "checked",
+		"verified": {
+			"status": "checked",
+			"answer": "x = 4",
+			"method": "Distribute: 4x + 12 = 2x + 20. Subtract 2x and 12: 2x = 8, so x = 4.",
+			"issue": "",
+			"checkedWithCode": true
+		}
+	},
+	"board": [
+		{
+			"shapeId": "line1",
+			"text": "4x + 3 = 2x + 20",
+			"x": 40,
+			"y": 220,
+			"w": 240,
+			"h": 40
+		},
+		{
+			"shapeId": "line2",
+			"text": "2x + 3 = 20",
+			"x": 40,
+			"y": 290,
+			"w": 180,
+			"h": 40
+		},
+		{
+			"shapeId": "line3",
+			"text": "2x = 17",
+			"x": 40,
+			"y": 360,
+			"w": 120,
+			"h": 40
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "line1",
+		"hints": 0,
+		"maxQuestions": 0,
+		"maxMarks": 1,
+		"forbidden": [
+			"4x + 12",
+			"4x+12",
+			"x = 4"
+		]
+	}
+}

@@ -35,6 +35,18 @@ export function noteHint(editor: Editor, rung: string) {
 }
 
 /**
+ * An error mark the student didn't ask for (a Watch turn, M8) on work in the open problem is
+ * help, like a hint: a later solve is assisted (L2). It is filed as the `watch` rung.
+ */
+export function noteWatchMark(editor: Editor, targetId: TLShapeId) {
+	const frame = getLatestProblemFrame(editor)
+	if (!frame) return
+	const state = getProblemState(frame)
+	if (state.status !== 'open' || !isInWorkArea(editor, frame, targetId)) return
+	updateProblemState(editor, frame.id, { hintRungs: [...state.hintRungs, 'watch'] })
+}
+
+/**
  * A verdict on work in the current problem's work area grades the attempt. A correct one
  * solves the problem and records evidence; an incorrect one counts as help for the next try.
  */

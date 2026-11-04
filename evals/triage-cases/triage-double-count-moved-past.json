@@ -1,0 +1,60 @@
+{
+	"id": "triage-double-count-moved-past",
+	"description": "Adding overlapping probabilities, then a decimal on the next line. Step in on line3.",
+	"problemId": "eval-triage-double-count-moved-past",
+	"title": "Heart or king",
+	"statement": "One card is drawn from a standard 52-card deck. What is the probability that it is a heart or a king?",
+	"verified": {
+		"status": "checked",
+		"answer": "16/52 = 4/13 ≈ 0.3077",
+		"method": "13/52 + 4/52 − 1/52 for the king of hearts = 16/52 = 4/13.",
+		"issue": "",
+		"checkedWithCode": true
+	},
+	"shapes": [
+		{
+			"id": "line1",
+			"author": "student",
+			"type": "text",
+			"text": "P(heart) = 13/52",
+			"x": 40,
+			"y": 220,
+			"w": 300,
+			"h": 40
+		},
+		{
+			"id": "line2",
+			"author": "student",
+			"type": "text",
+			"text": "P(king) = 4/52",
+			"x": 40,
+			"y": 290,
+			"w": 300,
+			"h": 40
+		},
+		{
+			"id": "line3",
+			"author": "student",
+			"type": "text",
+			"text": "P(heart or king) = 13/52 + 4/52 = 17/52",
+			"x": 40,
+			"y": 360,
+			"w": 300,
+			"h": 40
+		},
+		{
+			"id": "line4",
+			"author": "student",
+			"type": "text",
+			"text": "≈ 0.327",
+			"x": 40,
+			"y": 430,
+			"w": 300,
+			"h": 40
+		}
+	],
+	"expect": {
+		"intervene": true,
+		"shapeId": "line3"
+	}
+}

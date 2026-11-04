@@ -19,6 +19,8 @@ export interface EvalCase {
 	hintsGiven?: number
 	/** On a `quiz` case, the due review the student started from the review queue (L4). */
 	reviewConcept?: string
+	/** On a `watch` case, what the triage check flagged (M8). */
+	watchReason?: string
 	/** The student's message. Defaults to the pressed button's message. */
 	message?: string
 	/** Defaults to the app's default model. */
@@ -55,6 +57,8 @@ export type EvalHistoryTurn =
 export type ExpectedVerdict = 'correct' | 'incorrect' | 'none'
 
 export interface EvalExpectations {
+	/** Whether doing nothing is a valid reply, as on a Watch turn the tutor disagrees with (M8). */
+	allowNoActions?: boolean
 	/**
 	 * The single verdict the tutor must give, or `none` for no verdict at all. A list allows any
 	 * of them, such as `["none", "correct"]` for "anything but an incorrect verdict".
