@@ -1,0 +1,81 @@
+{
+	"id": "absolute-value-wait-what-after-table",
+	"description": "The tutor explained |x − 3| ≤ 2 as 1 ≤ x ≤ 5 with algebra and a table of test values, drawn with `diagram` (chat history; the table is on the board). The student pressed Wait, what?. M6: re-explain in a representation not used yet in this chat, so not another table: a number line with a closed segment from 1 to 5 (the points within 2 of 3), or a plot of |x − 3| against the line y = 2. No verdict, error mark, or hint.",
+	"rules": [
+		"M6",
+		"E3",
+		"Q1"
+	],
+	"intent": "wait-what",
+	"history": [
+		{
+			"role": "student",
+			"message": "Explain this to me."
+		},
+		{
+			"role": "tutor",
+			"actions": [
+				{
+					"_type": "write-math",
+					"intent": "Unpack the absolute value into a double inequality",
+					"latex": "|x - 3| \\le 2 \\;\\Leftrightarrow\\; -2 \\le x - 3 \\le 2 \\;\\Leftrightarrow\\; 1 \\le x \\le 5",
+					"anchorShapeId": "question"
+				},
+				{
+					"_type": "diagram",
+					"intent": "Check values on both sides of the endpoints",
+					"title": "Test values for |x − 3| ≤ 2",
+					"anchorShapeId": "question",
+					"diagram": {
+						"kind": "table",
+						"corner": "x",
+						"columns": ["|x − 3|", "≤ 2?"],
+						"rows": [
+							{ "label": "0", "cells": ["3", "no"] },
+							{ "label": "1", "cells": ["2", "yes"] },
+							{ "label": "3", "cells": ["0", "yes"] },
+							{ "label": "5", "cells": ["2", "yes"] },
+							{ "label": "6", "cells": ["3", "no"] }
+						],
+						"highlightRows": [1, 2, 3],
+						"highlightColumns": []
+					}
+				},
+				{
+					"_type": "message",
+					"text": "|x − 3| ≤ 2 means x − 3 is between −2 and 2, so add 3 everywhere: 1 ≤ x ≤ 5. The table checks a few values: 1, 3, and 5 work, and 0 and 6 don't."
+				}
+			]
+		}
+	],
+	"board": [
+		{
+			"shapeId": "question",
+			"text": "Why is |x − 3| ≤ 2 the same as 1 ≤ x ≤ 5?",
+			"x": 0,
+			"y": 0,
+			"w": 460,
+			"h": 40
+		},
+		{
+			"shapeId": "table1",
+			"type": "unknown",
+			"note": "tutor diagram (table)",
+			"text": "table \"Test values for |x − 3| ≤ 2\": x | |x − 3| | ≤ 2? / 0 | 3 | no / 1 | 2 | yes / 3 | 0 | yes / 5 | 2 | yes / 6 | 3 | no (highlighted: row 1, row 3, row 5)",
+			"x": 480,
+			"y": 0,
+			"w": 211,
+			"h": 252
+		}
+	],
+	"expect": {
+		"verdict": "none",
+		"markErrorOn": "none",
+		"hints": 0,
+		"maxQuestions": 1,
+		"diagram": [
+			"number-line",
+			"plot"
+		]
+	}
+}

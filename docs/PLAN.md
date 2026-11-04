@@ -301,7 +301,11 @@ tested on probability first (§8 #1: the app itself is general purpose).
   drew a valid diagram. The tutor favors tables: both inequality runs drew a test-value
   table, not a number line, and Explain and D1 turns also drew tables and trees unprompted.
   A live Explain turn in the app drew a table, and Wait-what then drew a shaded 2-set Venn
-  diagram.
+  diagram. On 2026-11-04 the table habit was checked: for "why does < flip" a table of test
+  values is a fair worked example, and a new case, `absolute-value-wait-what-after-table`,
+  shows the tutor doesn't repeat a table it already drew. It drew a "distance from 3"
+  number line in 3/3 runs on the current prompt. A fit guide in the prompt (which kind suits
+  which point) changed nothing measurable, so it was dropped.
 - Opt-in proactive watching with triage (needs §8 #3).
 
 **Phase 4: materials.**

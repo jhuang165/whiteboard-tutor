@@ -79,7 +79,9 @@ also rejects bare-number titles such as "Problem 3". L is decided in code, not b
 their `latex`, `title`, and `statement` are scanned for leaks but not counted as questions.
 `diagram` counts as a mark too; its labels, cells, outcomes, and expressions are scanned for
 leaks (numbers placed by value, like a point on a number line, aren't). `draws-diagram` (M6)
-runs on `wait-what-after-explain` and `inequality-number-line-wait-what`.
+runs on `wait-what-after-explain`, `inequality-number-line-wait-what`, and
+`absolute-value-wait-what-after-table`, where the earlier turn already drew a table, so
+another table fails.
 A case can set `problem` (the full `ProblemPart` problem, including `verified` for the checked answer the worker would attach) and `learnerSummary` (the per-concept evidence summary). Put the checked answer in `forbidden` on hint cases.
 
 | Check | Rule |
